@@ -1,38 +1,36 @@
 import 'package:flutter/material.dart';
-import 'app_routes.dart';
 import '../../features/catalog/pages/home_page.dart';
 import '../../features/product/pages/product_page.dart';
 import '../../features/checkout/pages/checkout_page.dart';
 import '../../features/checkout/pages/thank_you_page.dart';
 import '../../features/admin/pages/admin_dashboard_page.dart';
-import '../../features/admin/pages/orders_page.dart';
-import '../../features/admin/pages/reviews_page.dart';
-import '../../features/admin/pages/settings_page.dart';
 
 class AppRouter {
+  static const String home = '/';
+  static const String product = '/p';
+  static const String checkout = '/checkout';
+  static const String thankYou = '/thank-you';
+  static const String admin = '/admin';
+
   static final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
-  static Route<dynamic> onGenerateRoute(RouteSettings s) {
-    switch (s.name) {
-      case Routes.home:
+  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case home:
         return _m(const HomePage());
-      case Routes.product:
-        final slug = (s.arguments as Map?)?['slug'] as String? ?? '';
-        return _m(ProductPage(slug: slug));
-      case Routes.checkout:
-        final id = (s.arguments as Map?)?['productId'] as int? ?? 0;
+      case product:
+        final args = settings.arguments as Map?;
+        final product = args?['product'] as Map<String, dynamic>? ?? {};
+        final slug = args?['slug'] as String? ?? '';
+        return _m(ProductPage(product: product, slug: slug));
+      case checkout:
+        final id = (settings.arguments as Map?)?['productId'] as int? ?? 0;
         return _m(CheckoutPage(productId: id));
-      case Routes.thankYou:
-        final no = (s.arguments as Map?)?['orderNo'];
+      case thankYou:
+        final no = (settings.arguments as Map?)?['orderNo'];
         return _m(ThankYouPage(orderNo: no));
-      case Routes.admin:
+      case admin:
         return _m(const AdminDashboardPage());
-      case Routes.adminOrders:
-        return _m(const OrdersPage());
-      case Routes.adminReviews:
-        return _m(const AdminReviewsPage());
-      case Routes.adminSettings:
-        return _m(const AdminSettingsPage());
       default:
         return _m(const Scaffold(body: Center(child: Text('404'))));
     }
