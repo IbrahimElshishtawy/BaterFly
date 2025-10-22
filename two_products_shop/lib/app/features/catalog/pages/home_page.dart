@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
               mainAxisSpacing: 12,
             ),
             itemCount: items.length,
-            itemBuilder: (_, i) => _ProductCard(p: items[i]),
+            itemBuilder: (_, i) => ProductCard(p: items[i]),
           );
         },
       ),
