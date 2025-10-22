@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:two_products_shop/app/features/catalog/pages/home_page.dart';
+import 'package:two_products_shop/app/features/checkout/pages/checkout_page.dart';
+import 'package:two_products_shop/app/features/checkout/pages/thank_you_page.dart';
 
 class AppRouter {
   static const String home = '/';
@@ -20,15 +23,15 @@ class AppRouter {
         final args =
             settings.arguments as Map<String, dynamic>?; // {productId, qty}
         return _m(
-          _CheckoutPage(productId: args?['productId'], qty: args?['qty'] ?? 1),
+          CheckoutPage(productId: args?['productId'], qty: args?['qty'] ?? 1),
         );
       case thankYou:
         final args = settings.arguments as Map<String, dynamic>?; // {orderNo}
-        return _m(_ThankYouPage(orderNo: args?['orderNo'] ?? ''));
+        return _m(ThankYouPage(orderNo: args?['orderNo'] ?? ''));
       case admin:
-        return _m(const _AdminGate());
+        return _m(const AdminGate());
       default:
-        return _m(const _NotFound());
+        return _m(const NotFound());
     }
   }
 
@@ -61,59 +64,5 @@ class _ProductPage extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _CheckoutPage extends StatelessWidget {
-  final int? productId;
-  final int qty;
-  const _CheckoutPage({required this.productId, required this.qty});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('إتمام الطلب')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => Navigator.pushNamed(
-            context,
-            AppRouter.thankYou,
-            arguments: {'orderNo': 'ORD-XXXX'},
-          ),
-          child: const Text('تأكيد وإظهار رقم الطلب'),
-        ),
-      ),
-    );
-  }
-}
-
-class _ThankYouPage extends StatelessWidget {
-  final String orderNo;
-  const _ThankYouPage({required this.orderNo});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('شكراً لك')),
-      body: Center(child: Text('رقم طلبك: $orderNo')),
-    );
-  }
-}
-
-class _AdminGate extends StatelessWidget {
-  const _AdminGate();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('لوحة الأدمن (لاحقاً)')));
-  }
-}
-
-class _NotFound extends StatelessWidget {
-  const _NotFound();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('404')));
   }
 }
