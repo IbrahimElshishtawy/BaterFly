@@ -19,7 +19,7 @@ class ImageLoader extends StatelessWidget {
       height: height,
       width: double.infinity,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => Container(
+      errorBuilder: (_, _, _) => Container(
         height: height ?? 180,
         color: Colors.grey.shade200,
         child: const Center(child: Icon(Icons.broken_image)),
