@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_to_list_in_spreads
+
 import 'package:flutter/material.dart';
 import '../../../data/datasources/remote/products_remote.dart';
 import '../../../data/models/product_model.dart';
@@ -6,7 +8,11 @@ import '../../reviews/widgets/review_section.dart';
 
 class ProductPage extends StatefulWidget {
   final String slug;
-  const ProductPage({super.key, required this.slug});
+  const ProductPage({
+    super.key,
+    required this.slug,
+    required Map<String, dynamic> product,
+  });
 
   @override
   State<ProductPage> createState() => _ProductPageState();
