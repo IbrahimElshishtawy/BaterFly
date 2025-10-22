@@ -48,4 +48,16 @@ class ProductModel {
       reviewsCount: (m[AppConstants.fReviewsCount] as int?) ?? 0,
     );
   }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'slug': slug,
+    'price': price,
+    'images': images,
+    'usage': usage,
+    'features': features,
+    'active': active,
+    'avg_rating': avgRating,
+    'reviews_count': reviewsCount,
+  };
 }
