@@ -1,19 +1,13 @@
+// ignore_for_file: unnecessary_underscores
+
 import 'package:flutter/material.dart';
+import 'package:two_products_shop/app/features/product/pages/product_page_shell.dart';
+import 'package:two_products_shop/app/features/product/widgets/product_list_item.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/animations/fade_slide.dart';
-import '../../../core/widgets/animations/staggered_grid.dart';
-import '../widgets/product_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  int _cols(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
-    if (w >= 1200) return 6;
-    if (w >= 900) return 5;
-    if (w >= 700) return 3;
-    return 2;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +59,9 @@ class HomePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         FilledButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            // تعامل مع الضغط هنا
+                          },
                           icon: const Icon(
                             Icons.local_fire_department_outlined,
                           ),
@@ -75,7 +71,6 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // صورة ترويجية اختيارية
                   Flexible(
                     child: AspectRatio(
                       aspectRatio: 4 / 3,
@@ -100,36 +95,32 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // جريد متدرّج الحركة
+          // قائمة منتجات أفقية بدلاً من الجريد
           Expanded(
-            child: StaggeredGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: _cols(context),
-                crossAxisSpacing: 14,
-                mainAxisSpacing: 14,
-                childAspectRatio: .78,
-              ),
+            child: ListView.separated(
+              padding: const EdgeInsets.only(bottom: 24),
               itemCount: demo.length,
-              itemBuilder: (_, i) {
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, i) {
                 final it = demo[i];
-                return ProductCard(
-                  id: it['id']!,
-                  title: it['title']!,
-                  priceText: it['price']!,
-                  imageUrl: it['image'],
+                return ProductListItem(
+                  id: it['id'] as String,
+                  title: it['title'] as String,
+                  priceText: it['price'] as String,
+                  imageUrl: it['image'] as String?,
                   onTap: () {
                     Navigator.of(context).push(
                       PageRouteBuilder(
-                        transitionDuration: const Duration(milliseconds: 500),
-                        pageBuilder: (_, a, __) {
-                          return FadeTransition(
-                            opacity: CurvedAnimation(
-                              parent: a,
-                              curve: Curves.easeOutCubic,
-                            ),
-                            child: _ProductPageShell(productId: it['id']!),
-                          );
-                        },
+                        transitionDuration: const Duration(milliseconds: 400),
+                        pageBuilder: (_, a, __) => FadeTransition(
+                          opacity: CurvedAnimation(
+                            parent: a,
+                            curve: Curves.easeOutCubic,
+                          ),
+                          child: ProductPageShell(
+                            productId: it['id'] as String,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -138,21 +129,6 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// غلاف بسيط لفتح صفحة المنتج الموجودة لديك
-class _ProductPageShell extends StatelessWidget {
-  final String productId;
-  const _ProductPageShell({required this.productId});
-  @override
-  Widget build(BuildContext context) {
-    // استبدل بالمسار الفعلي لو مختلف
-    return Navigator(
-      onGenerateRoute: (_) => MaterialPageRoute(
-        builder: (_) => const SizedBox(), // placeholder لو احتجت
       ),
     );
   }
