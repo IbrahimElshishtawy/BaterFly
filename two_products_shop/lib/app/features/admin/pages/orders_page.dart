@@ -34,14 +34,15 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   Widget build(BuildContext context) {
     if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_orders.isEmpty)
+    if (_orders.isEmpty) {
       return const Center(child: Text('لا توجد طلبات حالياً'));
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('الطلبات')),
       body: ListView.separated(
         itemCount: _orders.length,
-        separatorBuilder: (_, __) => const Divider(),
+        separatorBuilder: (_, _) => const Divider(),
         itemBuilder: (_, i) {
           final o = _orders[i];
           return ListTile(
