@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_cast
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../services/supabase/supabase_client.dart';
 import '../../../core/config/app_constants.dart';
