@@ -1,171 +1,173 @@
 import 'package:flutter/material.dart';
-import 'package:two_products_shop/app/data/datasources/remote/products_remote.dart';
-import 'package:two_products_shop/app/data/models/product_model.dart';
+import '../../data/datasources/remote/products_remote.dart';
+import '../../data/models/product_model.dart';
+import 'animations/fade_slide.dart';
 
-class ProductPage extends StatefulWidget {
-  final String productId;
-  const ProductPage({super.key, required this.productId});
+class MarketingHero extends StatefulWidget {
+  final String? featuredProductId; // اختياري: هيرو لمنتج مميز
+  const MarketingHero({super.key, this.featuredProductId});
+
   @override
-  State<ProductPage> createState() => _ProductPageState();
+  State<MarketingHero> createState() => _MarketingHeroState();
 }
 
-class _ProductPageState extends State<ProductPage>
-    with TickerProviderStateMixin {
+class _MarketingHeroState extends State<MarketingHero> {
   final _remote = ProductsRemote();
-  ProductModel? product;
-  bool loading = true;
-  String? error;
+  ProductModel? _p;
+  bool _loading = false;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    if (widget.featuredProductId != null) {
+      _fetch();
+    }
   }
 
-  Future<void> _load() async {
-    setState(() => loading = true);
+  Future<void> _fetch() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      product = await _remote.getById(widget.productId);
-      if (product == null) error = 'المنتج غير متاح';
+      _p = await _remote.getById(widget.featuredProductId!);
+      if (_p == null) _error = 'المنتج غير متاح';
     } catch (e) {
-      error = e.toString();
+      _error = e.toString();
     } finally {
-      if (mounted) setState(() => loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (loading)
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    if (error != null)
-      return Scaffold(
-        appBar: AppBar(),
-        body: Center(child: Text(error!)),
-      );
-    final p = product!;
+    final p = _p;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(p.title)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Hero(
-            tag: 'p-img-${p.id}',
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: AspectRatio(
-                aspectRatio: 1.4,
-                child: p.imageUrl != null
-                    ? Image.network(p.imageUrl!, fit: BoxFit.cover)
-                    : Container(color: const Color(0xFFE9EEF5)),
-              ),
-            ),
+    return FadeSlide(
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).colorScheme.primary.withOpacity(.12),
+              Theme.of(context).colorScheme.secondary.withOpacity(.10),
+            ],
           ),
-          const SizedBox(height: 16),
-
-          FadeSlide(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    p.title,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withOpacity(.10),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    '${p.displayPrice} EGP',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          if ((p.description ?? '').isNotEmpty)
-            FadeSlide(
-              delay: const Duration(milliseconds: 80),
-              child: Text(
-                p.description!,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-
-          const SizedBox(height: 18),
-
-          FadeSlide(
-            delay: const Duration(milliseconds: 140),
-            child: FilledButton.icon(
-              onPressed: p.inStock ? () {} : null,
-              icon: const Icon(Icons.add_shopping_cart_rounded),
-              label: Text(p.inStock ? 'أضف إلى السلة' : 'غير متوفر'),
-            ),
-          ),
-
-          const SizedBox(height: 22),
-
-          // مقطع فوائد/مميزات تسويقية
-          FadeSlide(
-            delay: const Duration(milliseconds: 200),
-            child: _Benefits(),
-          ),
-        ],
+        ),
+        child: _loading
+            ? const SizedBox(
+                height: 160,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : _error != null || p == null
+            ? _StaticHero() // بانر تسويقي ثابت لو مافيش منتج
+            : _ProductHero(p: p),
       ),
     );
   }
 }
 
-class _Benefits extends StatelessWidget {
+class _StaticHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final items = const [
-      (Icons.verified, 'جودة مضمونة'),
-      (Icons.local_shipping_outlined, 'توصيل سريع'),
-      (Icons.lock_outline, 'دفع آمن'),
-      (Icons.reviews_outlined, 'تقييمات موثوقة'),
-    ];
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x1418273A),
-            blurRadius: 14,
-            offset: Offset(0, 6),
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'عروض اليوم',
+                style: Theme.of(context).textTheme.displayLarge,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'خصومات حقيقية على أفضل المنتجات. تسوّق الآن.',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.local_fire_department_outlined),
+                label: const Text('اكتشف العروض'),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Wrap(
-        spacing: 14,
-        runSpacing: 12,
-        children: items
-            .map(
-              (e) => Row(
-                mainAxisSize: MainAxisSize.min,
+        ),
+        const SizedBox(width: 16),
+        Flexible(
+          child: AspectRatio(
+            aspectRatio: 4 / 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Container(color: const Color(0xFFE9EEF5)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ProductHero extends StatelessWidget {
+  final ProductModel p;
+  const _ProductHero({required this.p});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        // نص تسويقي
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(p.title, style: Theme.of(context).textTheme.displayLarge),
+              const SizedBox(height: 8),
+              if ((p.description ?? '').isNotEmpty)
+                Text(
+                  p.description!,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
                 children: [
-                  Icon(e.$1, size: 18),
-                  const SizedBox(width: 6),
-                  Text(e.$2),
+                  FilledButton.icon(
+                    onPressed: p.inStock ? () {} : null,
+                    icon: const Icon(Icons.add_shopping_cart_rounded),
+                    label: Text(p.inStock ? 'أضف إلى السلة' : 'غير متوفر'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.visibility_outlined),
+                    label: Text('${p.displayPrice} EGP'),
+                  ),
                 ],
               ),
-            )
-            .toList(),
-      ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        // صورة المنتج
+        Flexible(
+          child: AspectRatio(
+            aspectRatio: 4 / 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: p.imageUrl != null
+                  ? Image.network(p.imageUrl!, fit: BoxFit.cover)
+                  : Container(color: const Color(0xFFE9EEF5)),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
