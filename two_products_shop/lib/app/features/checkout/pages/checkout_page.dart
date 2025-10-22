@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/routing/app_router.dart';
@@ -5,8 +7,8 @@ import '../../../services/supabase/supabase_client.dart';
 import '../../../core/config/app_constants.dart';
 
 class CheckoutPage extends StatefulWidget {
-  final int productId;
-  const CheckoutPage({super.key, required this.productId});
+  final int? productId;
+  const CheckoutPage({super.key, this.productId});
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
