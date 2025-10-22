@@ -28,18 +28,20 @@ class _AdminGateState extends State<AdminGate> {
         context,
         MaterialPageRoute(builder: (_) => const AdminLoginPage()),
       );
-      if (ok != true)
+      if (ok != true) {
         return setState(() {
           _checking = false;
           _allowed = false;
         });
+      }
     }
     final u = s.auth.currentUser;
-    if (u == null)
+    if (u == null) {
       return setState(() {
         _checking = false;
         _allowed = false;
       });
+    }
 
     final row = await s
         .from('admins')
