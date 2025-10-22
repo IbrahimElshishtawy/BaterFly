@@ -1,33 +1,37 @@
-// ignore_for_file: unnecessary_underscores
-
+// ignore_for_file: unnecessary_cast
 import 'package:flutter/material.dart';
-import 'package:two_products_shop/app/features/product/pages/product_page_shell.dart';
-import 'package:two_products_shop/app/features/product/widgets/product_list_item.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/animations/fade_slide.dart';
+import '../../product/pages/product_page_shell.dart';
+import '../../../data/datasources/remote/products_remote.dart';
+import '../../../data/models/product_model.dart';
+import '../../product/widgets/product_list_item.dart';
+import '../../../core/utils/formatters.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final _remote = ProductsRemote();
+  late Future<List<ProductModel>> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _remote.fetchActive(limit: 50);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final demo = List.generate(
-      12,
-      (i) => {
-        'id': 'p$i',
-        'title': 'منتج رقم ${i + 1}',
-        'price': 'EGP ${(i + 1) * 199}',
-        'image': null,
-      },
-    );
-
     return AppShell(
       onOpenCart: () {},
       onOpenSearch: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // هيرو تسويقي علوي
           FadeSlide(
             child: Container(
               padding: const EdgeInsets.all(18),
@@ -59,9 +63,7 @@ class HomePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         FilledButton.icon(
-                          onPressed: () {
-                            // تعامل مع الضغط هنا
-                          },
+                          onPressed: () {},
                           icon: const Icon(
                             Icons.local_fire_department_outlined,
                           ),
@@ -84,8 +86,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 20),
-
+          const SizedBox(height: 16),
           FadeSlide(
             delay: const Duration(milliseconds: 120),
             child: Text(
@@ -94,34 +95,45 @@ class HomePage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-
-          // قائمة منتجات أفقية بدلاً من الجريد
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.only(bottom: 24),
-              itemCount: demo.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, i) {
-                final it = demo[i];
-                return ProductListItem(
-                  id: it['id'] as String,
-                  title: it['title'] as String,
-                  priceText: it['price'] as String,
-                  imageUrl: it['image'] as String?,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        transitionDuration: const Duration(milliseconds: 400),
-                        pageBuilder: (_, a, __) => FadeTransition(
-                          opacity: CurvedAnimation(
-                            parent: a,
-                            curve: Curves.easeOutCubic,
+            child: FutureBuilder<List<ProductModel>>(
+              future: _future,
+              builder: (context, s) {
+                if (s.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (s.hasError) return Center(child: Text('خطأ: ${s.error}'));
+                final items = s.data ?? [];
+                if (items.isEmpty)
+                  return const Center(child: Text('لا توجد منتجات حالياً'));
+
+                return ListView.separated(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  itemCount: items.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, i) {
+                    final p = items[i];
+                    return ProductListItem(
+                      id: p.id,
+                      title: p.title,
+                      priceText: Formatters.money(p.displayPrice),
+                      imageUrl: p.imageUrl,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            transitionDuration: const Duration(
+                              milliseconds: 400,
+                            ),
+                            pageBuilder: (_, a, __) => FadeTransition(
+                              opacity: CurvedAnimation(
+                                parent: a,
+                                curve: Curves.easeOutCubic,
+                              ),
+                              child: ProductPageShell(productId: p.id),
+                            ),
                           ),
-                          child: ProductPageShell(
-                            productId: it['id'] as String,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
                 );

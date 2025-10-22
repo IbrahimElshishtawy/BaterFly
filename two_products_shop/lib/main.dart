@@ -19,7 +19,7 @@ class TwoProductsApp extends StatelessWidget {
     return MaterialApp(
       title: 'Two Products Shop',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
+      theme: AppTheme.light(),
       onGenerateRoute: AppRouter.onGenerateRoute,
       initialRoute: AppRouter.home,
       navigatorKey: AppRouter.navKey,

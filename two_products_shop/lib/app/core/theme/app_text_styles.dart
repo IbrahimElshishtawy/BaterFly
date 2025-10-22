@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 
-class Txt {
-  static TextStyle get h1 =>
-      const TextStyle(fontSize: 22, fontWeight: FontWeight.bold);
-  static TextStyle get h2 =>
-      const TextStyle(fontSize: 18, fontWeight: FontWeight.w600);
-  static TextStyle get body => const TextStyle(fontSize: 14, height: 1.5);
-  static TextStyle get small =>
-      const TextStyle(fontSize: 12, color: Colors.grey);
+class AppTextStyles {
+  static const title = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textDark,
+  );
+
+  static const subtitle = TextStyle(fontSize: 16, color: AppColors.textDark);
+
+  static const body = TextStyle(fontSize: 14, color: AppColors.textDark);
+
+  static const small = TextStyle(fontSize: 12, color: Colors.grey);
 }

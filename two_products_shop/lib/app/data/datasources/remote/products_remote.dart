@@ -1,3 +1,4 @@
+// ignore_for_file: unnecessary_cast
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/product_model.dart';
 
@@ -17,10 +18,14 @@ class ProductsRemote {
         .toList();
   }
 
-  Future<ProductModel?> getById(String id) async {
-    final res = await _sb.from(_table).select().eq('id', id).maybeSingle();
+  Future<ProductModel?> getById(String idOrSlug) async {
+    final asInt = int.tryParse(idOrSlug);
+    final base = _sb.from(_table).select();
+    final res = asInt != null
+        ? await base.eq('id', asInt).maybeSingle()
+        : await base.eq('slug', idOrSlug).maybeSingle();
     if (res == null) return null;
-    return ProductModel.fromMap(res);
+    return ProductModel.fromMap(res as Map<String, dynamic>);
   }
 
   Future<List<ProductModel>> fetchActive({int limit = 50}) async {
@@ -33,14 +38,14 @@ class ProductsRemote {
   Future<ProductModel?> fetchBySlug(String slug) async {
     final res = await _sb.from(_table).select().eq('slug', slug).maybeSingle();
     if (res == null) return null;
-    return ProductModel.fromMap(res);
+    return ProductModel.fromMap(res as Map<String, dynamic>);
   }
 
   Future<List<ProductModel>> search(String query, {int limit = 30}) async {
     final res = await _sb
         .from(_table)
         .select()
-        .ilike('title', '%$query%')
+        .or('ilike(title,%$query%),ilike(name,%$query%)')
         .limit(limit);
     return (res as List)
         .map((e) => ProductModel.fromMap(e as Map<String, dynamic>))

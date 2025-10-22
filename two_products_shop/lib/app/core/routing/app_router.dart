@@ -1,36 +1,38 @@
 import 'package:flutter/material.dart';
+import 'app_routes.dart';
 import '../../features/catalog/pages/home_page.dart';
 import '../../features/product/pages/product_page.dart';
 import '../../features/checkout/pages/checkout_page.dart';
 import '../../features/checkout/pages/thank_you_page.dart';
 import '../../features/admin/pages/admin_dashboard_page.dart';
+import '../../features/admin/pages/orders_page.dart';
+import '../../features/admin/pages/reviews_page.dart';
+import '../../features/admin/pages/settings_page.dart';
 
 class AppRouter {
-  static const String home = '/';
-  static const String product = '/p';
-  static const String checkout = '/checkout';
-  static const String thankYou = '/thank-you';
-  static const String admin = '/admin';
-
   static final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case home:
+  static Route<dynamic> onGenerateRoute(RouteSettings s) {
+    switch (s.name) {
+      case Routes.home:
         return _m(const HomePage());
-      case product:
-        final args = settings.arguments as Map?;
-        final product = args?['product'] as Map<String, dynamic>? ?? {};
-        final slug = args?['slug'] as String? ?? '';
-        return _m(ProductPage(product: product, slug: slug));
-      case checkout:
-        final id = (settings.arguments as Map?)?['productId'] as int? ?? 0;
-        return _m(CheckoutPage(productId: id));
-      case thankYou:
-        final no = (settings.arguments as Map?)?['orderNo'];
+      case Routes.product:
+        final idOrSlug = (s.arguments as Map?)?['idOrSlug'] as String? ?? '';
+        return _m(ProductPage(slug: '', product: {}));
+      case Routes.checkout:
+        final pid = (s.arguments as Map?)?['productId'] as int? ?? 0;
+        return _m(CheckoutPage(productId: pid));
+      case '/thank-you':
+        final no = (s.arguments as Map?)?['orderNo'];
         return _m(ThankYouPage(orderNo: no));
-      case admin:
+      case '/admin':
         return _m(const AdminDashboardPage());
+      case '/admin/orders':
+        return _m(const OrdersPage());
+      case '/admin/reviews':
+        return _m(const AdminReviewsPage());
+      case '/admin/settings':
+        return _m(const AdminSettingsPage());
       default:
         return _m(const Scaffold(body: Center(child: Text('404'))));
     }

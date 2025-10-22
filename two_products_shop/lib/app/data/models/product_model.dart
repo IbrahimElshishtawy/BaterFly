@@ -1,14 +1,17 @@
+import 'dart:convert' as json;
+
 class ProductModel {
-  final String id; // ex: UUID أو رقم كنص
-  final String title; // الاسم المعروض
+  final String id;
+  final String title;
   final String? description;
   final String? imageUrl;
-  final List<String> images; // صور متعددة
+  final List<String> images;
   final num price;
   final num? salePrice;
   final bool inStock;
-  final String? usage; // نص إرشادات الاستخدام
-  final List<String> features; // نقاط مميزات
+  final String? usage;
+  final List<String> features;
+  final String? slug;
 
   const ProductModel({
     required this.id,
@@ -21,21 +24,46 @@ class ProductModel {
     required this.inStock,
     this.usage,
     this.features = const [],
+    this.slug,
   });
 
   num get displayPrice => salePrice ?? price;
 
-  // توافق مع أعمدة شائعة: name/title, image_url/images, features كـ json/text[]
-  factory ProductModel.fromMap(Map<String, dynamic> m) => ProductModel(
-    id: '${m['id']}',
-    title: (m['title'] ?? m['name'] ?? '').toString(),
-    description: m['description'] as String?,
-    imageUrl: m['image_url'] as String?,
-    images: (m['images'] as List?)?.map((e) => '$e').toList() ?? const [],
-    price: (m['price'] ?? 0) as num,
-    salePrice: m['sale_price'] as num?,
-    inStock: (m['in_stock'] ?? true) as bool,
-    usage: m['usage'] as String?,
-    features: (m['features'] as List?)?.map((e) => '$e').toList() ?? const [],
-  );
+  factory ProductModel.fromMap(Map<String, dynamic> m) {
+    // images قد تأتي كنص JSON أو List
+    final rawImages = m['images'];
+    final List<String> imgs = switch (rawImages) {
+      List l => l.map((e) => '$e').toList(),
+      String s when s.trim().startsWith('[') => List<String>.from(
+        (json.jsonDecode(s) as List).map((e) => '$e'),
+      ),
+      _ => const <String>[],
+    };
+
+    final imgUrl =
+        (m['image_url'] as String?) ?? (imgs.isNotEmpty ? imgs.first : null);
+
+    final featsRaw = m['features'];
+    final List<String> feats = switch (featsRaw) {
+      List l => l.map((e) => '$e').toList(),
+      String s when s.trim().startsWith('[') => List<String>.from(
+        (json.jsonDecode(s) as List).map((e) => '$e'),
+      ),
+      _ => const <String>[],
+    };
+
+    return ProductModel(
+      id: '${m['id']}',
+      title: (m['title'] ?? m['name'] ?? '').toString(),
+      description: (m['description'] ?? m['usage']) as String?,
+      imageUrl: imgUrl,
+      images: imgs,
+      price: (m['price'] ?? 0) as num,
+      salePrice: m['sale_price'] as num?,
+      inStock: (m['in_stock'] ?? m['active'] ?? true) as bool,
+      usage: m['usage'] as String?,
+      features: feats,
+      slug: m['slug'] as String?,
+    );
+  }
 }
