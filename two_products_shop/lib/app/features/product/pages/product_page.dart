@@ -31,13 +31,14 @@ class _ProductPageState extends State<ProductPage> {
 
   Future<void> _load() async {
     final p = await _remote.fetchBySlug(widget.slug);
-    if (mounted) {
-      setState(() {
-        _product = p;
-        _loading = false;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      _product = p;
+      _loading = false;
+    });
   }
+
+  int _idAsInt(String id) => int.tryParse(id) ?? 0;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,7 @@ class _ProductPageState extends State<ProductPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(p.name)),
+      appBar: AppBar(title: Text(p.title)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -66,21 +67,26 @@ class _ProductPageState extends State<ProductPage> {
                 ),
               ),
             const SizedBox(height: 12),
-            Text(p.name, style: Theme.of(context).textTheme.headlineSmall),
+            Text(p.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
-              '${p.price.toStringAsFixed(0)} ج.م',
+              '${p.displayPrice} ج.م',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text(p.usage ?? '', style: const TextStyle(height: 1.5)),
-            const SizedBox(height: 12),
-            const Text(
-              'الميزات:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              p.usage ?? p.description ?? '',
+              style: const TextStyle(height: 1.5),
             ),
-            ...p.features.map((f) => Text('• $f')).toList(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
+            if (p.features.isNotEmpty) ...[
+              const Text(
+                'الميزات:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              ...p.features.map((f) => Text('• $f')).toList(),
+              const SizedBox(height: 20),
+            ],
             Center(
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.shopping_cart),
@@ -93,7 +99,9 @@ class _ProductPageState extends State<ProductPage> {
               ),
             ),
             const SizedBox(height: 24),
-            ReviewSection(productId: p.id),
+            // لو ReviewSection يتطلب int:
+            ReviewSection(productId: _idAsInt(p.id)),
+            // ولو يقبل String عندك، استخدم: ReviewSection(productId: p.id),
           ],
         ),
       ),
