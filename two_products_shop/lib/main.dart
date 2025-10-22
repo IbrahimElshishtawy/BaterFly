@@ -6,7 +6,7 @@ import 'app/services/supabase/supabase_client.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Supa.init(); // تهيئة Supabase
+  await Supa.init();
   FlutterError.onError = (details) => AppError.handleFlutter(details);
   runApp(const TwoProductsApp());
 }
