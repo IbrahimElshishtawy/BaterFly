@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/widgets/app_footer.dart';
 import '../../../services/supabase/supabase_service.dart';
 import '../widgets/product_card.dart';
-import '../../product/pages/product_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,18 +13,42 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late final SupabaseClient _sb;
+  late final TextEditingController _search;
   late final AnimationController _ac;
   late final Animation<double> _fade;
+  List<Map<String, dynamic>> _items = [];
+  bool _loading = true;
 
-  Future<List<Map<String, dynamic>>> _load() async {
-    final rows = await _sb
+  @override
+  void initState() {
+    super.initState();
+    _sb = Supa.client;
+    _search = TextEditingController();
+    _ac = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    )..forward();
+    _fade = CurvedAnimation(parent: _ac, curve: Curves.easeOut);
+    _fetch();
+  }
+
+  @override
+  void dispose() {
+    _ac.dispose();
+    _search.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetch([String q = '']) async {
+    setState(() => _loading = true);
+    final b = _sb
         .from('products')
         .select()
         .eq('active', true)
         .order('reviews_count', ascending: false)
-        .order('avg_rating', ascending: false)
-        .limit(24);
-    return (rows as List).map((e) => e as Map<String, dynamic>).map((m) {
+        .order('avg_rating', ascending: false);
+    final rows = q.trim().isEmpty ? await b : await b.ilike('name', '%$q%');
+    _items = (rows as List).map((e) => e as Map<String, dynamic>).map((m) {
       final imgs = (m['images'] as List?)?.cast() ?? const [];
       return {
         'id': m['id'],
@@ -33,28 +57,16 @@ class _HomePageState extends State<HomePage>
         'image': imgs.isNotEmpty ? imgs.first.toString() : null,
         'desc': (m['usage'] ?? '') as String,
         'slug': m['slug'],
+        'avg_rating': (m['avg_rating'] ?? 0) is num
+            ? (m['avg_rating'] as num).toDouble()
+            : 0.0,
+        'reviews_count': (m['reviews_count'] ?? 0) as int,
       };
     }).toList();
+    if (mounted) setState(() => _loading = false);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _sb = Supa.client;
-    _ac = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 350),
-    )..forward();
-    _fade = CurvedAnimation(parent: _ac, curve: Curves.easeOut);
-  }
-
-  @override
-  void dispose() {
-    _ac.dispose();
-    super.dispose();
-  }
-
-  int _colsForWidth(double w) {
+  int _cols(double w) {
     if (w >= 1400) return 5;
     if (w >= 1100) return 4;
     if (w >= 800) return 3;
@@ -62,59 +74,116 @@ class _HomePageState extends State<HomePage>
     return 1;
   }
 
+  void _openDrawer() => Scaffold.of(context).openEndDrawer();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('متجر لمسة حرير'), centerTitle: true),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _load(),
-        builder: (context, snap) {
-          if (snap.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snap.hasError) {
-            return Center(child: Text('حدث خطأ: ${snap.error}'));
-          }
-          final products = snap.data ?? const [];
-          if (products.isEmpty) {
-            return const Center(child: Text('لا توجد منتجات حالياً'));
-          }
-
-          return LayoutBuilder(
-            builder: (context, c) {
-              final cols = _colsForWidth(c.maxWidth);
-              return FadeTransition(
-                opacity: _fade,
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: cols,
-                    mainAxisSpacing: 18,
-                    crossAxisSpacing: 18,
-                    childAspectRatio: 0.78,
-                  ),
-                  itemCount: products.length,
-                  itemBuilder: (_, i) {
-                    final p = products[i];
-                    return ProductCard(
-                      name: p['name'] as String,
-                      price: (p['price'] as double).toStringAsFixed(0),
-                      image: (p['image']),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ProductPage(product: p),
-                          ),
-                        );
-                      },
-                    );
+      endDrawer: Drawer(
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(12),
+            children: const [
+              ListTile(
+                leading: Icon(Icons.cached),
+                title: Text('سياسة الاستبدال والاسترجاع'),
+              ),
+              ListTile(
+                leading: Icon(Icons.local_shipping_outlined),
+                title: Text('سياسة الشحن'),
+              ),
+              ListTile(
+                leading: Icon(Icons.support_agent),
+                title: Text('التواصل مع الدعم'),
+              ),
+            ],
+          ),
+        ),
+      ),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('لمسة حرير'),
+        leading: const SizedBox(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: _openDrawer,
+            tooltip: 'القائمة',
+          ),
+          const SizedBox(width: 4),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: TextField(
+              controller: _search,
+              onSubmitted: _fetch,
+              decoration: InputDecoration(
+                hintText: 'ابحث عن المنتج…',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _search.clear();
+                    _fetch('');
                   },
                 ),
-              );
-            },
-          );
-        },
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : LayoutBuilder(
+              builder: (context, c) {
+                final cols = _cols(c.maxWidth);
+                return FadeTransition(
+                  opacity: _fade,
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: cols,
+                      mainAxisSpacing: 18,
+                      crossAxisSpacing: 18,
+                      childAspectRatio: 0.78,
+                    ),
+                    itemCount: _items.length,
+                    itemBuilder: (_, i) {
+                      final p = _items[i];
+                      return ProductCard(
+                        name: p['name'] as String,
+                        price:
+                            '${(p['price'] as double).toStringAsFixed(0)} ج.م',
+                        image:
+                            (p['image'] as String?) ??
+                            'https://via.placeholder.com/600x800?text=Product',
+                        rating: (p['avg_rating'] as double),
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/product',
+                            arguments: p,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+      bottomNavigationBar: AppFooter(
+        about: 'منتجات احترافية لعناية الشعر وفرده بدون فورمالين.',
+        policies: 'استبدال/استرجاع خلال 14 يوم. شحن خلال 1-3 أيام عمل.',
+        onWhatsapp: () {},
+        onFacebook: () {},
+        onInstagram: () {},
       ),
     );
   }
