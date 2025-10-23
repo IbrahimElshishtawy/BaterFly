@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'thank_you_page.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 class CheckoutPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -10,15 +12,15 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  final _name = TextEditingController();
-  final _phone = TextEditingController();
-  final _address = TextEditingController();
-  bool _sending = false;
+  final name = TextEditingController();
+  final phone = TextEditingController();
+  final address = TextEditingController();
+  bool sending = false;
 
-  void _confirm() async {
-    setState(() => _sending = true);
+  void confirmOrder() async {
+    setState(() => sending = true);
     await Future.delayed(const Duration(seconds: 1));
-    setState(() => _sending = false);
+    setState(() => sending = false);
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
@@ -36,27 +38,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
         child: ListView(
           children: [
             TextField(
-              controller: _name,
+              controller: name,
               decoration: const InputDecoration(labelText: 'الاسم الكامل'),
             ),
             TextField(
-              controller: _phone,
+              controller: phone,
               decoration: const InputDecoration(labelText: 'رقم الهاتف'),
             ),
             TextField(
-              controller: _address,
+              controller: address,
               decoration: const InputDecoration(labelText: 'العنوان'),
             ),
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: _sending ? null : _confirm,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pinkAccent,
+                backgroundColor: AppColors.primary,
                 minimumSize: const Size.fromHeight(50),
               ),
-              child: _sending
+              onPressed: sending ? null : confirmOrder,
+              child: sending
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('تأكيد الطلب', style: TextStyle(fontSize: 18)),
+                  : const Text('تأكيد الطلب', style: AppTextStyles.button),
             ),
           ],
         ),
