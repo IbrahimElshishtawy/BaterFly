@@ -34,6 +34,7 @@ class ProductGrid extends StatelessWidget {
             price: p['price'],
             image: p['image'],
             onTap: p['onTap'],
+            rating: p['rating'] as double,
           ),
         );
       },
