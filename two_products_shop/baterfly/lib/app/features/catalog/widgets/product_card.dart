@@ -16,6 +16,7 @@ class ProductCard extends StatefulWidget {
     required this.price,
     required this.image,
     this.onTap,
+    required double rating,
   });
 
   @override
