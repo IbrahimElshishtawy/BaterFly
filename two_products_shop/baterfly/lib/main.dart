@@ -7,7 +7,8 @@ import 'app/services/supabase/supabase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "lib/app/assets/.env");
+
   await Supa.init();
   runApp(const ShopApp());
 }
