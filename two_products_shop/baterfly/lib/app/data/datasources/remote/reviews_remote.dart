@@ -3,7 +3,7 @@ import '../../../services/supabase/supabase_service.dart';
 
 class ReviewsRemote {
   final SupabaseClient _sb = Supa.client;
-  static const _table = 'product_reviews';
+  final String _table = 'product_reviews';
 
   Future<List<Map<String, dynamic>>> listApproved(int productId) async {
     final res = await _sb
@@ -12,10 +12,10 @@ class ReviewsRemote {
         .eq('product_id', productId)
         .eq('status', 'approved')
         .order('created_at', ascending: false);
-    return (res as List).cast<Map<String, dynamic>>();
+    return (res as List).map((e) => e as Map<String, dynamic>).toList();
   }
 
-  Future<void> submit({
+  Future<void> add({
     required int productId,
     required String fullName,
     required int rating,
@@ -26,6 +26,7 @@ class ReviewsRemote {
       'full_name': fullName,
       'rating': rating,
       'comment': comment,
+      'status': 'pending',
       'is_verified': false,
     });
   }
