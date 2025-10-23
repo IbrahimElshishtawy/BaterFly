@@ -4,7 +4,7 @@ import '../../domain/repositories/product_repository.dart';
 import '../../domain/entities/product.dart';
 import '../models/product_model.dart';
 
-class ProductRepositoryImpl implements ProductRepository {
+abstract class ProductRepositoryImpl implements ProductRepository {
   final SupabaseClient _sb = Supa.client;
   final String _table = 'products';
 
