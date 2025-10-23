@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../services/supabase/supabase_service.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -33,8 +32,9 @@ class _OrdersPageState extends State<OrdersPage> {
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: f,
         builder: (c, s) {
-          if (!s.hasData)
+          if (!s.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final orders = s.data!;
           if (orders.isEmpty) return const Center(child: Text('لا توجد طلبات'));
           return ListView.builder(

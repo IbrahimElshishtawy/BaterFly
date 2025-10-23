@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/app_colors.dart';
@@ -59,8 +61,9 @@ class _ReviewSectionState extends State<ReviewSection> {
         FutureBuilder<List<Map<String, dynamic>>>(
           future: f,
           builder: (_, s) {
-            if (!s.hasData)
+            if (!s.hasData) {
               return const Center(child: CircularProgressIndicator());
+            }
             final items = s.data!;
             if (items.isEmpty) return const Text('لا توجد تقييمات بعد');
             return Column(

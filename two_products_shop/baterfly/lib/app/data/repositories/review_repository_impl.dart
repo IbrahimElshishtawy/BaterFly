@@ -21,7 +21,7 @@ class ReviewRepositoryImpl implements ReviewRepository {
     required int rating,
     required String comment,
   }) {
-    return _remote.add(
+    return _remote.submit(
       productId: productId,
       fullName: fullName,
       rating: rating,

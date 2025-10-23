@@ -30,6 +30,6 @@ class ProductRepositoryImpl implements ProductRepository {
     final res = await _sb.from(_table).select().eq('id', id).maybeSingle();
 
     if (res == null) return null;
-    return ProductModel.fromMap(res as Map<String, dynamic>);
+    return ProductModel.fromMap(res);
   }
 }

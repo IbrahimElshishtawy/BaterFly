@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../services/supabase/supabase_service.dart';
 
 class ReviewsPage extends StatefulWidget {
@@ -41,11 +40,13 @@ class _ReviewsPageState extends State<ReviewsPage> {
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: f,
         builder: (c, s) {
-          if (!s.hasData)
+          if (!s.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final reviews = s.data!;
-          if (reviews.isEmpty)
+          if (reviews.isEmpty) {
             return const Center(child: Text('لا توجد تقييمات'));
+          }
           return ListView.builder(
             itemCount: reviews.length,
             itemBuilder: (_, i) {

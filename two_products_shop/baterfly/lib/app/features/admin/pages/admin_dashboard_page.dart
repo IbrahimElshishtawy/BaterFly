@@ -1,7 +1,7 @@
+import 'package:baterfly/app/features/admin/pages/orders_page.dart';
+import 'package:baterfly/app/features/admin/pages/reviews_page.dart';
+import 'package:baterfly/app/features/admin/pages/settings_page.dart';
 import 'package:flutter/material.dart';
-import '../orders/orders_page.dart';
-import '../reviews_page.dart';
-import '../settings_page.dart';
 
 class AdminDashboardPage extends StatelessWidget {
   const AdminDashboardPage({super.key});

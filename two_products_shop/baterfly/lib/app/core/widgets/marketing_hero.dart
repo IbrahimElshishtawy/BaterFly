@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'animations/fade_slide.dart';
