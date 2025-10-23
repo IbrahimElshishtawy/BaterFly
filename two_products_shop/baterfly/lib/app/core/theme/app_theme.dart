@@ -3,13 +3,13 @@ import 'app_colors.dart';
 
 class AppTheme {
   static ThemeData get light => ThemeData(
-    useMaterial3: true,
-    scaffoldBackgroundColor: AppColors.background,
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+    scaffoldBackgroundColor: AppColors.background,
+    useMaterial3: true,
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
-      elevation: 0,
-      foregroundColor: Colors.black87,
+      elevation: 0.2,
+      foregroundColor: AppColors.textDark,
     ),
   );
 }
