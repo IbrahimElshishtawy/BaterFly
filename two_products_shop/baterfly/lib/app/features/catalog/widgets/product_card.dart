@@ -1,102 +1,75 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../../../core/theme/app_colors.dart';
 
-class ProductCard extends StatefulWidget {
+class ProductCard extends StatelessWidget {
   final String name;
-  final String price;
+  final double price;
+  final double rating;
   final String image;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   const ProductCard({
     super.key,
     required this.name,
     required this.price,
+    required this.rating,
     required this.image,
-    this.onTap,
-    required double rating,
+    required this.onTap,
   });
 
   @override
-  State<ProductCard> createState() => _ProductCardState();
-}
-
-class _ProductCardState extends State<ProductCard> {
-  bool hovered = false;
-
-  @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => hovered = true),
-      onExit: (_) => setState(() => hovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Ink(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-          boxShadow: hovered
-              ? [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: Colors.black12.withOpacity(.05),
-                    blurRadius: 4,
-                  ),
-                ],
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.black12),
         ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: widget.onTap,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Hero(
+                tag: 'img-$name',
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
+                    top: Radius.circular(14),
                   ),
                   child: Image.network(
-                    widget.image,
+                    image,
                     fit: BoxFit.cover,
                     width: double.infinity,
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.name,
-                      style: AppTextStyles.subtitle.copyWith(
-                        fontWeight: FontWeight.w600,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star_rounded,
+                        size: 18,
+                        color: Colors.amber[700],
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      "${widget.price} ج.م",
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
+                      Text(rating.toStringAsFixed(1)),
+                      const Spacer(),
+                      Text(
+                        '${price.toStringAsFixed(0)} ج.م',
+                        style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
