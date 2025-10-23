@@ -1,7 +1,11 @@
-import 'package:intl/intl.dart';
+class Fmt {
+  static String price(num v) {
+    if (v % 1 == 0) {
+      return v.toInt().toString();
+    } else {
+      return v.toStringAsFixed(2);
+    }
+  }
 
-class Formatters {
-  static String currency(num value) =>
-      NumberFormat.currency(symbol: 'ج.م').format(value);
-  static String date(DateTime date) => DateFormat('yyyy/MM/dd').format(date);
+  static String numFixed(num v, [int digits = 1]) => v.toStringAsFixed(digits);
 }
