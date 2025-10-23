@@ -14,6 +14,9 @@ class AppFooter extends StatelessWidget {
     required this.onWhatsapp,
     required this.onFacebook,
     required this.onInstagram,
+    required String facebookUrl,
+    required String whatsappUrl,
+    required String instagramUrl,
   });
 
   @override
