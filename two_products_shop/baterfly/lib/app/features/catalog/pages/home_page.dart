@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../product/pages/product_page.dart';
 import '../widgets/product_card.dart';
+import '../../product/pages/product_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -10,58 +10,48 @@ class HomePage extends StatelessWidget {
     final products = [
       {
         'id': 1,
-        'name': 'Brazilian Keratin Protein',
-        'price': 'EGP 950',
-        'image':
-            'https://images.unsplash.com/photo-1596464716121-7b6b60fbb33c?w=800',
-        'desc':
-            'بروتين برازيلي لفرد الشعر وتغذيته من الجذور. يمنحك لمعان وقوة وحيوية طبيعية.',
+        'name': 'كيراتين بروتين حرير برازيلي',
+        'price': 950,
+        'image': 'https://i.imgur.com/lHbHbTB.jpg',
+        'desc': 'بروتين برازيلي لفرد وتغذية الشعر بتركيبة الكيراتين والأرجان.',
       },
       {
         'id': 2,
-        'name': 'Argan Oil Hair Treatment',
-        'price': 'EGP 780',
-        'image':
-            'https://images.unsplash.com/photo-1600180758890-6c1d0a92c14e?w=800',
-        'desc':
-            'علاج غني بزيت الأرجان المغربي لتغذية الشعر الجاف والمجهد وإعادة لمعانه الطبيعي.',
+        'name': 'ماسك الكافيار للشعر التالف',
+        'price': 480,
+        'image': 'https://i.imgur.com/xkPEmj3.jpg',
+        'desc': 'ترطيب عميق للشعر الجاف والتالف بفضل مستخلص الكافيار الطبيعي.',
       },
       {
         'id': 3,
-        'name': 'Cocoa Hair Protein',
-        'price': 'EGP 850',
-        'image':
-            'https://images.unsplash.com/photo-1601049676869-702ea24cfd91?w=800',
-        'desc':
-            'بروتين الكاكاو لتنعيم الشعر الخشن وترميم التقصف، مناسب لجميع أنواع الشعر.',
+        'name': 'سيروم اللمعان الفوري',
+        'price': 220,
+        'image': 'https://i.imgur.com/jjBQDcC.jpg',
+        'desc': 'يمنح شعرك لمعانًا فوريًا ويحميه من الحرارة والعوامل الخارجية.',
       },
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('منتجات بروتين الشعر'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('متجر لمسة حرير'), centerTitle: true),
       body: GridView.builder(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, // على الويب 3 أعمدة
-          childAspectRatio: .75,
+          crossAxisCount: 3,
           mainAxisSpacing: 18,
           crossAxisSpacing: 18,
+          childAspectRatio: 0.75,
         ),
         itemCount: products.length,
         itemBuilder: (_, i) {
           final p = products[i];
           return ProductCard(
-            name: p['name']!,
-            price: p['price']!,
-            image: p['image']!,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => ProductPage(product: p)),
-              );
-            },
+            name: p['name'],
+            price: p['price'].toString(),
+            image: p['image'],
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => ProductPage(product: p)),
+            ),
           );
         },
       ),
