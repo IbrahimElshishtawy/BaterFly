@@ -98,10 +98,8 @@ class _HomePageState extends State<HomePage>
                     final p = products[i];
                     return ProductCard(
                       name: p['name'] as String,
-                      price: '${(p['price'] as double).toStringAsFixed(0)} ج.م',
-                      image:
-                          (p['image'] as String?) ??
-                          'https://via.placeholder.com/600x800?text=Product',
+                      price: (p['price'] as double).toStringAsFixed(0),
+                      image: (p['image']),
                       onTap: () {
                         Navigator.push(
                           context,
