@@ -4,12 +4,12 @@ import '../../domain/repositories/product_repository.dart';
 import '../../domain/entities/product.dart';
 import '../models/product_model.dart';
 
-abstract class ProductRepositoryImpl implements ProductRepository {
+class ProductRepositoryImpl implements ProductRepository {
   final SupabaseClient _sb = Supa.client;
   final String _table = 'products';
 
   @override
-  Future<List<Product>> getPopularProducts({int limit = 20}) async {
+  Future<List<Product>> getProducts({int limit = 20}) async {
     final res = await _sb
         .from(_table)
         .select()
@@ -18,22 +18,18 @@ abstract class ProductRepositoryImpl implements ProductRepository {
         .order('avg_rating', ascending: false)
         .limit(limit);
 
+    // ProductModel extends Product ⇒ نرجّعها مباشرة كـ Product
     return (res as List)
-        .map((e) => ProductModel.fromMap(e).toEntity())
+        .map((e) => ProductModel.fromMap(e as Map<String, dynamic>))
         .toList();
   }
 
+  // لو واجهت توقيع مختلف في الـ interface عدّل الاسم هنا والـ interface سوا
   @override
-  Future<Product?> getById(String idOrSlug) async {
-    final q = _sb.from(_table).select().limit(1);
-    final id = int.tryParse(idOrSlug);
-    if (id != null) {
-      q.eq('id', id);
-    } else {
-      q.eq('slug', idOrSlug);
-    }
-    final res = await q.maybeSingle();
+  Future<Product?> getProductById(int id) async {
+    final res = await _sb.from(_table).select().eq('id', id).maybeSingle();
+
     if (res == null) return null;
-    return ProductModel.fromMap(res as Map<String, dynamic>).toEntity();
+    return ProductModel.fromMap(res as Map<String, dynamic>);
   }
 }
