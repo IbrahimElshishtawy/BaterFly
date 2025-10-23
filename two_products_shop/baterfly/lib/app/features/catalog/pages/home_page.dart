@@ -41,14 +41,17 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _fetch([String q = '']) async {
     setState(() => _loading = true);
-    final b = _sb
-        .from('products')
-        .select()
-        .eq('active', true)
+
+    // ابقِ البناء على FilterBuilder ثم اطلب order في النهاية
+    final fb = _sb.from('products').select().eq('active', true);
+    if (q.trim().isNotEmpty) {
+      fb.ilike('name', '%$q%');
+    }
+    final rows = await fb
         .order('reviews_count', ascending: false)
         .order('avg_rating', ascending: false);
-    final rows = q.trim().isEmpty ? await b : await b.ilike('name', '%$q%');
-    _items = (rows as List).map((e) => e as Map<String, dynamic>).map((m) {
+
+    _items = (rows as List).cast<Map<String, dynamic>>().map((m) {
       final imgs = (m['images'] as List?)?.cast() ?? const [];
       return {
         'id': m['id'],
@@ -57,12 +60,11 @@ class _HomePageState extends State<HomePage>
         'image': imgs.isNotEmpty ? imgs.first.toString() : null,
         'desc': (m['usage'] ?? '') as String,
         'slug': m['slug'],
-        'avg_rating': (m['avg_rating'] ?? 0) is num
-            ? (m['avg_rating'] as num).toDouble()
-            : 0.0,
+        'avg_rating': ((m['avg_rating'] ?? 0) as num).toDouble(),
         'reviews_count': (m['reviews_count'] ?? 0) as int,
       };
     }).toList();
+
     if (mounted) setState(() => _loading = false);
   }
 
@@ -159,19 +161,16 @@ class _HomePageState extends State<HomePage>
                       final p = _items[i];
                       return ProductCard(
                         name: p['name'] as String,
-                        price:
-                            '${(p['price'] as double).toStringAsFixed(0)} ج.م',
+                        price: p['price'] as double, // مرر double
                         image:
                             (p['image'] as String?) ??
                             'https://via.placeholder.com/600x800?text=Product',
-                        rating: (p['avg_rating'] as double),
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/product',
-                            arguments: p,
-                          );
-                        },
+                        rating: p['avg_rating'] as double,
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          '/product',
+                          arguments: p,
+                        ),
                       );
                     },
                   ),
@@ -181,6 +180,9 @@ class _HomePageState extends State<HomePage>
       bottomNavigationBar: AppFooter(
         about: 'منتجات احترافية لعناية الشعر وفرده بدون فورمالين.',
         policies: 'استبدال/استرجاع خلال 14 يوم. شحن خلال 1-3 أيام عمل.',
+        facebookUrl: 'https://facebook.com/yourpage',
+        instagramUrl: 'https://instagram.com/yourpage',
+        whatsappUrl: 'https://wa.me/201234567890',
         onWhatsapp: () {},
         onFacebook: () {},
         onInstagram: () {},
