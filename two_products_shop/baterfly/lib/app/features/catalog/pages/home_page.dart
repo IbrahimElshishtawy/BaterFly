@@ -88,20 +88,7 @@ class _HomePageState extends State<HomePage>
       ),
 
       // استخدم شريط الموقع بدل AppBar الافتراضي
-      appBar: SiteAppBar(
-        transparent: false,
-        onOpenMenu: () => Scaffold.of(context).openEndDrawer(),
-        onSearchTap: () async {
-          final res = await showSearch<String?>(
-            context: context,
-            delegate: CustomSearchDelegate(initial: _q.value),
-          );
-          if (res != null) setState(() => _q.value = res);
-        },
-        onOpenCart: () => Navigator.pushNamed(context, '/cart'),
-        onAdmin: () => Navigator.pushNamed(context, '/admin/login'),
-        onLogoTap: () => Navigator.pushNamed(context, '/'),
-      ),
+      appBar: SiteAppBar(transparent: false),
 
       body: Stack(
         children: [

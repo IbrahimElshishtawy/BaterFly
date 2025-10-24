@@ -1,7 +1,6 @@
 // ignore_for_file: unnecessary_underscores, no_leading_underscores_for_local_identifiers
 import 'package:baterfly/app/core/utils/responsive.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar.dart';
-import 'package:baterfly/app/features/catalog/widgets/Search_delegate.dart';
 import 'package:flutter/material.dart';
 import '../../../core/utils/formatters.dart';
 import '../../checkout/pages/checkout_page.dart';
@@ -16,8 +15,6 @@ class ProductPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = product['name'] as String;
-    final _q = ValueNotifier<String>('');
-
     final price = (product['price'] as num).toDouble();
     final desc = (product['desc'] ?? '') as String;
     final img =
@@ -32,7 +29,7 @@ class ProductPage extends StatelessWidget {
         (product['ingredients'] as List?)?.cast<String>() ?? const <String>[];
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false, // يمنع الصورة من الدخول تحت الـAppBar
       endDrawer: Drawer(
         child: SafeArea(
           child: ListView(
@@ -53,20 +50,7 @@ class ProductPage extends StatelessWidget {
           ),
         ),
       ),
-      appBar: SiteAppBar(
-        transparent: false,
-        onOpenMenu: () => Scaffold.of(context).openEndDrawer(),
-        onSearchTap: () async {
-          final res = await showSearch<String?>(
-            context: context,
-            delegate: CustomSearchDelegate(initial: _q.value),
-          );
-          if (res != null) _q.value = res;
-        },
-        onOpenCart: () => Navigator.pushNamed(context, '/cart'),
-        onAdmin: () => Navigator.pushNamed(context, '/admin/login'),
-        onLogoTap: () => Navigator.pushNamed(context, '/'),
-      ),
+      appBar: const SiteAppBar(transparent: false),
 
       body: LayoutBuilder(
         builder: (context, cons) {
@@ -81,7 +65,7 @@ class ProductPage extends StatelessWidget {
               ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  // صورة بدون Hero
+                  // صورة العنوان
                   Responsive.wrap(
                     maxW: maxW,
                     pad: pad,
@@ -234,7 +218,7 @@ class ProductPage extends StatelessWidget {
                     ),
                   ),
 
-                  // محتوى: عمودان ≥1024
+                  // تخطيط المحتوى
                   if (w >= 1024)
                     Responsive.wrap(
                       maxW: maxW,
@@ -395,7 +379,8 @@ class ProductPage extends StatelessWidget {
                   ],
 
                   const SizedBox(height: 24),
-                  // Footer في آخر الصفحة
+
+                  // Footer
                   Responsive.wrap(
                     maxW: maxW,
                     pad: pad,
@@ -433,7 +418,7 @@ class ProductPage extends StatelessWidget {
       );
 }
 
-// ويدجت مساعدة صغيرة لإلحاق عنصر بعد Row ثابت
+// ويدجت مساعدة لإلحاق عنصر بعد Row ثابت
 extension _WithTrailing on Widget {
   Widget _with(Widget row, {required Widget trailing}) {
     return Builder(

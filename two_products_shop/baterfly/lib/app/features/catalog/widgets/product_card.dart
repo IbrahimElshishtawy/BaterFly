@@ -7,6 +7,8 @@ class ProductCard extends StatefulWidget {
   final String name;
   final double price;
   final double rating;
+
+  /// يدعم رابطًا واحدًا أو عدة روابط مفصولة بفواصل
   final String image;
   final VoidCallback onTap;
 
@@ -25,10 +27,31 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
   bool _hover = false;
+  late final PageController _pc = PageController();
+  int _page = 0;
+
+  List<String> get _imgs {
+    final parts = widget.image
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) {
+      return const ['https://via.placeholder.com/800x1000?text=Product'];
+    }
+    return parts;
+  }
+
+  @override
+  void dispose() {
+    _pc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     const radius = 14.0;
+    final imgs = _imgs;
 
     final card = AnimatedContainer(
       duration: const Duration(milliseconds: 140),
@@ -50,7 +73,7 @@ class _ProductCardState extends State<ProductCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // الصورة تتمدّد فقط في المتاح لمنع overflow
+          // مساحة الصور: سلايدر تلقائي عند تعدد الصور
           Expanded(
             child: ClipRRect(
               borderRadius: const BorderRadius.vertical(
@@ -59,38 +82,15 @@ class _ProductCardState extends State<ProductCard> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // استخدم Positioned.fill بدل AspectRatio
-                  Positioned.fill(
-                    child: Image.network(
-                      widget.image,
-                      fit: BoxFit.cover,
-                      frameBuilder: (ctx, child, frame, _) => AnimatedOpacity(
-                        opacity: frame == null ? 0 : 1,
-                        duration: const Duration(milliseconds: 300),
-                        child: child,
-                      ),
-                      errorBuilder: (_, __, ___) => Container(
-                        color: const Color(0x11000000),
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          Icons.broken_image_outlined,
-                          size: 36,
-                          color: Colors.black45,
-                        ),
-                      ),
-                      loadingBuilder: (ctx, child, progress) => progress == null
-                          ? child
-                          : const Center(
-                              child: SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                            ),
+                  if (imgs.length == 1)
+                    _NetImage(imgs.first)
+                  else
+                    PageView.builder(
+                      controller: _pc,
+                      itemCount: imgs.length,
+                      onPageChanged: (i) => setState(() => _page = i),
+                      itemBuilder: (_, i) => _NetImage(imgs[i]),
                     ),
-                  ),
 
                   // شارة التقييم
                   PositionedDirectional(
@@ -128,17 +128,29 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                     ),
                   ),
+
+                  // مؤشرات سلايدر
+                  if (imgs.length > 1)
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: _Dots(count: imgs.length, index: _page),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
           ),
 
-          // منطقة النصوص قصيرة ومضغوطة
+          // نصوص
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min, // مهم لتقليل الارتفاع
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   widget.name,
@@ -223,6 +235,65 @@ class _ProductCardState extends State<ProductCard> {
       child: DefaultTextStyle.merge(
         style: TextStyle(fontSize: 12, color: fg),
         child: child,
+      ),
+    );
+  }
+}
+
+/// صورة شبكة مع تحميل وخطأ موحّد
+class _NetImage extends StatelessWidget {
+  final String url;
+  const _NetImage(this.url);
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      errorBuilder: (_, __, ___) => Container(
+        color: const Color(0x11000000),
+        alignment: Alignment.center,
+        child: const Icon(
+          Icons.broken_image_outlined,
+          size: 36,
+          color: Colors.black45,
+        ),
+      ),
+      loadingBuilder: (ctx, child, p) => p == null
+          ? child
+          : const Center(
+              child: SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+    );
+  }
+}
+
+/// مؤشرات سلايدر بسيطة
+class _Dots extends StatelessWidget {
+  final int count;
+  final int index;
+  const _Dots({required this.count, required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 6,
+      children: List.generate(
+        count,
+        (i) => AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          width: i == index ? 18 : 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(i == index ? .95 : .45),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       ),
     );
   }
