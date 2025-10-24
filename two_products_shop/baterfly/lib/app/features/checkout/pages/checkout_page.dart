@@ -70,7 +70,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         child: ListView(
           children: [
             DropdownButtonFormField<int>(
-              value: qty,
+              initialValue: qty,
               decoration: const InputDecoration(labelText: 'الكمية'),
               items: List.generate(5, (i) => i + 1)
                   .map((e) => DropdownMenuItem(value: e, child: Text('$e')))
