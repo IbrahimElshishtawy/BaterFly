@@ -1,5 +1,5 @@
+// ignore: unused_import
 import 'package:baterfly/app/data/models/product_model.dart';
-import 'package:baterfly/app/domain/entities/product.dart';
 
 import '../../domain/entities/review.dart';
 import '../../domain/repositories/review_repository.dart';
@@ -17,16 +17,16 @@ class ReviewRepositoryImpl implements ReviewRepository {
     return data.map((r) => ReviewModel.fromMap(r)).toList();
   }
 
-  @override
-  Future<Product?> getById(String idOrSlug) async {
-    final builder = _sb.from(_table).select().limit(1);
-    final res = int.tryParse(idOrSlug) != null
-        ? await builder.eq('id', int.parse(idOrSlug)).maybeSingle()
-        : await builder.eq('slug', idOrSlug).maybeSingle();
+  // @override
+  // Future<Product?> getById(String idOrSlug) async {
+  //   final builder = _sb.from(_table).select().limit(1);
+  //   final res = int.tryParse(idOrSlug) != null
+  //       ? await builder.eq('id', int.parse(idOrSlug)).maybeSingle()
+  //       : await builder.eq('slug', idOrSlug).maybeSingle();
 
-    if (res == null) return null;
-    return ProductModel.fromMap(res as Map<String, dynamic>).toEntity();
-  }
+  //   if (res == null) return null;
+  //   return ProductModel.fromMap(res as Map<String, dynamic>).toEntity();
+  // }
 
   @override
   Future<void> submitReview({
