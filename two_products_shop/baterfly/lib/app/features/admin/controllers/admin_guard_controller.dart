@@ -10,8 +10,7 @@ class AdminGuardController {
     final res = await _sb
         .from('admins')
         .select('user_id')
-        .eq('user_id', uid)
+        .filter('user_id', 'eq', uid) // بديل بدون eq
         .maybeSingle();
-    return res != null;
   }
 }
