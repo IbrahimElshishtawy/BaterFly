@@ -1,4 +1,6 @@
 import 'package:baterfly/app/core/utils/responsive.dart';
+import 'package:baterfly/app/core/widgets/site_app_bar.dart';
+import 'package:baterfly/app/features/catalog/widgets/Search_delegate.dart';
 import 'package:baterfly/app/features/product/widgets/product_hover.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -84,29 +86,23 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('لمسة حرير'),
-        leadingWidth: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () async {
-              final res = await showSearch<String?>(
-                context: context,
-                delegate: _SearchDelegate(initial: _q.value),
-              );
-              if (res != null) setState(() => _q.value = res);
-            },
-          ),
-          Builder(
-            builder: (c) => IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => Scaffold.of(c).openEndDrawer(),
-            ),
-          ),
-        ],
+
+      // استخدم شريط الموقع بدل AppBar الافتراضي
+      appBar: SiteAppBar(
+        transparent: false,
+        onOpenMenu: () => Scaffold.of(context).openEndDrawer(),
+        onSearchTap: () async {
+          final res = await showSearch<String?>(
+            context: context,
+            delegate: CustomSearchDelegate(initial: _q.value),
+          );
+          if (res != null) setState(() => _q.value = res);
+        },
+        onOpenCart: () => Navigator.pushNamed(context, '/cart'),
+        onAdmin: () => Navigator.pushNamed(context, '/admin/login'),
+        onLogoTap: () => Navigator.pushNamed(context, '/'),
       ),
+
       body: Stack(
         children: [
           const GradientBackground(),
@@ -232,7 +228,7 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
 
-                      // Footer آخر الصفحة وغير ثابت
+                      // Footer
                       SliverToBoxAdapter(
                         child: Align(
                           alignment: Alignment.topCenter,
@@ -257,32 +253,4 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
-}
-
-class _SearchDelegate extends SearchDelegate<String?> {
-  _SearchDelegate({String initial = ''}) {
-    query = initial;
-  }
-
-  @override
-  List<Widget>? buildActions(BuildContext context) => [
-    IconButton(onPressed: () => query = '', icon: const Icon(Icons.clear)),
-  ];
-
-  @override
-  Widget? buildLeading(BuildContext context) => IconButton(
-    onPressed: () => close(context, null),
-    icon: const Icon(Icons.arrow_back),
-  );
-
-  @override
-  Widget buildResults(BuildContext context) => _hint();
-
-  @override
-  Widget buildSuggestions(BuildContext context) => _hint();
-
-  Widget _hint() => Center(child: Text('اكتب اسم المنتج ثم Enter: $query'));
-
-  @override
-  void showResults(BuildContext context) => close(context, query);
 }
