@@ -1,10 +1,11 @@
-// ignore_for_file: unnecessary_underscores
+// ignore_for_file: unnecessary_underscores, no_leading_underscores_for_local_identifiers
 import 'package:baterfly/app/core/utils/responsive.dart';
+import 'package:baterfly/app/core/widgets/site_app_bar.dart';
+import 'package:baterfly/app/features/catalog/widgets/Search_delegate.dart';
 import 'package:flutter/material.dart';
 import '../../../core/utils/formatters.dart';
 import '../../checkout/pages/checkout_page.dart';
 import '../../../core/widgets/footer_links.dart';
-import '../widgets/hero_image.dart';
 import '../widgets/gradient_bg.dart';
 import '../widgets/section_card.dart';
 
@@ -15,6 +16,8 @@ class ProductPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = product['name'] as String;
+    final _q = ValueNotifier<String>('');
+
     final price = (product['price'] as num).toDouble();
     final desc = (product['desc'] ?? '') as String;
     final img =
@@ -30,11 +33,41 @@ class ProductPage extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(name),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      endDrawer: Drawer(
+        child: SafeArea(
+          child: ListView(
+            children: const [
+              ListTile(
+                title: Center(
+                  child: Text(
+                    'الأقسام',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+              Divider(),
+              ListTile(title: Text('سياسة الاستبدال والاسترجاع')),
+              ListTile(title: Text('سياسة الشحن')),
+              ListTile(title: Text('التواصل مع الدعم')),
+            ],
+          ),
+        ),
       ),
+      appBar: SiteAppBar(
+        transparent: false,
+        onOpenMenu: () => Scaffold.of(context).openEndDrawer(),
+        onSearchTap: () async {
+          final res = await showSearch<String?>(
+            context: context,
+            delegate: CustomSearchDelegate(initial: _q.value),
+          );
+          if (res != null) _q.value = res;
+        },
+        onOpenCart: () => Navigator.pushNamed(context, '/cart'),
+        onAdmin: () => Navigator.pushNamed(context, '/admin/login'),
+        onLogoTap: () => Navigator.pushNamed(context, '/'),
+      ),
+
       body: LayoutBuilder(
         builder: (context, cons) {
           final w = cons.maxWidth;
@@ -48,11 +81,56 @@ class ProductPage extends StatelessWidget {
               ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  // صورة جذابة
+                  // صورة بدون Hero
                   Responsive.wrap(
                     maxW: maxW,
                     pad: pad,
-                    child: HeroImage(url: img, height: heroH, borderRadius: 28),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: SizedBox(
+                        height: heroH,
+                        width: double.infinity,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.network(
+                              img,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                color: const Color(0x11000000),
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 40,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                              loadingBuilder: (ctx, child, p) => p == null
+                                  ? child
+                                  : const Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                            ),
+                            const DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Color(0x22000000),
+                                    Color(0x00000000),
+                                    Color(0x33000000),
+                                  ],
+                                  stops: [0, .5, 1],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
 
                   // شريط السعر + CTA
