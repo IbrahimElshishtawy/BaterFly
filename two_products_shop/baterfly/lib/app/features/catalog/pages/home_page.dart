@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage>
   }
 
   int _cols(double w) {
-    if (w >= 1400) return 5;
+    if (w >= 1300) return 5;
     if (w >= 1100) return 4;
     if (w >= 800) return 3;
     if (w >= 560) return 2;
