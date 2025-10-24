@@ -15,10 +15,11 @@ class FooterLinks extends StatelessWidget {
     );
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF00897B), Color(0xFF004D40)],
+          colors: [Color(0xFF3E2723), Color(0xFF1B0000)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -28,8 +29,8 @@ class FooterLinks extends StatelessWidget {
         children: [
           // روابط السياسات
           Wrap(
-            spacing: 18,
-            runSpacing: 8,
+            spacing: 16,
+            runSpacing: 4,
             alignment: WrapAlignment.center,
             children: [
               _link(
@@ -42,40 +43,41 @@ class FooterLinks extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
 
-          // أيقونات التواصل
           Wrap(
-            spacing: 14,
+            spacing: 10,
+            crossAxisAlignment: WrapCrossAlignment.center,
             alignment: WrapAlignment.center,
             children: [
               _icon('https://facebook.com', Icons.facebook),
               _icon('https://instagram.com', Icons.camera_alt_outlined),
               _icon('https://wa.me/201234567890', Icons.chat_outlined),
+              const SizedBox(width: 10),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/admin/login'),
+                icon: const Icon(
+                  Icons.admin_panel_settings_outlined,
+                  size: 18,
+                  color: Colors.white,
+                ),
+                label: const Text('أدمن', style: TextStyle(fontSize: 13)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.12),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
             ],
           ),
 
-          const SizedBox(height: 20),
-
-          // زر الأدمن
-          ElevatedButton.icon(
-            onPressed: () => Navigator.pushNamed(context, '/admin'),
-            icon: const Icon(
-              Icons.admin_panel_settings_outlined,
-              color: Colors.white,
-            ),
-            label: const Text('لوحة الأدمن'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.15),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Text('© 2025 لمسة حرير', style: style),
         ],
       ),
@@ -91,6 +93,6 @@ class FooterLinks extends StatelessWidget {
   Widget _icon(String url, IconData icon) => InkWell(
     onTap: () =>
         launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
-    child: Icon(icon, size: 26, color: Colors.white),
+    child: Icon(icon, size: 22, color: Colors.white.withOpacity(0.9)),
   );
 }
