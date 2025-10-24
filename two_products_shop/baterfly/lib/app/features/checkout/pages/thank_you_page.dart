@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 class ThankYouPage extends StatelessWidget {
-  const ThankYouPage({super.key});
+  const ThankYouPage({
+    super.key,
+    required String orderNo,
+    required String productName,
+  });
 
   @override
   Widget build(BuildContext context) {
