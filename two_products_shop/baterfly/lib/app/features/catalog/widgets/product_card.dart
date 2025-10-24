@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_underscores, deprecated_member_use
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
