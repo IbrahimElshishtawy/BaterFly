@@ -1,8 +1,7 @@
 // ignore_for_file: unnecessary_underscores
-
-import 'package:baterfly/app/core/widgets/order_sheet.dart';
 import 'package:flutter/material.dart';
 import '../../../core/utils/formatters.dart';
+import '../../checkout/pages/checkout_page.dart';
 
 class ProductPage extends StatelessWidget {
   final Map<String, dynamic> product;
@@ -63,27 +62,13 @@ class ProductPage extends StatelessWidget {
           const SizedBox(height: 28),
           Center(
             child: _CtaButton(
-              onPressed: () async {
-                final orderNo = await showModalBottomSheet<String>(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => DraggableScrollableSheet(
-                    expand: false,
-                    initialChildSize: 0.7,
-                    minChildSize: 0.5,
-                    maxChildSize: 0.95,
-                    builder: (_, __) => OrderSheet(
-                      productId: product['id'] as int,
-                      productName: name,
-                    ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CheckoutPage(product: product),
                   ),
                 );
-                if (orderNo != null && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('تم إنشاء الطلب: $orderNo')),
-                  );
-                }
               },
             ),
           ),
