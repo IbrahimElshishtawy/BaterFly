@@ -20,7 +20,7 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(10),
       child: Ink(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
@@ -34,7 +34,7 @@ class ProductCard extends StatelessWidget {
                 tag: 'img-$name',
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(14),
+                    top: Radius.circular(13),
                   ),
                   child: Image.network(
                     image,
@@ -45,7 +45,7 @@ class ProductCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              padding: const EdgeInsets.fromLTRB(11, 10, 12, 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
