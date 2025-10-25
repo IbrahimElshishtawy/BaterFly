@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:baterfly/app/core/utils/responsive.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
 import 'package:baterfly/app/features/catalog/widgets/Search_delegate.dart';

@@ -1,4 +1,6 @@
 // lib/app/features/cart/pages/cart_page.dart
+// ignore_for_file: unnecessary_underscores
+
 import 'package:flutter/material.dart';
 import '../../../core/widgets/site_app_bar/site_app_bar.dart';
 import '../../../core/widgets/footer_links/footer_links.dart';

@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unused_import
 import 'package:flutter/material.dart';
 import 'footer_desktop_columns.dart';
 import 'footer_mobile_columns.dart';
