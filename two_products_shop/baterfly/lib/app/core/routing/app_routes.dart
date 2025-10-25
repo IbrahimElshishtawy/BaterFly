@@ -7,4 +7,7 @@ class AppRoutes {
   static const cart = '/cart';
   static const adminLogin = '/admin/login';
   static const adminDashboard = '/admin';
+  static const returns = '/returns'; // جديد
+  static const shipping = '/shipping'; // جديد
+  static const support = '/support'; // جديد
 }
