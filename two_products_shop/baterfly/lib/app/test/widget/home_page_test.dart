@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 
 void main() {
   testWidgets('HomePage loads and shows loading indicator', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: HomePage()));
+    await tester.pumpWidget(
+      const MaterialApp(home: HomePage(initialQuery: '')),
+    );
 
     // يجب أن يظهر مؤشر التحميل أولاً
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
