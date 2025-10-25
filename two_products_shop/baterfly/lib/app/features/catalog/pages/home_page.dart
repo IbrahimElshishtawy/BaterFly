@@ -1,5 +1,5 @@
 import 'package:baterfly/app/core/utils/responsive.dart';
-import 'package:baterfly/app/core/widgets/site_app_bar.dart';
+import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
 import 'package:baterfly/app/features/catalog/widgets/Search_delegate.dart';
 import 'package:baterfly/app/features/product/widgets/product_hover.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import '../../product/widgets/gradient_bg.dart';
 import '../widgets/product_card.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required String initialQuery});
   @override
   State<HomePage> createState() => _HomePageState();
 }
