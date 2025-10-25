@@ -4,7 +4,7 @@ import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../../core/utils/formatters.dart';
 import '../../checkout/pages/checkout_page.dart';
-import '../../../core/widgets/footer_links.dart';
+import '../../../core/widgets/footer_links/footer_links.dart';
 import '../widgets/gradient_bg.dart';
 import '../widgets/section_card.dart';
 
