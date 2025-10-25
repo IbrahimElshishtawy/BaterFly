@@ -1,6 +1,6 @@
 // ignore_for_file: unnecessary_underscores, no_leading_underscores_for_local_identifiers
 import 'package:baterfly/app/core/utils/responsive.dart';
-import 'package:baterfly/app/core/widgets/site_app_bar.dart';
+import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../../../core/utils/formatters.dart';
 import '../../checkout/pages/checkout_page.dart';
