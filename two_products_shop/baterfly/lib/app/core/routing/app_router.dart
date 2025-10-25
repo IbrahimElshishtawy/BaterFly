@@ -1,4 +1,8 @@
+import 'package:baterfly/app/features/cart/pages/cart_page.dart';
 import 'package:baterfly/app/features/contact/pages/contact_page.dart';
+import 'package:baterfly/app/features/policies/pages/returns_page.dart';
+import 'package:baterfly/app/features/policies/pages/support_page.dart';
+import 'package:baterfly/app/features/policies/shipping_page.dart';
 import 'package:flutter/material.dart';
 import '../../features/catalog/pages/home_page.dart';
 import '../../features/product/pages/product_page.dart';
@@ -14,6 +18,12 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const HomePage(initialQuery: ''),
         );
+      case AppRoutes.returns:
+        return MaterialPageRoute(builder: (_) => const ReturnsPage());
+      case AppRoutes.shipping:
+        return MaterialPageRoute(builder: (_) => const ShippingPage());
+      case AppRoutes.support:
+        return MaterialPageRoute(builder: (_) => const SupportPage());
 
       case '/catalog':
         final args = s.arguments as Map<String, dynamic>? ?? {};
@@ -36,6 +46,9 @@ class AppRouter {
 
       case AppRoutes.contact:
         return MaterialPageRoute(builder: (_) => const ContactPage());
+
+      case AppRoutes.cart:
+        return MaterialPageRoute(builder: (_) => const CartPage());
 
       default:
         return MaterialPageRoute(
