@@ -10,17 +10,29 @@ class AppRouter {
   static Route<dynamic> onGenerate(RouteSettings s) {
     switch (s.name) {
       case AppRoutes.home:
-        return MaterialPageRoute(builder: (_) => const HomePage());
+        return MaterialPageRoute(
+          builder: (_) => const HomePage(initialQuery: ''),
+        );
+
+      case '/catalog':
+        final args = s.arguments as Map<String, dynamic>? ?? {};
+        final q = args['q'] as String? ?? '';
+        return MaterialPageRoute(builder: (_) => HomePage(initialQuery: q));
+
       case AppRoutes.product:
-        final p = s.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(builder: (_) => ProductPage(product: p));
+        final args = s.arguments as Map<String, dynamic>? ?? {};
+        return MaterialPageRoute(builder: (_) => ProductPage(product: args));
+
       case AppRoutes.checkout:
-        final p = s.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(builder: (_) => CheckoutPage(product: p));
+        final args = s.arguments as Map<String, dynamic>? ?? {};
+        return MaterialPageRoute(builder: (_) => CheckoutPage(product: args));
+
       case AppRoutes.adminLogin:
         return MaterialPageRoute(builder: (_) => const AdminLoginPage());
+
       case AppRoutes.adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboardPage());
+
       default:
         return MaterialPageRoute(
           builder: (_) =>
