@@ -6,7 +6,7 @@ import 'package:baterfly/app/features/product/widgets/gradient_bg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../data/datasources/remote/orders_remote.dart';
-import '../../../core/widgets/footer_links.dart';
+import '../../../core/widgets/footer_links/footer_links.dart';
 import 'thank_you_page.dart';
 
 class CheckoutPage extends StatefulWidget {
