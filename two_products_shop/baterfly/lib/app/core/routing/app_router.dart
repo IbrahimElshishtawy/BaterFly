@@ -1,3 +1,4 @@
+import 'package:baterfly/app/features/contact/pages/contact_page.dart';
 import 'package:flutter/material.dart';
 import '../../features/catalog/pages/home_page.dart';
 import '../../features/product/pages/product_page.dart';
@@ -32,6 +33,9 @@ class AppRouter {
 
       case AppRoutes.adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboardPage());
+
+      case AppRoutes.contact:
+        return MaterialPageRoute(builder: (_) => const ContactPage());
 
       default:
         return MaterialPageRoute(
