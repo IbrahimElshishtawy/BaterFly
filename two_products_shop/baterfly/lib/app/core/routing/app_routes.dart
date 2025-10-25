@@ -4,6 +4,7 @@ class AppRoutes {
   static const product = '/product';
   static const contact = '/contact';
   static const checkout = '/checkout';
+  static const cart = '/cart';
   static const adminLogin = '/admin/login';
   static const adminDashboard = '/admin';
 }
