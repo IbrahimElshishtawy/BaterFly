@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/widgets/site_app_bar/site_app_bar.dart';
-import '../../../core/widgets/footer_links.dart';
+import '../../../core/widgets/footer_links/footer_links.dart';
 
 class ContactPage extends StatelessWidget {
   const ContactPage({super.key});
