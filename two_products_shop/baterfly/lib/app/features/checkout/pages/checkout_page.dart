@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:baterfly/app/core/utils/responsive.dart';
-import 'package:baterfly/app/core/widgets/site_app_bar.dart';
+import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
 import 'package:baterfly/app/features/product/widgets/gradient_bg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
