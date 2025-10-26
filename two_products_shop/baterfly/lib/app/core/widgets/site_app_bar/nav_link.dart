@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 class NavLink extends StatefulWidget {
   final String text;
   final VoidCallback onTap;
-  const NavLink({super.key, required this.text, required this.onTap});
+  const NavLink({
+    super.key,
+    required this.text,
+    required this.onTap,
+    required String route,
+  });
 
   @override
   State<NavLink> createState() => _NavLinkState();
