@@ -23,8 +23,6 @@ class ProductCard extends StatefulWidget {
     this.rating,
     this.price,
     this.topRadius = 13,
-
-    // افتراضيات آمنة
     this.autoPlay = true,
     this.interval = const Duration(seconds: 3),
     this.slideDuration = const Duration(milliseconds: 450),
@@ -61,7 +59,6 @@ class _ProductImageCarouselState extends State<ProductCard> {
     if (!widget.autoPlay) return;
     if (_imgs.length <= 1) return;
 
-    // نضمن جاهزية الـ PageController بعد أول فريم
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _timer?.cancel();
       _timer = Timer.periodic(widget.interval, (_) {
@@ -94,15 +91,15 @@ class _ProductImageCarouselState extends State<ProductCard> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (imgs.length == 1)
-            AnimatedImageSlider(imgs.first)
+          // إصلاح: استخدم السلايدر عند تعدد الصور، وعرض صورة واحدة فقط عند الانفراد
+          if (imgs.length > 1)
+            AnimatedImageSlider(
+              images: imgs,
+              interval: widget.interval,
+              borderRadius: widget.topRadius,
+            )
           else
-            PageView.builder(
-              controller: _pc,
-              itemCount: imgs.length,
-              onPageChanged: (i) => setState(() => _page = i),
-              itemBuilder: (_, i) => ImageAny(imgs[i]),
-            ),
+            ImageAny(imgs.first),
 
           if (widget.rating != null)
             PositionedDirectional(
@@ -111,18 +108,27 @@ class _ProductImageCarouselState extends State<ProductCard> {
               child: _badge(
                 context,
                 child: Row(
-                  children: [
-                    const Icon(
+                  children: const [
+                    Icon(
                       Icons.star_rounded,
                       size: 14,
                       color: Color(0xFFFFC107),
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      widget.rating!.toStringAsFixed(1),
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
+                    SizedBox(width: 4),
                   ],
+                ),
+              ),
+            ),
+
+          if (widget.rating != null)
+            PositionedDirectional(
+              top: 8,
+              start: 34, // إزاحة بسيطة للنص بجوار الأيقونة
+              child: _badge(
+                context,
+                child: Text(
+                  widget.rating!.toStringAsFixed(1),
+                  style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),
             ),
