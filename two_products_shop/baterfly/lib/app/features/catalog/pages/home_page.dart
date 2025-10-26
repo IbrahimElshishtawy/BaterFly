@@ -9,7 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/widgets/footer_links/footer_links.dart';
 import '../../../services/supabase/supabase_service.dart';
 import '../../product/widgets/gradient_bg.dart';
-import '../widgets/product_card.dart';
+import '../widgets/product_card/product_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required String initialQuery});
