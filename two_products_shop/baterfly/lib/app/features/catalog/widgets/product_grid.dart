@@ -5,6 +5,20 @@ class ProductGrid extends StatelessWidget {
   final List<Map<String, dynamic>> products;
   const ProductGrid({super.key, required this.products});
 
+  List<String> _toImages(dynamic v) {
+    if (v == null)
+      return const ['https://via.placeholder.com/800x1000?text=Product'];
+    if (v is List) {
+      return v.map((e) => '$e'.trim()).where((e) => e.isNotEmpty).toList();
+    }
+    // يدعم "a.jpg, b.jpg"
+    return '$v'
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -18,6 +32,10 @@ class ProductGrid extends StatelessWidget {
       itemCount: products.length,
       itemBuilder: (_, i) {
         final p = products[i];
+        final images = _toImages(p['images'] ?? p['image']);
+        final price = (p['price'] as num?)?.toDouble();
+        final rating = (p['rating'] as num?)?.toDouble();
+
         return TweenAnimationBuilder<double>(
           duration: const Duration(milliseconds: 400),
           tween: Tween(begin: 0, end: 1),
@@ -30,11 +48,10 @@ class ProductGrid extends StatelessWidget {
             ),
           ),
           child: ProductCard(
-            name: p['name'],
-            price: p['price'],
-            image: p['image'],
-            onTap: p['onTap'],
-            rating: p['rating'] as double,
+            images: images,
+            price: price,
+            rating: rating,
+            // إن احتجت onTap أو name أضفها في ProductCard نفسه ثم مررها هنا
           ),
         );
       },
