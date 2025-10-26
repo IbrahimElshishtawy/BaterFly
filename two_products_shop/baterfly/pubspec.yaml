@@ -27,7 +27,7 @@ flutter:
   uses-material-design: true
   assets:
     - lib/app/assets/.env
-    - lib/app/assets/images/image_1.jpg
-    - lib/app/assets/images/image_2.jpg
-    - lib/app/assets/images/image_3.jpg
-    - lib/app/assets/images/image_4.jpg
+    - assets/images/image_1.jpg
+    - assets/images/image_2.jpg
+    - assets/images/image_3.jpg
+    - assets/images/image_4.jpg
