@@ -17,9 +17,9 @@ class FooterMobileColumns extends StatelessWidget {
           runSpacing: 8,
           alignment: WrapAlignment.center,
           children: [
-            _NavLink(text: 'سياسة الاستبدال والاسترجاع', route: '/returns'),
-            _NavLink(text: 'سياسة الشحن', route: '/shipping'),
-            _NavLink(text: 'الدعم الفني واتساب', route: '/support'),
+            NavLink(text: 'سياسة الاستبدال والاسترجاع', route: '/returns'),
+            NavLink(text: 'سياسة الشحن', route: '/shipping'),
+            NavLink(text: 'الدعم الفني واتساب', route: '/support'),
           ],
         ),
       ],
@@ -28,10 +28,11 @@ class FooterMobileColumns extends StatelessWidget {
 }
 
 // عنصر مخصص للتنقل الداخلي داخل التطبيق
-class _NavLink extends StatelessWidget {
+class NavLink extends StatelessWidget {
   final String text;
   final String route;
-  const _NavLink({required this.text, required this.route});
+
+  const NavLink({super.key, required this.text, required this.route});
 
   @override
   Widget build(BuildContext context) {
