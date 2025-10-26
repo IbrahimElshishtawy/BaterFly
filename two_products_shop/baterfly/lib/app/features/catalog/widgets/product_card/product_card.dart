@@ -1,21 +1,19 @@
+// lib/app/features/catalog/widgets/product_card/product_card.dart
 // ignore_for_file: unnecessary_underscores
 
 import 'dart:async';
-import 'package:baterfly/app/features/catalog/widgets/product_card/Dots.dart';
-import 'package:baterfly/app/features/catalog/widgets/product_card/Net_Image.dart';
 import 'package:flutter/material.dart';
 
 class ProductCard extends StatefulWidget {
-  final List<String> images; // http/https أو assets
+  /// يقبل مسارات assets أو روابط شبكة
+  final List<String> images;
   final double? rating;
   final double? price;
   final double topRadius;
 
-  // إعدادات السلايدر
+  /// سلايدر تلقائي
   final bool autoPlay;
   final Duration interval;
-  final Duration slideDuration;
-  final Curve slideCurve;
 
   const ProductCard({
     super.key,
@@ -25,59 +23,29 @@ class ProductCard extends StatefulWidget {
     this.topRadius = 13,
     this.autoPlay = true,
     this.interval = const Duration(seconds: 3),
-    this.slideDuration = const Duration(milliseconds: 450),
-    this.slideCurve = Curves.easeInOut,
   });
 
   @override
-  State<ProductCard> createState() => _ProductImageCarouselState();
+  State<ProductCard> createState() => _ProductCardState();
 }
 
-class _ProductImageCarouselState extends State<ProductCard> {
-  late final PageController _pc = PageController();
-  int _page = 0;
-  Timer? _timer;
+class _ProductCardState extends State<ProductCard> {
+  int _index = 0;
 
   List<String> get _imgs {
-    final parts = widget.images
+    final xs = widget.images
         .map((e) => e.trim())
         .where((e) => e.isNotEmpty)
         .toList();
-    if (parts.isEmpty) {
-      return const ['https://via.placeholder.com/800x1000?text=Product'];
+    if (xs.isEmpty) {
+      return const [
+        'assets/images/image_1.jpg',
+        'assets/images/image_2.jpg',
+        'assets/images/image_3.jpg',
+        'assets/images/image_4.jpg',
+      ];
     }
-    return parts;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _startAutoPlayIfNeeded();
-  }
-
-  void _startAutoPlayIfNeeded() {
-    if (!widget.autoPlay) return;
-    if (_imgs.length <= 1) return;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _timer?.cancel();
-      _timer = Timer.periodic(widget.interval, (_) {
-        if (!mounted) return;
-        final next = (_page + 1) % _imgs.length;
-        _pc.animateToPage(
-          next,
-          duration: widget.slideDuration,
-          curve: widget.slideCurve,
-        );
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _pc.dispose();
-    super.dispose();
+    return xs;
   }
 
   @override
@@ -91,15 +59,16 @@ class _ProductImageCarouselState extends State<ProductCard> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // إصلاح: استخدم السلايدر عند تعدد الصور، وعرض صورة واحدة فقط عند الانفراد
           if (imgs.length > 1)
-            AnimatedImageSlider(
+            _AnimatedImageSlider(
               images: imgs,
               interval: widget.interval,
               borderRadius: widget.topRadius,
+              autoPlay: widget.autoPlay,
+              onIndexChanged: (i) => setState(() => _index = i),
             )
           else
-            ImageAny(imgs.first),
+            _ImageAny(imgs.first),
 
           if (widget.rating != null)
             PositionedDirectional(
@@ -119,11 +88,10 @@ class _ProductImageCarouselState extends State<ProductCard> {
                 ),
               ),
             ),
-
           if (widget.rating != null)
             PositionedDirectional(
               top: 8,
-              start: 34, // إزاحة بسيطة للنص بجوار الأيقونة
+              start: 36,
               child: _badge(
                 context,
                 child: Text(
@@ -152,7 +120,7 @@ class _ProductImageCarouselState extends State<ProductCard> {
               alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: Dots(count: imgs.length, index: _page),
+                child: _Dots(count: imgs.length, index: _index),
               ),
             ),
         ],
@@ -177,6 +145,149 @@ class _ProductImageCarouselState extends State<ProductCard> {
       child: DefaultTextStyle.merge(
         style: TextStyle(fontSize: 12, color: fg),
         child: child,
+      ),
+    );
+  }
+}
+
+/// ===== Helpers =====
+
+class _ImageAny extends StatelessWidget {
+  final String src;
+  const _ImageAny(this.src);
+
+  bool get _isNet {
+    final u = Uri.tryParse(src);
+    return u != null && (u.scheme == 'http' || u.scheme == 'https');
+  }
+
+  String get _resolvedAsset {
+    if (src.startsWith('assets/')) return src;
+    if (_isNet) return src;
+    return 'assets/images/$src';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isNet) {
+      return Image.network(
+        src,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        errorBuilder: (_, __, ___) => _err(),
+        loadingBuilder: (ctx, child, p) => p == null
+            ? child
+            : const Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+      );
+    }
+    return Image.asset(
+      _resolvedAsset,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      errorBuilder: (_, __, ___) => _err(),
+    );
+  }
+
+  Widget _err() => Container(
+    color: const Color(0x11000000),
+    alignment: Alignment.center,
+    child: const Icon(
+      Icons.broken_image_outlined,
+      size: 36,
+      color: Colors.black45,
+    ),
+  );
+}
+
+class _AnimatedImageSlider extends StatefulWidget {
+  final List<String> images;
+  final Duration interval;
+  final double borderRadius;
+  final bool autoPlay;
+  final ValueChanged<int>? onIndexChanged;
+
+  const _AnimatedImageSlider({
+    required this.images,
+    this.interval = const Duration(seconds: 3),
+    this.borderRadius = 12,
+    this.autoPlay = true,
+    this.onIndexChanged,
+  });
+
+  @override
+  State<_AnimatedImageSlider> createState() => _AnimatedImageSliderState();
+}
+
+class _AnimatedImageSliderState extends State<_AnimatedImageSlider> {
+  int _index = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autoPlay && widget.images.length > 1) {
+      _timer = Timer.periodic(widget.interval, (_) {
+        if (!mounted) return;
+        setState(() => _index = (_index + 1) % widget.images.length);
+        widget.onIndexChanged?.call(_index);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final img = widget.images[_index];
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(widget.borderRadius),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 800),
+        switchInCurve: Curves.easeInOut,
+        switchOutCurve: Curves.easeInOut,
+        layoutBuilder: (currentChild, previousChildren) => Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            ...previousChildren,
+            if (currentChild != null) currentChild,
+          ],
+        ),
+        child: KeyedSubtree(key: ValueKey(img), child: _ImageAny(img)),
+      ),
+    );
+  }
+}
+
+class _Dots extends StatelessWidget {
+  final int count;
+  final int index;
+  const _Dots({required this.count, required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 6,
+      children: List.generate(
+        count,
+        (i) => AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          width: i == index ? 18 : 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(i == index ? .95 : .45),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       ),
     );
   }

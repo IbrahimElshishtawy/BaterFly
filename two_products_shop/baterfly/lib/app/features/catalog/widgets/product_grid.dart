@@ -1,3 +1,4 @@
+// lib/app/features/catalog/widgets/product_grid.dart
 import 'package:flutter/material.dart';
 import 'product_card/product_card.dart';
 
@@ -6,17 +7,38 @@ class ProductGrid extends StatelessWidget {
   const ProductGrid({super.key, required this.products});
 
   List<String> _toImages(dynamic v) {
-    if (v == null)
-      return const ['https://via.placeholder.com/800x1000?text=Product'];
-    if (v is List) {
-      return v.map((e) => '$e'.trim()).where((e) => e.isNotEmpty).toList();
+    if (v == null) {
+      return const [
+        'assets/images/image_1.jpg',
+        'assets/images/image_2.jpg',
+        'assets/images/image_3.jpg',
+        'assets/images/image_4.jpg',
+      ];
     }
-    // يدعم "a.jpg, b.jpg"
-    return '$v'
+    if (v is List) {
+      final xs = v.map((e) => '$e'.trim()).where((e) => e.isNotEmpty).toList();
+      return xs.isEmpty
+          ? const [
+              'assets/images/image_1.jpg',
+              'assets/images/image_2.jpg',
+              'assets/images/image_3.jpg',
+              'assets/images/image_4.jpg',
+            ]
+          : xs;
+    }
+    final xs = '$v'
         .split(',')
         .map((e) => e.trim())
         .where((e) => e.isNotEmpty)
         .toList();
+    return xs.isEmpty
+        ? const [
+            'assets/images/image_1.jpg',
+            'assets/images/image_2.jpg',
+            'assets/images/image_3.jpg',
+            'assets/images/image_4.jpg',
+          ]
+        : xs;
   }
 
   @override
@@ -47,12 +69,7 @@ class ProductGrid extends StatelessWidget {
               child: child,
             ),
           ),
-          child: ProductCard(
-            images: images,
-            price: price,
-            rating: rating,
-            // إن احتجت onTap أو name أضفها في ProductCard نفسه ثم مررها هنا
-          ),
+          child: ProductCard(images: images, price: price, rating: rating),
         );
       },
     );

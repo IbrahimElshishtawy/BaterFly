@@ -56,26 +56,6 @@ class _HomePageState extends State<HomePage>
     }).toList();
   }
 
-  List<String> _toImages(dynamic v) {
-    List<String> fallback = const [
-      'lib/app/assets/images/image_1.jpg',
-      'lib/app/assets/images/image_2.jpg',
-      'lib/app/assets/images/image_3.jpg',
-      'lib/app/assets/images/image_4.jpg',
-    ];
-    if (v == null) return fallback;
-    if (v is List) {
-      final xs = v.map((e) => '$e'.trim()).where((e) => e.isNotEmpty).toList();
-      return xs.isEmpty ? fallback : xs;
-    }
-    final xs = '$v'
-        .split(',')
-        .map((e) => e.trim())
-        .where((e) => e.isNotEmpty)
-        .toList();
-    return xs.isEmpty ? fallback : xs;
-  }
-
   int _cols(double w) {
     if (w >= 1400) return 6;
     if (w >= 1200) return 5;
@@ -108,7 +88,10 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
+
+      // استخدم شريط الموقع بدل AppBar الافتراضي
       appBar: SiteAppBar(transparent: false),
+
       body: Stack(
         children: [
           const GradientBackground(),
@@ -127,12 +110,14 @@ class _HomePageState extends State<HomePage>
                   final maxW = Responsive.maxWidth(w);
                   final cols = _cols(w);
 
+                  // حواف جانبية لتوسيط الشبكة داخل maxW مع احترام padding
                   double side = (w - maxW) / 2;
                   final minSide = pad.horizontal / 2;
                   if (side < minSide) side = minSide;
 
                   return CustomScrollView(
                     slivers: [
+                      // شريط ترويجي علوي
                       SliverToBoxAdapter(
                         child: Align(
                           alignment: Alignment.topCenter,
@@ -156,7 +141,9 @@ class _HomePageState extends State<HomePage>
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
-                                  border: Border.all(color: Color(0x22FFFFFF)),
+                                  border: Border.all(
+                                    color: const Color(0x22FFFFFF),
+                                  ),
                                 ),
                                 child: const Row(
                                   children: [
@@ -181,6 +168,7 @@ class _HomePageState extends State<HomePage>
 
                       const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
+                      // الشبكة
                       SliverPadding(
                         padding: EdgeInsets.fromLTRB(side, 16, side, 16),
                         sliver: SliverGrid(
@@ -193,10 +181,11 @@ class _HomePageState extends State<HomePage>
                               ),
                           delegate: SliverChildBuilderDelegate((context, i) {
                             final m = items[i];
-                            final images = _toImages(m['images']);
-                            final price = (m['price'] as num).toDouble();
-                            final rating = ((m['avg_rating'] ?? 0) as num)
-                                .toDouble();
+                            final imgs =
+                                (m['images'] as List?)?.cast() ?? const [];
+                            final img = imgs.isNotEmpty
+                                ? imgs.first.toString()
+                                : 'https://via.placeholder.com/800x1000?text=Product';
 
                             return FadeTransition(
                               opacity: CurvedAnimation(
@@ -207,23 +196,11 @@ class _HomePageState extends State<HomePage>
                                   curve: Curves.easeOut,
                                 ),
                               ),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/product',
-                                    arguments: {...m, 'images': images},
-                                  );
-                                },
-                                borderRadius: BorderRadius.circular(13),
-                                child: ProductHover(
-                                  child: ProductCard(
-                                    images:
-                                        images, // يستخدم الصور من Supabase أو fallback المحلي
-                                    price: price,
-                                    rating: rating,
-                                    topRadius: 13,
-                                  ),
+                              child: ProductHover(
+                                child: ProductCard(images: [
+                                  
+                                ],
+                                
                                 ),
                               ),
                             );
@@ -231,6 +208,7 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
 
+                      // Footer
                       SliverToBoxAdapter(
                         child: Align(
                           alignment: Alignment.topCenter,
