@@ -1,5 +1,6 @@
 // ignore_for_file: unused_local_variable, deprecated_member_use
 
+import 'package:baterfly/app/core/widgets/site_app_bar/nav_link.dart';
 import 'package:flutter/material.dart';
 import 'footer_helpers.dart';
 
@@ -35,20 +36,27 @@ class FooterDesktopColumns extends StatelessWidget {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              FooterColHeader('السياسات'),
-              SizedBox(height: 10),
-              FooterLink(
+            children: [
+              NavLink(
                 text: 'سياسة الاستبدال والاسترجاع',
-                url: 'https://example.com/returns',
+                route: '/returns',
+                onTap: () {
+                  Navigator.pushNamed(context, '/returns');
+                },
               ),
-              FooterLink(
+              NavLink(
                 text: 'سياسة الشحن',
-                url: 'https://example.com/shipping',
+                route: '/shipping',
+                onTap: () {
+                  Navigator.pushNamed(context, '/shipping');
+                },
               ),
-              FooterLink(
-                text: 'الأسئلة الشائعة',
-                url: 'https://example.com/faq',
+              NavLink(
+                text: 'الدعم الفني واتساب',
+                route: '/support',
+                onTap: () {
+                  Navigator.pushNamed(context, '/support');
+                },
               ),
             ],
           ),
