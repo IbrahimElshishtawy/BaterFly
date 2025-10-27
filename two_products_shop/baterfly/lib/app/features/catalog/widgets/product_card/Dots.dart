@@ -1,11 +1,12 @@
-// ignore_for_file: file_names
+// lib/app/features/catalog/widgets/product_card/dots.dart
+// ignore_for_file: unused_element, file_names, deprecated_member_use
 
 import 'package:flutter/material.dart';
 
-class Dots extends StatelessWidget {
+class _Dots extends StatelessWidget {
   final int count;
   final int index;
-  const Dots({required this.count, required this.index});
+  const _Dots({required this.count, required this.index});
 
   @override
   Widget build(BuildContext context) {
