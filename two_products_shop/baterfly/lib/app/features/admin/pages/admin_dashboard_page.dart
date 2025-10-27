@@ -1,5 +1,5 @@
 // lib/app/features/admin/pages/admin_dashboard_page.dart
-// ignore_for_file: unnecessary_underscores
+// ignore_for_file: unnecessary_underscores, deprecated_member_use
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
