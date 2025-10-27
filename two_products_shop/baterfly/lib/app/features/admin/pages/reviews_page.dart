@@ -1,5 +1,5 @@
 // lib/app/features/admin/pages/reviews_page.dart
-// ignore_for_file: unnecessary_underscores
+// ignore_for_file: unnecessary_underscores, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import '../../../core/widgets/site_app_bar/site_app_bar.dart';
