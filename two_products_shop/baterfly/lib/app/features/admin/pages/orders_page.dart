@@ -97,108 +97,102 @@ class _OrdersPageState extends State<OrdersPage>
                         curve: Curves.easeOutCubic,
                       ),
                     ),
-                    child: Container(
+                    child: Card(
                       margin: const EdgeInsets.only(bottom: 14),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 14,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        color: Colors.white.withOpacity(0.95),
-                        border: Border.all(color: Colors.black12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.teal.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(10),
+                      elevation: 4,
+                      color: Colors.white.withOpacity(0.95),
+                      child: Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.teal.withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.receipt_long_rounded,
+                                color: Colors.teal,
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.receipt_long_rounded,
-                              color: Colors.teal,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  name,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.phone,
-                                      size: 14,
-                                      color: Theme.of(context).hintColor,
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
                                     ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      phone,
-                                      style: TextStyle(
-                                        fontSize: 13,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.phone,
+                                        size: 14,
                                         color: Theme.of(context).hintColor,
                                       ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        phone,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Theme.of(context).hintColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _statusColor(
+                                      status,
+                                    ).withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: _statusColor(
+                                        status,
+                                      ).withOpacity(0.3),
                                     ),
-                                  ],
+                                  ),
+                                  child: Text(
+                                    status,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: _statusColor(status),
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  '$total ج.م',
+                                  style: const TextStyle(
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.teal,
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: _statusColor(status).withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: _statusColor(
-                                      status,
-                                    ).withOpacity(0.3),
-                                  ),
-                                ),
-                                child: Text(
-                                  status,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: _statusColor(status),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                '$total ج.م',
-                                style: const TextStyle(
-                                  fontSize: 14.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.teal,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );
