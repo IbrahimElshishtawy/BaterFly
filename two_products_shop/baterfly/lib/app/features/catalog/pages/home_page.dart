@@ -210,15 +210,27 @@ class _HomePageState extends State<HomePage>
                               ),
                               child: ProductHover(
                                 child: ProductCard(
-                                  images: images, // ← يدعم أصول + روابط
+                                  images: [
+                                    'assets/images/image_1.jpg',
+                                    'assets/images/image_2.jpg',
+                                    'assets/images/image_3.jpg',
+                                    'assets/images/image_4.jpg',
+                                  ], // تأكد من أن هذه المسارات صحيحة
                                   price: price,
                                   rating: rating,
                                   onTap: () {
-                                    // ← افتح صفحة المنتج
                                     Navigator.pushNamed(
                                       context,
                                       '/product',
-                                      arguments: {...m, 'images': images},
+                                      arguments: {
+                                        ...m,
+                                        'images': [
+                                          'assets/images/image_1.jpg',
+                                          'assets/images/image_2.jpg',
+                                          'assets/images/image_3.jpg',
+                                          'assets/images/image_4.jpg',
+                                        ],
+                                      },
                                     );
                                   },
                                 ),
