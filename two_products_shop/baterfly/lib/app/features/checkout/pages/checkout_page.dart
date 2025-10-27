@@ -1,4 +1,6 @@
 // lib/app/features/catalog/pages/checkout_page.dart
+// ignore_for_file: unused_local_variable
+
 import 'package:baterfly/app/features/checkout/widgets/checkout_form.dart';
 import 'package:baterfly/app/features/checkout/widgets/product_card_widget.dart';
 import 'package:flutter/material.dart';
