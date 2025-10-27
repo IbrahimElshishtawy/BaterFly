@@ -3,10 +3,10 @@
 
 import 'package:flutter/material.dart';
 
-class _Dots extends StatelessWidget {
+class Dots extends StatelessWidget {
   final int count;
   final int index;
-  const _Dots({required this.count, required this.index});
+  const Dots({super.key, required this.count, required this.index});
 
   @override
   Widget build(BuildContext context) {
