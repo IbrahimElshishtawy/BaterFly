@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, unused_local_variable
 
 import 'package:baterfly/app/core/utils/responsive.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
