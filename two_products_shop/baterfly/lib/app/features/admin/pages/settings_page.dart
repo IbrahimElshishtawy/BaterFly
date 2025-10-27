@@ -1,8 +1,14 @@
+// lib/app/features/admin/pages/settings_page.dart
+// ignore_for_file: unnecessary_underscores
+
 import 'package:flutter/material.dart';
+import '../../../core/widgets/site_app_bar/site_app_bar.dart';
+import '../../../features/product/widgets/gradient_bg.dart';
 import '../../../services/supabase/supabase_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
@@ -44,28 +50,76 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('الإعدادات العامة')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: ListView(
-          children: [
-            TextField(
-              controller: whatsapp,
-              decoration: const InputDecoration(labelText: 'رقم واتساب'),
+      appBar: const SiteAppBar(transparent: false),
+      body: Stack(
+        children: [
+          const GradientBackground(),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: ListView(
+              children: [
+                const SizedBox(height: 24),
+
+                // حقل رقم واتساب مع أيقونة
+                TextField(
+                  controller: whatsapp,
+                  decoration: InputDecoration(
+                    labelText: 'رقم واتساب',
+                    labelStyle: TextStyle(color: Theme.of(context).hintColor),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.95),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.black12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14),
+                    prefixIcon: const Icon(Icons.phone, color: Colors.teal),
+                  ),
+                ),
+                const SizedBox(height: 18),
+
+                // حقل بريد الدعم مع أيقونة
+                TextField(
+                  controller: email,
+                  decoration: InputDecoration(
+                    labelText: 'بريد الدعم',
+                    labelStyle: TextStyle(color: Theme.of(context).hintColor),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.95),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.black12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14),
+                    prefixIcon: const Icon(Icons.email, color: Colors.teal),
+                  ),
+                ),
+                const SizedBox(height: 30),
+
+                // زر حفظ التغييرات
+                ElevatedButton(
+                  onPressed: saving ? null : _save,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                    backgroundColor: Colors.teal,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: saving
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'حفظ التغييرات',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                ),
+              ],
             ),
-            TextField(
-              controller: email,
-              decoration: const InputDecoration(labelText: 'بريد الدعم'),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: saving ? null : _save,
-              child: saving
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('حفظ التغييرات'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
