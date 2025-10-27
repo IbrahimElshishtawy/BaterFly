@@ -1,4 +1,6 @@
 // lib/app/features/catalog/widgets/checkout_form.dart
+// ignore_for_file: unused_field, prefer_final_fields
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
