@@ -5,15 +5,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class ProductCard extends StatefulWidget {
-  /// يقبل مسارات assets أو روابط شبكة
   final List<String> images;
   final double? rating;
   final double? price;
   final double topRadius;
 
-  /// سلايدر تلقائي
   final bool autoPlay;
   final Duration interval;
+
+  final VoidCallback? onTap; // ← جديد
 
   const ProductCard({
     super.key,
@@ -23,6 +23,7 @@ class ProductCard extends StatefulWidget {
     this.topRadius = 13,
     this.autoPlay = true,
     this.interval = const Duration(seconds: 3),
+    this.onTap, // ← جديد
   });
 
   @override
@@ -37,22 +38,21 @@ class _ProductCardState extends State<ProductCard> {
         .map((e) => e.trim())
         .where((e) => e.isNotEmpty)
         .toList();
-    if (xs.isEmpty) {
-      return const [
-        'assets/images/image_1.jpg',
-        'assets/images/image_2.jpg',
-        'assets/images/image_3.jpg',
-        'assets/images/image_4.jpg',
-      ];
-    }
-    return xs;
+    return xs.isEmpty
+        ? const [
+            'assets/images/image_1.jpg',
+            'assets/images/image_2.jpg',
+            'assets/images/image_3.jpg',
+            'assets/images/image_4.jpg',
+          ]
+        : xs;
   }
 
   @override
   Widget build(BuildContext context) {
     final imgs = _imgs;
 
-    return ClipRRect(
+    final content = ClipRRect(
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(widget.topRadius),
       ),
@@ -76,8 +76,8 @@ class _ProductCardState extends State<ProductCard> {
               start: 8,
               child: _badge(
                 context,
-                child: Row(
-                  children: const [
+                child: const Row(
+                  children: [
                     Icon(
                       Icons.star_rounded,
                       size: 14,
@@ -126,6 +126,15 @@ class _ProductCardState extends State<ProductCard> {
         ],
       ),
     );
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: widget.onTap, // ← هنا
+        borderRadius: BorderRadius.circular(widget.topRadius),
+        child: content,
+      ),
+    );
   }
 
   Widget _badge(
@@ -151,7 +160,6 @@ class _ProductCardState extends State<ProductCard> {
 }
 
 /// ===== Helpers =====
-
 class _ImageAny extends StatelessWidget {
   final String src;
   const _ImageAny(this.src);
