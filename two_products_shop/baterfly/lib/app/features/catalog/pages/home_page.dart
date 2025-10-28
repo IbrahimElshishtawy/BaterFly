@@ -241,19 +241,15 @@ class _HomePageState extends State<HomePage>
                       ),
 
                       SliverToBoxAdapter(
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: maxW),
-                            child: Padding(
-                              padding: pad,
-                              child: const FooterLinks(),
-                            ),
-                          ),
+                        child: Container(
+                          width: double.infinity,
+                          color: Colors.transparent,
+                          padding: const EdgeInsets.only(top: 24, bottom: 32),
+                          child: const FooterLinks(),
                         ),
                       ),
 
-                      const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                      const SliverToBoxAdapter(child: SizedBox(height: 12)),
                     ],
                   );
                 },
