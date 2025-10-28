@@ -2,8 +2,6 @@
 
 import 'dart:async';
 import 'package:baterfly/app/core/widgets/footer_links/footer_links.dart';
-import 'package:baterfly/app/data/models/Cart_Item.dart';
-import 'package:baterfly/app/domain/entities/product.dart';
 import 'package:baterfly/app/features/checkout/pages/checkout_page.dart';
 import 'package:baterfly/app/features/product/sections/price_and_cta.dart';
 import 'package:baterfly/app/features/product/sections/product_details.dart';
@@ -233,15 +231,6 @@ class _ProductPageState extends State<ProductPage> {
                         usage: usage,
                         features: features,
                         ingredients: ingredients,
-                        onAddToCart: () {
-                          CartService.I.add(
-                            widget.product as Product,
-                            qty: 1,
-                          ); // الإضافة فعليًا
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('تمت الإضافة للسلة')),
-                          );
-                        },
                       ),
                     ),
                   ),
