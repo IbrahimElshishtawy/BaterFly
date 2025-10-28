@@ -70,51 +70,57 @@ class _CartPageState extends State<CartPage> {
                 ),
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
-        decoration: const BoxDecoration(
-          color: Color(0xFF162133),
-          border: Border(top: BorderSide(color: Color(0x22FFFFFF))),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                'الإجمالي: ${cart.subtotal.toStringAsFixed(0)} ج.م',
-                textDirection: TextDirection.rtl,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                ),
-              ),
+      // جمعنا الملخص + الروابط هنا لتفادي التداخل
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+            decoration: const BoxDecoration(
+              color: Color(0xFF162133),
+              border: Border(top: BorderSide(color: Color(0x22FFFFFF))),
             ),
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF1E88E5),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'الإجمالي: ${(cart.subtotal).toStringAsFixed(0)} ج.م',
+                    textDirection: TextDirection.rtl,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF1E88E5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: items.isEmpty
+                      ? null
+                      : () => Navigator.pushNamed(context, '/checkout'),
+                  child: const Text(
+                    'إتمام الشراء',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-              ),
-              onPressed: items.isEmpty
-                  ? null
-                  : () => Navigator.pushNamed(context, '/checkout'),
-              child: const Text(
-                'إتمام الشراء',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const FooterLinks(), // تحت الملخص بدون bottomSheet
+        ],
       ),
-      bottomSheet: const FooterLinks(),
     );
   }
 }
@@ -123,8 +129,18 @@ class _CartTile extends StatelessWidget {
   final CartItem item;
   const _CartTile({required this.item});
 
+  String _firstImage(String? raw) {
+    final s = (raw ?? '').trim();
+    if (s.isEmpty) return '';
+    final first = s.contains(',') ? s.split(',').first.trim() : s;
+    return first;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final img = _firstImage(item.image);
+    final price = (item.price ?? 0).toDouble(); // حماية إضافية
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -136,17 +152,23 @@ class _CartTile extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              item.image.split(',').first.trim(),
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const SizedBox(
-                width: 80,
-                height: 80,
-                child: ColoredBox(color: Color(0x11000000)),
-              ),
-            ),
+            child: img.isEmpty
+                ? const SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: ColoredBox(color: Color(0x11000000)),
+                  )
+                : Image.network(
+                    img,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: ColoredBox(color: Color(0x11000000)),
+                    ),
+                  ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -165,7 +187,7 @@ class _CartTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'ج.م ${item.price.toStringAsFixed(0)}',
+                  'ج.م ${price.toStringAsFixed(0)}',
                   textDirection: TextDirection.rtl,
                   style: const TextStyle(color: Colors.white70, fontSize: 13),
                 ),
@@ -200,7 +222,7 @@ class _QtyControl extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            onPressed: () => cart.decrement(item.id),
+            onPressed: () => cart.decrement(item.id), // تأكد أنها لا تنزل < 1
             icon: const Icon(Icons.remove, color: Colors.white70, size: 18),
           ),
           Text(
