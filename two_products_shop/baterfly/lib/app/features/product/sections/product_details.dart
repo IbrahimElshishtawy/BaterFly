@@ -161,7 +161,11 @@ class _Paragraph extends StatelessWidget {
     return Text(
       text,
       textAlign: TextAlign.start,
-      style: const TextStyle(color: Colors.white, height: 1.7, fontSize: 15.5),
+      style: const TextStyle(
+        color: Color.fromARGB(255, 59, 55, 55),
+        height: 1.7,
+        fontSize: 15.5,
+      ),
     );
   }
 }
