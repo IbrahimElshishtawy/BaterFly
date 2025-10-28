@@ -1,8 +1,8 @@
-import 'package:baterfly/app/features/product/widgets/feature_grid.dart';
-import 'package:baterfly/app/features/product/widgets/safety_list.dart';
 import 'package:flutter/material.dart';
-import 'section_card.dart';
+import 'feature_grid.dart';
+import 'safety_list.dart';
 import 'ingredient_chips.dart';
+import 'section_card.dart';
 
 class RightColumn extends StatelessWidget {
   final List<String> features;
