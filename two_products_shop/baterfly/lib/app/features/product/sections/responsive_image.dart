@@ -1,5 +1,7 @@
 // lib/app/features/product/widgets/responsive_image.dart
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 
 class ResponsiveImage extends StatelessWidget {
   final String img;
@@ -16,23 +18,19 @@ class ResponsiveImage extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              img,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: const Color(0x11000000),
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.broken_image_outlined,
-                  size: 40,
-                  color: Colors.white70,
-                ),
-              ),
-              loadingBuilder: (ctx, child, p) => p == null
-                  ? child
-                  : const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
+            // عرض الصورة
+            PhotoViewGallery.builder(
+              itemCount: 1, // عدد الصور (هنا واحدة فقط)
+              builder: (context, index) {
+                return PhotoViewGalleryPageOptions(
+                  imageProvider: NetworkImage(img),
+                  minScale: PhotoViewComputedScale.contained,
+                  maxScale: PhotoViewComputedScale.covered,
+                );
+              },
+              scrollPhysics: BouncingScrollPhysics(),
+              backgroundDecoration: BoxDecoration(color: Colors.black),
+              pageController: PageController(),
             ),
             const DecoratedBox(
               decoration: BoxDecoration(
