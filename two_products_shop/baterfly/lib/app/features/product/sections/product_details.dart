@@ -1,15 +1,12 @@
-import 'dart:ui';
-
+import 'package:baterfly/app/features/product/widgets/section_card.dart';
 import 'package:baterfly/app/features/product/widgets/ingredient_chips.dart';
 import 'package:baterfly/app/features/product/widgets/left_column.dart';
 import 'package:baterfly/app/features/product/widgets/right_column.dart';
 import 'package:baterfly/app/features/product/widgets/safety_list.dart';
-import 'package:baterfly/app/features/product/widgets/section_card.dart';
 import 'package:baterfly/app/features/product/widgets/trust_row.dart';
 import 'package:baterfly/app/features/product/widgets/usage_accordion.dart';
 import 'package:baterfly/app/features/product/widgets/usp_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 class ProductDetails extends StatelessWidget {
   final double w;
@@ -38,13 +35,22 @@ class ProductDetails extends StatelessWidget {
         : 'سيرامايد BUTTERFLY ...';
     final productUsage = usage.trim().isNotEmpty
         ? usage.trim()
-        : 'رجّي العبوة جيدًا ...';
+        : '''
+1. يتم غسل الشعر جيدًا قبل الاستخدام
+2. تجفيف الشعر بنسبة 80% بواسطة منشفة دافئة وواساخ ساخن.
+3. تقسيم الشعر من 4–6 أجزاء حسب مناسبيته.
+4. توزيع المنتج خصلة خصلة.
+5. تركه لمدة 30–45 دقيقة حسب نوع الشعر.
+6. جفف الشعر بواسطة السيشوار.
+7. مرري المكواة على الخصلات الرفيعة.
+8. شطفه بماء بارد.
+''';
 
     final safety = const [
       'اختبار حساسية على خصلة صغيرة قبل الاستخدام الأول.',
-      'تجنّب ملامسة العينين والجلد المتهيج.',
-      'يُستخدم على شعر نظيف فقط ...',
-      'مخصّص للاستخدام الخارجي فقط.',
+      'تجنب ملامسة العينين والجلد المتهيج.',
+      'يُستخدم على شعر نظيف فقط.',
+      'مخصص للاستخدام الخارجي فقط.',
     ];
 
     final wide = w >= 1100;
