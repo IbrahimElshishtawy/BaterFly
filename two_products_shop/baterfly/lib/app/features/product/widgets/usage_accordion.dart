@@ -1,8 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 
 class UsageAccordion extends StatefulWidget {
   final String text;
-  const UsageAccordion({required this.text});
+  const UsageAccordion({super.key, required this.text});
 
   @override
   State<UsageAccordion> createState() => _UsageAccordionState();
