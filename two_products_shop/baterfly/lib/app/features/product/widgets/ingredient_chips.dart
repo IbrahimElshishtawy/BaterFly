@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class IngredientChips extends StatelessWidget {
   final List<String> items;
-  const IngredientChips(this.items);
+  const IngredientChips(this.items, {super.key});
 
   @override
   Widget build(BuildContext context) {
