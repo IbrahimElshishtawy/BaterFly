@@ -1,5 +1,5 @@
 // lib/app/features/cart/pages/cart_page.dart
-// ignore_for_file: unnecessary_underscores
+// ignore_for_file: unnecessary_underscores, dead_code
 
 import 'package:flutter/material.dart';
 import '../../../core/widgets/site_app_bar/site_app_bar.dart';
@@ -139,7 +139,7 @@ class _CartTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final img = _firstImage(item.image);
-    final price = (item.price ?? 0).toDouble(); // حماية إضافية
+    final price = (item.price).toDouble(); // حماية إضافية
 
     return Container(
       padding: const EdgeInsets.all(14),
