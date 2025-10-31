@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class FeatureGrid extends StatefulWidget {
   final List<String> items;
-  const FeatureGrid(this.items);
+  const FeatureGrid(this.items, {super.key});
 
   @override
   State<FeatureGrid> createState() => _FeatureGridState();
