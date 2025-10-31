@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class USPBar extends StatelessWidget {
-  const USPBar();
+  const USPBar({super.key});
 
   @override
   Widget build(BuildContext context) {
