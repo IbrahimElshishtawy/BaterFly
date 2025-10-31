@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class SafetyList extends StatelessWidget {
   final List<String> items;
-  const SafetyList(this.items);
+  const SafetyList(this.items, {super.key});
 
   @override
   Widget build(BuildContext context) {
