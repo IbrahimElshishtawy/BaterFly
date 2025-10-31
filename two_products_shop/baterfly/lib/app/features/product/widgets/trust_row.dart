@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TrustRow extends StatelessWidget {
-  const TrustRow();
+  const TrustRow({super.key});
 
   @override
   Widget build(BuildContext context) {
