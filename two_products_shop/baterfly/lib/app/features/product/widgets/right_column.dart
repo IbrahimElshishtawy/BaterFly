@@ -9,6 +9,7 @@ class RightColumn extends StatelessWidget {
   final List<String> ingredients;
   final List<String> safety;
   const RightColumn({
+    super.key,
     required this.features,
     required this.ingredients,
     required this.safety,
