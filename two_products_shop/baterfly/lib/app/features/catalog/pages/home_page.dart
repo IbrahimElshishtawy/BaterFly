@@ -1,6 +1,7 @@
 // ignore_for_file: unused_import, unused_local_variable
 
 import 'package:baterfly/app/core/utils/responsive.dart';
+import 'package:baterfly/app/core/widgets/product_video_widget.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
 import 'package:baterfly/app/features/catalog/widgets/Search_delegate.dart';
 import 'package:baterfly/app/features/product/widgets/product_hover.dart';
@@ -84,12 +85,64 @@ class _HomePageState extends State<HomePage>
   }
 
   int _cols(double w) {
-    if (w >= 1400) return 6;
-    if (w >= 1200) return 5;
+    if (w >= 1600) return 6;
+    if (w >= 1300) return 5;
     if (w >= 992) return 4;
     if (w >= 720) return 3;
     if (w >= 520) return 2;
     return 1;
+  }
+
+  // 🎬 كارت فيديو مخصص
+  Widget _buildVideoCard(String videoUrl, String label) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
+        gradient: const LinearGradient(
+          colors: [Color(0xFF1E1E1E), Color(0xFF3A3A3A)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Stack(
+          children: [
+            ProductVideoWidget(videoUrl: videoUrl),
+            Positioned(
+              bottom: 16,
+              left: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -121,7 +174,7 @@ class _HomePageState extends State<HomePage>
           const GradientBackground(),
           Column(
             children: [
-              // إضافة شريط البحث
+              // 🔍 شريط البحث
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: TextField(
@@ -164,6 +217,7 @@ class _HomePageState extends State<HomePage>
 
                             return CustomScrollView(
                               slivers: [
+                                // 🏷️ إعلان
                                 SliverToBoxAdapter(
                                   child: Align(
                                     alignment: Alignment.topCenter,
@@ -224,6 +278,7 @@ class _HomePageState extends State<HomePage>
                                   child: SizedBox(height: 8),
                                 ),
 
+                                // 🛒 المنتجات
                                 SliverPadding(
                                   padding: EdgeInsets.fromLTRB(
                                     side,
@@ -244,7 +299,6 @@ class _HomePageState extends State<HomePage>
                                       i,
                                     ) {
                                       final m = items[i];
-
                                       final images = _toImages(m['images']);
                                       final price = (m['price'] as num?)
                                           ?.toDouble();
@@ -263,8 +317,7 @@ class _HomePageState extends State<HomePage>
                                         ),
                                         child: ProductHover(
                                           child: ProductCard(
-                                            images:
-                                                images, // استخدام الصور من قاعدة البيانات
+                                            images: images,
                                             price: price,
                                             rating: rating,
                                             onTap: () {
@@ -273,8 +326,7 @@ class _HomePageState extends State<HomePage>
                                                 '/product',
                                                 arguments: {
                                                   ...m,
-                                                  'images':
-                                                      images, // تمرير الصور الصحيحة
+                                                  'images': images,
                                                 },
                                               );
                                             },
@@ -285,6 +337,91 @@ class _HomePageState extends State<HomePage>
                                   ),
                                 ),
 
+                                // 🎬 قسم الفيديوهات - متجاوب
+                                SliverToBoxAdapter(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 30,
+                                    ),
+                                    child: LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        final isWide =
+                                            constraints.maxWidth > 900;
+                                        final videos = [
+                                          {
+                                            'url': 'assets/video/video_1.mp4',
+                                            'label': 'تجربة العملاء ❤️',
+                                          },
+                                          {
+                                            'url': 'assets/video/video_2.mp4',
+                                            'label': 'مراجعة المنتج 🔥',
+                                          },
+                                          {
+                                            'url': 'assets/video/video_3.mp4',
+                                            'label': 'آراء المستخدمين 🌟',
+                                          },
+                                        ];
+
+                                        return Center(
+                                          child: Container(
+                                            width: isWide
+                                                ? constraints.maxWidth * 0.85
+                                                : double.infinity,
+                                            child: isWide
+                                                ? Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: videos.map((v) {
+                                                      return Expanded(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8.0,
+                                                              ),
+                                                          child:
+                                                              _buildVideoCard(
+                                                                v['url']!,
+                                                                v['label']!,
+                                                              ),
+                                                        ),
+                                                      );
+                                                    }).toList(),
+                                                  )
+                                                : SingleChildScrollView(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    child: Row(
+                                                      children: videos.map((v) {
+                                                        return Padding(
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 8,
+                                                              ),
+                                                          child: SizedBox(
+                                                            width:
+                                                                constraints
+                                                                    .maxWidth *
+                                                                0.85,
+                                                            child:
+                                                                _buildVideoCard(
+                                                                  v['url']!,
+                                                                  v['label']!,
+                                                                ),
+                                                          ),
+                                                        );
+                                                      }).toList(),
+                                                    ),
+                                                  ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                // ⚙️ الفوتر
                                 SliverToBoxAdapter(
                                   child: Container(
                                     width: double.infinity,
