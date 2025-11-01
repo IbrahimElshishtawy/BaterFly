@@ -15,10 +15,18 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+// subprojects {
+//     project.evaluationDependsOn(":app")
+// }
 subprojects {
-    project.evaluationDependsOn(":app")
+    afterEvaluate {
+        if (project.name == "app") {
+            tasks.named("preBuild") {
+                dependsOn(":shared:assembleRelease")
+            }
+        }
+    }
 }
-
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
