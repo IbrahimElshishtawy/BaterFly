@@ -12,7 +12,8 @@ import '../../product/widgets/gradient_bg.dart';
 import '../widgets/product_card/product_card.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required String initialQuery});
+  const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -25,16 +26,21 @@ class _HomePageState extends State<HomePage>
     vsync: this,
     duration: const Duration(milliseconds: 320),
   )..forward();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _sb = Supa.client;
+    _searchController.addListener(() {
+      _q.value = _searchController.text;
+    });
   }
 
   @override
   void dispose() {
     _ac.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -52,7 +58,8 @@ class _HomePageState extends State<HomePage>
     return list.where((m) {
       final name = (m['name'] ?? '').toString();
       final slug = (m['slug'] ?? '').toString();
-      return name.contains(q) || slug.contains(q);
+      return name.toLowerCase().contains(q.toLowerCase()) ||
+          slug.toLowerCase().contains(q.toLowerCase());
     }).toList();
   }
 
@@ -112,149 +119,197 @@ class _HomePageState extends State<HomePage>
       body: Stack(
         children: [
           const GradientBackground(),
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: _load(),
-            builder: (context, s) {
-              if (s.connectionState != ConnectionState.done) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final items = s.data ?? const [];
+          Column(
+            children: [
+              // إضافة شريط البحث
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'ابحث عن منتج...',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.9),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ValueListenableBuilder<String>(
+                  valueListenable: _q,
+                  builder: (context, query, _) {
+                    return FutureBuilder<List<Map<String, dynamic>>>(
+                      future: _load(),
+                      builder: (context, s) {
+                        if (s.connectionState != ConnectionState.done) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        final items = s.data ?? const [];
 
-              return LayoutBuilder(
-                builder: (_, c) {
-                  final w = c.maxWidth;
-                  final pad = Responsive.hpad(w);
-                  final maxW = Responsive.maxWidth(w);
-                  final cols = _cols(w);
+                        return LayoutBuilder(
+                          builder: (_, c) {
+                            final w = c.maxWidth;
+                            final pad = Responsive.hpad(w);
+                            final maxW = Responsive.maxWidth(w);
+                            final cols = _cols(w);
 
-                  double side = (w - maxW) / 2;
-                  final minSide = pad.horizontal / 2;
-                  if (side < minSide) side = minSide;
+                            double side = (w - maxW) / 2;
+                            final minSide = pad.horizontal / 2;
+                            if (side < minSide) side = minSide;
 
-                  return CustomScrollView(
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: maxW),
-                            child: Padding(
-                              padding: pad,
-                              child: Container(
-                                margin: const EdgeInsets.only(top: 14),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 18,
-                                  vertical: 12,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(14),
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0x14FFFFFF),
-                                      Color(0x0F000000),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  border: Border.all(color: Color(0x22FFFFFF)),
-                                ),
-                                child: const Row(
-                                  children: [
-                                    Icon(
-                                      Icons.local_shipping_outlined,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'شحن سريع واسترجاع خلال 14 يوم',
-                                        style: TextStyle(color: Colors.white),
+                            return CustomScrollView(
+                              slivers: [
+                                SliverToBoxAdapter(
+                                  child: Align(
+                                    alignment: Alignment.topCenter,
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxWidth: maxW,
+                                      ),
+                                      child: Padding(
+                                        padding: pad,
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                            top: 14,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 18,
+                                            vertical: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
+                                            gradient: const LinearGradient(
+                                              colors: [
+                                                Color(0x14FFFFFF),
+                                                Color(0x0F000000),
+                                              ],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ),
+                                            border: Border.all(
+                                              color: Color(0x22FFFFFF),
+                                            ),
+                                          ),
+                                          child: const Row(
+                                            children: [
+                                              Icon(
+                                                Icons.local_shipping_outlined,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(width: 10),
+                                              Expanded(
+                                                child: Text(
+                                                  'شحن سريع واسترجاع خلال 14 يوم',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
 
-                      const SliverToBoxAdapter(child: SizedBox(height: 8)),
-
-                      SliverPadding(
-                        padding: EdgeInsets.fromLTRB(side, 16, side, 16),
-                        sliver: SliverGrid(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: cols,
-                                mainAxisSpacing: 16,
-                                crossAxisSpacing: 16,
-                                childAspectRatio: .78,
-                              ),
-                          delegate: SliverChildBuilderDelegate((context, i) {
-                            final m = items[i];
-
-                            final images = _toImages(m['images']);
-                            final price = (m['price'] as num?)?.toDouble();
-                            final rating = ((m['avg_rating'] ?? 0) as num?)
-                                ?.toDouble();
-
-                            return FadeTransition(
-                              opacity: CurvedAnimation(
-                                parent: _ac,
-                                curve: Interval(
-                                  i / (items.length + 1),
-                                  1,
-                                  curve: Curves.easeOut,
+                                const SliverToBoxAdapter(
+                                  child: SizedBox(height: 8),
                                 ),
-                              ),
-                              child: ProductHover(
-                                child: ProductCard(
-                                  images: [
-                                    'assets/images/image_1.jpg',
-                                    'assets/images/image_2.jpg',
-                                    'assets/images/image_3.jpg',
-                                    'assets/images/image_4.jpg',
-                                  ], // تأكد من أن هذه المسارات صحيحة
-                                  price: price,
-                                  rating: rating,
-                                  onTap: () {
-                                    Navigator.pushNamed(
+
+                                SliverPadding(
+                                  padding: EdgeInsets.fromLTRB(
+                                    side,
+                                    16,
+                                    side,
+                                    16,
+                                  ),
+                                  sliver: SliverGrid(
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: cols,
+                                          mainAxisSpacing: 16,
+                                          crossAxisSpacing: 16,
+                                          childAspectRatio: .78,
+                                        ),
+                                    delegate: SliverChildBuilderDelegate((
                                       context,
-                                      '/product',
-                                      arguments: {
-                                        ...m,
-                                        'images': [
-                                          'assets/images/image_1.jpg',
-                                          'assets/images/image_2.jpg',
-                                          'assets/images/image_3.jpg',
-                                          'assets/images/image_4.jpg',
-                                        ],
-                                      },
-                                    );
-                                  },
+                                      i,
+                                    ) {
+                                      final m = items[i];
+
+                                      final images = _toImages(m['images']);
+                                      final price = (m['price'] as num?)
+                                          ?.toDouble();
+                                      final rating =
+                                          ((m['avg_rating'] ?? 0) as num?)
+                                              ?.toDouble();
+
+                                      return FadeTransition(
+                                        opacity: CurvedAnimation(
+                                          parent: _ac,
+                                          curve: Interval(
+                                            i / (items.length + 1),
+                                            1,
+                                            curve: Curves.easeOut,
+                                          ),
+                                        ),
+                                        child: ProductHover(
+                                          child: ProductCard(
+                                            images:
+                                                images, // استخدام الصور من قاعدة البيانات
+                                            price: price,
+                                            rating: rating,
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                context,
+                                                '/product',
+                                                arguments: {
+                                                  ...m,
+                                                  'images':
+                                                      images, // تمرير الصور الصحيحة
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    }, childCount: items.length),
+                                  ),
                                 ),
-                              ),
+
+                                SliverToBoxAdapter(
+                                  child: Container(
+                                    width: double.infinity,
+                                    color: Colors.transparent,
+                                    padding: const EdgeInsets.only(
+                                      top: 24,
+                                      bottom: 32,
+                                    ),
+                                    child: const FooterLinks(),
+                                  ),
+                                ),
+
+                                const SliverToBoxAdapter(
+                                  child: SizedBox(height: 12),
+                                ),
+                              ],
                             );
-                          }, childCount: items.length),
-                        ),
-                      ),
-
-                      SliverToBoxAdapter(
-                        child: Container(
-                          width: double.infinity,
-                          color: Colors.transparent,
-                          padding: const EdgeInsets.only(top: 24, bottom: 32),
-                          child: const FooterLinks(),
-                        ),
-                      ),
-
-                      const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                    ],
-                  );
-                },
-              );
-            },
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
