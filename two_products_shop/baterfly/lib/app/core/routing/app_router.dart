@@ -15,9 +15,7 @@ class AppRouter {
   static Route<dynamic> onGenerate(RouteSettings s) {
     switch (s.name) {
       case AppRoutes.home:
-        return MaterialPageRoute(
-          builder: (_) => const HomePage(initialQuery: ''),
-        );
+        return MaterialPageRoute(builder: (_) => const HomePage());
       case AppRoutes.returns:
         return MaterialPageRoute(builder: (_) => const ReturnsPage());
       case AppRoutes.shipping:
@@ -28,7 +26,7 @@ class AppRouter {
       case AppRoutes.catalog:
         final args = s.arguments as Map<String, dynamic>? ?? {};
         final q = args['q'] as String? ?? '';
-        return MaterialPageRoute(builder: (_) => HomePage(initialQuery: q));
+        return MaterialPageRoute(builder: (_) => HomePage());
 
       case AppRoutes.product:
         final args = s.arguments as Map<String, dynamic>? ?? {};
