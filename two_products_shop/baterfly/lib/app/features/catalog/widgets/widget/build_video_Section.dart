@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-// 🎞️ قسم الفيديوهات في المنتصف بخلفية مميزة
 import 'package:baterfly/app/core/widgets/product_video_widget.dart';
 import 'package:flutter/material.dart';
 
