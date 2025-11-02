@@ -7,9 +7,19 @@ class BuildVideoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final crossAxisCount = width > 1000
+        ? 3
+        : width > 600
+        ? 2
+        : 1;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 40.0),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1200),
@@ -17,30 +27,71 @@ class BuildVideoSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
-                '🎬 اكتشف أحدث الفيديوهات والعروض',
+                '🎬 اكتشف نتائج منتجاتنا المذهلة!',
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
-              GridView.count(
-                physics: const NeverScrollableScrollPhysics(),
+              GridView.builder(
                 shrinkWrap: true,
-                crossAxisCount: width > 1000
-                    ? 3
-                    : width > 600
-                    ? 2
-                    : 1,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-                childAspectRatio: 16 / 9,
-                children: const [
-                  ProductVideoWidget(videoUrl: 'assets/videos/vid1.mp4'),
-                  ProductVideoWidget(videoUrl: 'assets/videos/vid2.mp4'),
-                  ProductVideoWidget(videoUrl: 'assets/videos/vid3.mp4'),
-                ],
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: 3,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 16 / 9,
+                ),
+                itemBuilder: (context, index) {
+                  final videos = [
+                    {
+                      'url': 'assets/videos/vid1.mp4',
+                      'title': 'نتيجة بروتين الشعر بعد الاستخدام 💆‍♀️',
+                    },
+                    {
+                      'url': 'assets/videos/vid2.mp4',
+                      'title': 'عميلة بتجرب المنتج لأول مرة 😍',
+                    },
+                    {
+                      'url': 'assets/videos/vid3.mp4',
+                      'title': 'قبل وبعد جلسة البروتين ✨',
+                    },
+                  ];
+
+                  final video = videos[index];
+                  return Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: ProductVideoWidget(videoUrl: video['url']!),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(15),
+                          ),
+                        ),
+                        child: Text(
+                          video['title']!,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
