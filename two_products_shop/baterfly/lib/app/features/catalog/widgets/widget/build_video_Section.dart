@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import '../../../../core/widgets/product_video_widget.dart';
 
@@ -49,15 +51,15 @@ class BuildVideoSection extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final videos = [
                     {
-                      'url': 'assets/videos/vid1.mp4',
+                      'url': 'assets/videos/vid1.webm',
                       'title': 'نتيجة بروتين الشعر بعد الاستخدام 💆‍♀️',
                     },
                     {
-                      'url': 'assets/videos/vid2.mp4',
+                      'url': 'assets/videos/vid2.webm',
                       'title': 'عميلة بتجرب المنتج لأول مرة 😍',
                     },
                     {
-                      'url': 'assets/videos/vid3.mp4',
+                      'url': 'assets/videos/vid3.webm',
                       'title': 'قبل وبعد جلسة البروتين ✨',
                     },
                   ];
