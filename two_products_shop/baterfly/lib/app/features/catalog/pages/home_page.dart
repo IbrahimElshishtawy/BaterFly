@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import, unused_local_variable
+// ignore_for_file: unused_import, unused_local_variable, deprecated_member_use
 
 import 'package:baterfly/app/core/utils/responsive.dart';
 import 'package:baterfly/app/core/widgets/product_video_widget.dart';

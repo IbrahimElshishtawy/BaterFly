@@ -24,8 +24,6 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SupportPage());
 
       case AppRoutes.catalog:
-        final args = s.arguments as Map<String, dynamic>? ?? {};
-        final q = args['q'] as String? ?? '';
         return MaterialPageRoute(builder: (_) => HomePage());
 
       case AppRoutes.product:

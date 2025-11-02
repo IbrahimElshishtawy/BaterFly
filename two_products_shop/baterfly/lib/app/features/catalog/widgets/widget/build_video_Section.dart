@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, file_names
 
 import 'package:flutter/material.dart';
 import 'package:baterfly/app/core/widgets/product_video_widget.dart';
