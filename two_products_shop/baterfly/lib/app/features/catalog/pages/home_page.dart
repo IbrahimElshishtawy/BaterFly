@@ -1,16 +1,15 @@
-// ignore_for_file: unused_import, deprecated_member_use
+// ignore_for_file: deprecated_member_use
 
-import 'package:baterfly/app/core/utils/responsive.dart';
-import 'package:baterfly/app/core/widgets/product_video_widget.dart';
-import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
 import 'package:baterfly/app/features/catalog/widgets/widget/build_video_Section.dart';
-import 'package:baterfly/app/features/catalog/widgets/widget/build_video_section.dart';
-import 'package:baterfly/app/features/product/widgets/product_hover.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../core/utils/responsive.dart';
 import '../../../core/widgets/footer_links/footer_links.dart';
+import '../../../core/widgets/site_app_bar/site_app_bar.dart';
 import '../../../services/supabase/supabase_service.dart';
 import '../../product/widgets/gradient_bg.dart';
+import '../../product/widgets/product_hover.dart';
 import '../widgets/product_card/product_card.dart';
 
 class HomePage extends StatefulWidget {
@@ -138,7 +137,7 @@ class _HomePageState extends State<HomePage>
                             '🛍️ أفضل العروض لهذا الأسبوع!',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 20,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
@@ -183,10 +182,10 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
 
-                      // قسم الفيديوهات
+                      // قسم الفيديوهات الاحترافي
                       const SliverToBoxAdapter(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20),
+                          padding: EdgeInsets.symmetric(vertical: 30),
                           child: BuildVideoSection(),
                         ),
                       ),
