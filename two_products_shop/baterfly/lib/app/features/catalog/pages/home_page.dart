@@ -1,10 +1,10 @@
-// ignore_for_file: unused_import, unused_local_variable, deprecated_member_use
+// ignore_for_file: unused_import, deprecated_member_use
 
 import 'package:baterfly/app/core/utils/responsive.dart';
 import 'package:baterfly/app/core/widgets/product_video_widget.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
-import 'package:baterfly/app/features/catalog/widgets/Search_delegate.dart';
 import 'package:baterfly/app/features/catalog/widgets/widget/build_video_Section.dart';
+import 'package:baterfly/app/features/catalog/widgets/widget/build_video_section.dart';
 import 'package:baterfly/app/features/product/widgets/product_hover.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,26 +23,20 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late final SupabaseClient _sb;
-  final _q = ValueNotifier<String>('');
   late final AnimationController _ac = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 320),
   )..forward();
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _sb = Supa.client;
-    _searchController.addListener(() {
-      _q.value = _searchController.text;
-    });
   }
 
   @override
   void dispose() {
     _ac.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -54,18 +48,10 @@ class _HomePageState extends State<HomePage>
         .order('reviews_count', ascending: false)
         .order('avg_rating', ascending: false)
         .limit(60);
-    final list = (rows as List).cast<Map<String, dynamic>>();
-    final q = _q.value.trim();
-    if (q.isEmpty) return list;
-    return list.where((m) {
-      final name = (m['name'] ?? '').toString();
-      final slug = (m['slug'] ?? '').toString();
-      return name.toLowerCase().contains(q.toLowerCase()) ||
-          slug.toLowerCase().contains(q.toLowerCase());
-    }).toList();
+
+    return (rows as List).cast<Map<String, dynamic>>();
   }
 
-  // 🔹 تعديل مسارات الصور
   List<String> _toImages(dynamic v) {
     const fallback = [
       'assets/products/product1.jpg',
@@ -122,185 +108,134 @@ class _HomePageState extends State<HomePage>
       body: Stack(
         children: [
           const GradientBackground(),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'ابحث عن منتج...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.9),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ValueListenableBuilder<String>(
-                  valueListenable: _q,
-                  builder: (context, query, _) {
-                    return FutureBuilder<List<Map<String, dynamic>>>(
-                      future: _load(),
-                      builder: (context, s) {
-                        if (s.connectionState != ConnectionState.done) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        final items = s.data ?? const [];
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: _load(),
+            builder: (context, s) {
+              if (s.connectionState != ConnectionState.done) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final items = s.data ?? const [];
 
-                        return LayoutBuilder(
-                          builder: (_, c) {
-                            final w = c.maxWidth;
-                            final pad = Responsive.hpad(w);
-                            final maxW = Responsive.maxWidth(w);
-                            final cols = _cols(w);
-                            double side = (w - maxW) / 2;
-                            final minSide = pad.horizontal / 2;
-                            if (side < minSide) side = minSide;
+              return LayoutBuilder(
+                builder: (_, c) {
+                  final w = c.maxWidth;
+                  final pad = Responsive.hpad(w);
+                  final maxW = Responsive.maxWidth(w);
+                  final cols = _cols(w);
+                  double side = (w - maxW) / 2;
+                  final minSide = pad.horizontal / 2;
+                  if (side < minSide) side = minSide;
 
-                            final midIndex = (items.length / 2).floor();
+                  final midIndex = (items.length / 2).floor();
 
-                            return CustomScrollView(
-                              slivers: [
-                                SliverToBoxAdapter(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(16),
-                                    child: const Text(
-                                      '🛍️ أفضل العروض لهذا الأسبوع!',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
+                  return CustomScrollView(
+                    slivers: [
+                      // عنوان رئيسي
+                      SliverToBoxAdapter(
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          child: const Text(
+                            '🛍️ أفضل العروض لهذا الأسبوع!',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
 
-                                // المنتجات الأولى
-                                SliverPadding(
-                                  padding: EdgeInsets.fromLTRB(
-                                    side,
-                                    16,
-                                    side,
-                                    16,
-                                  ),
-                                  sliver: SliverGrid(
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: cols,
-                                          mainAxisSpacing: 16,
-                                          crossAxisSpacing: 16,
-                                          childAspectRatio: .78,
-                                        ),
-                                    delegate: SliverChildBuilderDelegate((
-                                      context,
-                                      i,
-                                    ) {
-                                      if (i >= midIndex) return null;
-                                      final m = items[i];
-                                      final images = _toImages(m['images']);
-                                      final price = (m['price'] as num?)
-                                          ?.toDouble();
-                                      final rating =
-                                          ((m['avg_rating'] ?? 0) as num?)
-                                              ?.toDouble();
+                      // الجزء الأول من المنتجات
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(side, 16, side, 16),
+                        sliver: SliverGrid(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: cols,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 16,
+                                childAspectRatio: .78,
+                              ),
+                          delegate: SliverChildBuilderDelegate((context, i) {
+                            if (i >= midIndex) return null;
+                            final m = items[i];
+                            final images = _toImages(m['images']);
+                            final price = (m['price'] as num?)?.toDouble();
+                            final rating = ((m['avg_rating'] ?? 0) as num?)
+                                ?.toDouble();
 
-                                      return ProductHover(
-                                        child: ProductCard(
-                                          images: images,
-                                          price: price,
-                                          rating: rating,
-                                          onTap: () {
-                                            Navigator.pushNamed(
-                                              context,
-                                              '/product',
-                                              arguments: {
-                                                ...m,
-                                                'images': images,
-                                              },
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    }, childCount: midIndex),
-                                  ),
-                                ),
-
-                                // 🎞️ قسم الفيديوهات المعدّل
-                                SliverToBoxAdapter(
-                                  child: LayoutBuilder(
-                                    builder: (_, c) => buildVideoSection(c),
-                                  ),
-                                ),
-
-                                // المنتجات التانية
-                                SliverPadding(
-                                  padding: EdgeInsets.fromLTRB(
-                                    side,
-                                    16,
-                                    side,
-                                    16,
-                                  ),
-                                  sliver: SliverGrid(
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: cols,
-                                          mainAxisSpacing: 16,
-                                          crossAxisSpacing: 16,
-                                          childAspectRatio: .78,
-                                        ),
-                                    delegate: SliverChildBuilderDelegate((
-                                      context,
-                                      i,
-                                    ) {
-                                      final index = midIndex + i;
-                                      if (index >= items.length) return null;
-                                      final m = items[index];
-                                      final images = _toImages(m['images']);
-                                      final price = (m['price'] as num?)
-                                          ?.toDouble();
-                                      final rating =
-                                          ((m['avg_rating'] ?? 0) as num?)
-                                              ?.toDouble();
-
-                                      return ProductHover(
-                                        child: ProductCard(
-                                          images: images,
-                                          price: price,
-                                          rating: rating,
-                                          onTap: () {
-                                            Navigator.pushNamed(
-                                              context,
-                                              '/product',
-                                              arguments: {
-                                                ...m,
-                                                'images': images,
-                                              },
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    }, childCount: items.length - midIndex),
-                                  ),
-                                ),
-
-                                // الفوتر
-                                const SliverToBoxAdapter(child: FooterLinks()),
-                              ],
+                            return ProductHover(
+                              child: ProductCard(
+                                images: images,
+                                price: price,
+                                rating: rating,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/product',
+                                    arguments: {...m, 'images': images},
+                                  );
+                                },
+                              ),
                             );
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
+                          }, childCount: midIndex),
+                        ),
+                      ),
+
+                      // قسم الفيديوهات
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: BuildVideoSection(),
+                        ),
+                      ),
+
+                      // الجزء الثاني من المنتجات
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(side, 16, side, 16),
+                        sliver: SliverGrid(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: cols,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 16,
+                                childAspectRatio: .78,
+                              ),
+                          delegate: SliverChildBuilderDelegate((context, i) {
+                            final index = midIndex + i;
+                            if (index >= items.length) return null;
+                            final m = items[index];
+                            final images = _toImages(m['images']);
+                            final price = (m['price'] as num?)?.toDouble();
+                            final rating = ((m['avg_rating'] ?? 0) as num?)
+                                ?.toDouble();
+
+                            return ProductHover(
+                              child: ProductCard(
+                                images: images,
+                                price: price,
+                                rating: rating,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/product',
+                                    arguments: {...m, 'images': images},
+                                  );
+                                },
+                              ),
+                            );
+                          }, childCount: items.length - midIndex),
+                        ),
+                      ),
+
+                      // الفوتر
+                      const SliverToBoxAdapter(child: FooterLinks()),
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
