@@ -5,7 +5,6 @@ import 'package:video_player/video_player.dart';
 
 class ProductVideoWidget extends StatefulWidget {
   final String videoUrl;
-  // مش محتاجين نحدد نسبة ثابتة هنا كمان
   const ProductVideoWidget({Key? key, required this.videoUrl})
     : super(key: key);
 
@@ -13,12 +12,11 @@ class ProductVideoWidget extends StatefulWidget {
   State<ProductVideoWidget> createState() => _ProductVideoWidgetState();
 }
 
-class _ProductVideoWidgetState extends State<ProductVideoWidget> {
+class _ProductVideoWidgetState extends State<ProductVideoWidget>
+    with SingleTickerProviderStateMixin {
   late VideoPlayerController _controller;
   bool _isPlaying = false;
   bool _isInitialized = false;
-
-  // 1. متغير جديد عشان نخزن فيه نسبة العرض للارتفاع الحقيقية للفيديو
   double? _videoAspectRatio;
 
   @override
@@ -27,7 +25,6 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget> {
 
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
       ..initialize().then((_) {
-        // 2. لما الفيديو يخلص التحميل، بنحسب النسبة من أبعاده الحقيقية
         if (_controller.value.size.width > 0 &&
             _controller.value.size.height > 0) {
           _videoAspectRatio =
@@ -37,6 +34,13 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget> {
         setState(() {
           _isInitialized = true;
         });
+
+        // تشغيل تلقائي بدون صوت
+        _controller.setLooping(true);
+        _controller.setVolume(0);
+        _controller.play();
+        _isPlaying = true;
+
         _controller.addListener(_videoListener);
       });
   }
@@ -57,36 +61,40 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget> {
   }
 
   void _togglePlayPause() {
-    setState(() {
-      _isPlaying = !_isPlaying;
-      if (_isPlaying) {
-        _controller.play();
-      } else {
-        _controller.pause();
-      }
-    });
+    if (_isPlaying) {
+      _controller.pause();
+    } else {
+      _controller.play();
+    }
+    setState(() => _isPlaying = !_isPlaying);
   }
 
   @override
   Widget build(BuildContext context) {
-    // لو الفيديو مزلش اتحمل أو نسبة العرض للارتفاع مش معروفة
     if (!_isInitialized || _videoAspectRatio == null) {
       return Container(
-        width: double.infinity, // اخد العرض الكامل
-        height: 200,
         color: Colors.black12,
-        child: const Center(child: CircularProgressIndicator()),
+        child: const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
       );
     }
 
-    // 3. بنستخدم النسبة اللي حسبناها من الفيديو نفسه
-    return AspectRatio(
-      aspectRatio: _videoAspectRatio!,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          VideoPlayer(_controller),
-          // زر التشغيل/الإيقاف المخصص
+          AnimatedOpacity(
+            opacity: _isInitialized ? 1 : 0,
+            duration: const Duration(milliseconds: 500),
+            child: AspectRatio(
+              aspectRatio: _videoAspectRatio!,
+              child: VideoPlayer(_controller),
+            ),
+          ),
+
+          // زر تشغيل أنيق عند الإيقاف
           if (!_isPlaying)
             GestureDetector(
               onTap: _togglePlayPause,
@@ -94,26 +102,42 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget> {
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.5),
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.6),
+                      blurRadius: 20,
+                    ),
+                  ],
                 ),
+                padding: const EdgeInsets.all(12),
                 child: const Icon(
-                  Icons.play_arrow,
+                  Icons.play_arrow_rounded,
                   color: Colors.white,
                   size: 60,
                 ),
               ),
+            )
+          else
+            GestureDetector(
+              onTap: _togglePlayPause,
+              child: Container(color: Colors.transparent),
             ),
-          // شريط التقدم
+
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: VideoProgressIndicator(
-              _controller,
-              allowScrubbing: true,
-              colors: const VideoProgressColors(
-                playedColor: Colors.blue,
-                backgroundColor: Colors.grey,
-                bufferedColor: Colors.lightBlue,
+            bottom: 8,
+            left: 10,
+            right: 10,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: VideoProgressIndicator(
+                _controller,
+                allowScrubbing: true,
+                padding: EdgeInsets.zero,
+                colors: const VideoProgressColors(
+                  playedColor: Colors.blueAccent,
+                  backgroundColor: Colors.white24,
+                  bufferedColor: Colors.lightBlue,
+                ),
               ),
             ),
           ),
