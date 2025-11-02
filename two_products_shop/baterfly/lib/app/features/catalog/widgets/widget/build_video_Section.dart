@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:baterfly/app/core/widgets/product_video_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:baterfly/app/core/widgets/product_video_widget.dart';
 
 Widget buildVideoSection(BoxConstraints constraints) {
   final videos = [
@@ -15,7 +15,7 @@ Widget buildVideoSection(BoxConstraints constraints) {
     padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
     decoration: const BoxDecoration(
       gradient: LinearGradient(
-        colors: [Color(0xFF101010), Color(0xFF1F1F1F)],
+        colors: [Color(0xFF0A0A0A), Color(0xFF151515)],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ),
@@ -25,34 +25,19 @@ Widget buildVideoSection(BoxConstraints constraints) {
         builder: (context, c) {
           final isWide = c.maxWidth > 900;
 
-          return isWide
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: videos.map((v) {
-                    return Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: buildVideoCard(v['url']!, v['label']!),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: videos.map((v) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: buildVideoCard(v['url']!, v['label']!),
-                      ),
-                    );
-                  }).toList(),
-                );
+          return Wrap(
+            spacing: 20,
+            runSpacing: 20,
+            alignment: WrapAlignment.center,
+            children: videos.map((v) {
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                width: isWide ? c.maxWidth / 3.3 : c.maxWidth * 0.9,
+                child: buildVideoCard(v['url']!, v['label']!),
+              );
+            }).toList(),
+          );
         },
       ),
     ),
@@ -60,53 +45,81 @@ Widget buildVideoSection(BoxConstraints constraints) {
 }
 
 Widget buildVideoCard(String videoUrl, String label) {
-  return Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(24),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.4),
-          blurRadius: 20,
-          offset: const Offset(0, 8),
-        ),
-      ],
-    ),
-    clipBehavior: Clip.antiAlias,
-    child: Stack(
-      children: [
-        // تشغيل الفيديو فعليًا
-        ProductVideoWidget(videoUrl: videoUrl),
-
-        // طبقة غامقة خفيفة
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.black.withOpacity(0.5), Colors.transparent],
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-            ),
+  return MouseRegion(
+    cursor: SystemMouseCursors.click,
+    child: GestureDetector(
+      onTap: () {
+        // ممكن تفتح الفيديو في شاشة كاملة هنا لاحقًا
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [
+              Colors.white.withOpacity(0.05),
+              Colors.white.withOpacity(0.02),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ),
-
-        // العنوان في منتصف الفيديو
-        Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          ],
+          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1.2),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            // خلفية الفيديو
+            Positioned.fill(child: ProductVideoWidget(videoUrl: videoUrl)),
+
+            // Gradient خفيف من أسفل
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                  ),
+                ),
               ),
             ),
-          ),
+
+            // النص أسفل الفيديو
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 10,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      shadows: [Shadow(blurRadius: 8, color: Colors.black54)],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     ),
   );
 }
