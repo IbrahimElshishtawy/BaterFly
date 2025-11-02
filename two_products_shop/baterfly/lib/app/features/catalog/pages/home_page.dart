@@ -4,6 +4,7 @@ import 'package:baterfly/app/core/utils/responsive.dart';
 import 'package:baterfly/app/core/widgets/product_video_widget.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
 import 'package:baterfly/app/features/catalog/widgets/Search_delegate.dart';
+import 'package:baterfly/app/features/catalog/widgets/widget/build_video_Section.dart';
 import 'package:baterfly/app/features/product/widgets/product_hover.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -64,12 +65,13 @@ class _HomePageState extends State<HomePage>
     }).toList();
   }
 
+  // 🔹 تعديل مسارات الصور
   List<String> _toImages(dynamic v) {
     const fallback = [
-      'assets/images/image_1.jpg',
-      'assets/images/image_2.jpg',
-      'assets/images/image_3.jpg',
-      'assets/images/image_4.jpg',
+      'assets/products/product1.jpg',
+      'assets/products/product2.jpg',
+      'assets/products/product3.jpg',
+      'assets/products/product4.jpg',
     ];
     if (v == null) return fallback;
     if (v is List) {
@@ -91,58 +93,6 @@ class _HomePageState extends State<HomePage>
     if (w >= 720) return 3;
     if (w >= 520) return 2;
     return 1;
-  }
-
-  // 🎬 كارت فيديو مخصص
-  Widget _buildVideoCard(String videoUrl, String label) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-        ],
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1E1E1E), Color(0xFF3A3A3A)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Stack(
-          children: [
-            ProductVideoWidget(videoUrl: videoUrl),
-            Positioned(
-              bottom: 16,
-              left: 16,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -174,7 +124,6 @@ class _HomePageState extends State<HomePage>
           const GradientBackground(),
           Column(
             children: [
-              // 🔍 شريط البحث
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: TextField(
@@ -210,75 +159,29 @@ class _HomePageState extends State<HomePage>
                             final pad = Responsive.hpad(w);
                             final maxW = Responsive.maxWidth(w);
                             final cols = _cols(w);
-
                             double side = (w - maxW) / 2;
                             final minSide = pad.horizontal / 2;
                             if (side < minSide) side = minSide;
 
+                            final midIndex = (items.length / 2).floor();
+
                             return CustomScrollView(
                               slivers: [
-                                // 🏷️ إعلان
                                 SliverToBoxAdapter(
-                                  child: Align(
-                                    alignment: Alignment.topCenter,
-                                    child: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        maxWidth: maxW,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    child: const Text(
+                                      '🛍️ أفضل العروض لهذا الأسبوع!',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
                                       ),
-                                      child: Padding(
-                                        padding: pad,
-                                        child: Container(
-                                          margin: const EdgeInsets.only(
-                                            top: 14,
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 18,
-                                            vertical: 12,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              14,
-                                            ),
-                                            gradient: const LinearGradient(
-                                              colors: [
-                                                Color(0x14FFFFFF),
-                                                Color(0x0F000000),
-                                              ],
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                            ),
-                                            border: Border.all(
-                                              color: Color(0x22FFFFFF),
-                                            ),
-                                          ),
-                                          child: const Row(
-                                            children: [
-                                              Icon(
-                                                Icons.local_shipping_outlined,
-                                                color: Colors.white,
-                                              ),
-                                              SizedBox(width: 10),
-                                              Expanded(
-                                                child: Text(
-                                                  'شحن سريع واسترجاع خلال 14 يوم',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ),
 
-                                const SliverToBoxAdapter(
-                                  child: SizedBox(height: 8),
-                                ),
-
-                                // 🛒 المنتجات
+                                // المنتجات الأولى
                                 SliverPadding(
                                   padding: EdgeInsets.fromLTRB(
                                     side,
@@ -298,6 +201,7 @@ class _HomePageState extends State<HomePage>
                                       context,
                                       i,
                                     ) {
+                                      if (i >= midIndex) return null;
                                       final m = items[i];
                                       final images = _toImages(m['images']);
                                       final price = (m['price'] as num?)
@@ -306,137 +210,87 @@ class _HomePageState extends State<HomePage>
                                           ((m['avg_rating'] ?? 0) as num?)
                                               ?.toDouble();
 
-                                      return FadeTransition(
-                                        opacity: CurvedAnimation(
-                                          parent: _ac,
-                                          curve: Interval(
-                                            i / (items.length + 1),
-                                            1,
-                                            curve: Curves.easeOut,
-                                          ),
-                                        ),
-                                        child: ProductHover(
-                                          child: ProductCard(
-                                            images: images,
-                                            price: price,
-                                            rating: rating,
-                                            onTap: () {
-                                              Navigator.pushNamed(
-                                                context,
-                                                '/product',
-                                                arguments: {
-                                                  ...m,
-                                                  'images': images,
-                                                },
-                                              );
-                                            },
-                                          ),
+                                      return ProductHover(
+                                        child: ProductCard(
+                                          images: images,
+                                          price: price,
+                                          rating: rating,
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/product',
+                                              arguments: {
+                                                ...m,
+                                                'images': images,
+                                              },
+                                            );
+                                          },
                                         ),
                                       );
-                                    }, childCount: items.length),
+                                    }, childCount: midIndex),
                                   ),
                                 ),
 
-                                // 🎬 قسم الفيديوهات - متجاوب
+                                // 🎞️ قسم الفيديوهات المعدّل
                                 SliverToBoxAdapter(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 30,
-                                    ),
-                                    child: LayoutBuilder(
-                                      builder: (context, constraints) {
-                                        final isWide =
-                                            constraints.maxWidth > 900;
-                                        final videos = [
-                                          {
-                                            'url': 'assets/video/video_1.mp4',
-                                            'label': 'تجربة العملاء ❤️',
-                                          },
-                                          {
-                                            'url': 'assets/video/video_2.mp4',
-                                            'label': 'مراجعة المنتج 🔥',
-                                          },
-                                          {
-                                            'url': 'assets/video/video_3.mp4',
-                                            'label': 'آراء المستخدمين 🌟',
-                                          },
-                                        ];
-
-                                        return Center(
-                                          child: Container(
-                                            width: isWide
-                                                ? constraints.maxWidth * 0.85
-                                                : double.infinity,
-                                            child: isWide
-                                                ? Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: videos.map((v) {
-                                                      return Expanded(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                8.0,
-                                                              ),
-                                                          child:
-                                                              _buildVideoCard(
-                                                                v['url']!,
-                                                                v['label']!,
-                                                              ),
-                                                        ),
-                                                      );
-                                                    }).toList(),
-                                                  )
-                                                : SingleChildScrollView(
-                                                    scrollDirection:
-                                                        Axis.horizontal,
-                                                    child: Row(
-                                                      children: videos.map((v) {
-                                                        return Padding(
-                                                          padding:
-                                                              const EdgeInsets.symmetric(
-                                                                horizontal: 8,
-                                                              ),
-                                                          child: SizedBox(
-                                                            width:
-                                                                constraints
-                                                                    .maxWidth *
-                                                                0.85,
-                                                            child:
-                                                                _buildVideoCard(
-                                                                  v['url']!,
-                                                                  v['label']!,
-                                                                ),
-                                                          ),
-                                                        );
-                                                      }).toList(),
-                                                    ),
-                                                  ),
-                                          ),
-                                        );
-                                      },
-                                    ),
+                                  child: LayoutBuilder(
+                                    builder: (_, c) => buildVideoSection(c),
                                   ),
                                 ),
 
-                                // ⚙️ الفوتر
-                                SliverToBoxAdapter(
-                                  child: Container(
-                                    width: double.infinity,
-                                    color: Colors.transparent,
-                                    padding: const EdgeInsets.only(
-                                      top: 24,
-                                      bottom: 32,
-                                    ),
-                                    child: const FooterLinks(),
+                                // المنتجات التانية
+                                SliverPadding(
+                                  padding: EdgeInsets.fromLTRB(
+                                    side,
+                                    16,
+                                    side,
+                                    16,
+                                  ),
+                                  sliver: SliverGrid(
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: cols,
+                                          mainAxisSpacing: 16,
+                                          crossAxisSpacing: 16,
+                                          childAspectRatio: .78,
+                                        ),
+                                    delegate: SliverChildBuilderDelegate((
+                                      context,
+                                      i,
+                                    ) {
+                                      final index = midIndex + i;
+                                      if (index >= items.length) return null;
+                                      final m = items[index];
+                                      final images = _toImages(m['images']);
+                                      final price = (m['price'] as num?)
+                                          ?.toDouble();
+                                      final rating =
+                                          ((m['avg_rating'] ?? 0) as num?)
+                                              ?.toDouble();
+
+                                      return ProductHover(
+                                        child: ProductCard(
+                                          images: images,
+                                          price: price,
+                                          rating: rating,
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/product',
+                                              arguments: {
+                                                ...m,
+                                                'images': images,
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    }, childCount: items.length - midIndex),
                                   ),
                                 ),
 
-                                const SliverToBoxAdapter(
-                                  child: SizedBox(height: 12),
-                                ),
+                                // الفوتر
+                                const SliverToBoxAdapter(child: FooterLinks()),
                               ],
                             );
                           },
