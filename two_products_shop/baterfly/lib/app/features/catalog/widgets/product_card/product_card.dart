@@ -26,6 +26,7 @@ class ProductCard extends StatefulWidget {
     this.autoPlay = true,
     this.interval = const Duration(seconds: 3),
     this.onTap,
+    required AnimatedImageSlider imageWidget,
   });
 
   @override
