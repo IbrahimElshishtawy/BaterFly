@@ -51,16 +51,20 @@ class BuildVideoSection extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final videos = [
                     {
-                      'url': 'assets/videos/vid1.webm',
+                      'url': 'assets/video/video_1.mp4',
                       'title': 'نتيجة بروتين الشعر بعد الاستخدام 💆‍♀️',
                     },
                     {
-                      'url': 'assets/videos/vid2.webm',
+                      'url': 'assets/video/video_2.mp4',
                       'title': 'عميلة بتجرب المنتج لأول مرة 😍',
                     },
                     {
-                      'url': 'assets/videos/vid3.webm',
+                      'url': 'assets/video/video_3.mp4',
                       'title': 'قبل وبعد جلسة البروتين ✨',
+                    },
+                    {
+                      'url': 'assets/video/video_4.mp4',
+                      'title': 'تجربة صالون التجميل مع منتجاتنا 💇‍♀️',
                     },
                   ];
 
