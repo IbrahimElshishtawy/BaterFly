@@ -23,7 +23,8 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget>
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
+    // ✅ استخدم asset بدل networkUrl
+    _controller = VideoPlayerController.asset(widget.videoUrl)
       ..initialize().then((_) {
         if (_controller.value.size.width > 0 &&
             _controller.value.size.height > 0) {
@@ -35,12 +36,12 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget>
           _isInitialized = true;
         });
 
-        // تشغيل تلقائي بدون صوت
-        _controller.setLooping(true);
-        _controller.setVolume(0);
-        _controller.play();
-        _isPlaying = true;
+        _controller
+          ..setLooping(true)
+          ..setVolume(0)
+          ..play();
 
+        _isPlaying = true;
         _controller.addListener(_videoListener);
       });
   }
@@ -94,7 +95,7 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget>
             ),
           ),
 
-          // زر تشغيل أنيق عند الإيقاف
+          // زر تشغيل عند الإيقاف
           if (!_isPlaying)
             GestureDetector(
               onTap: _togglePlayPause,
@@ -123,6 +124,7 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget>
               child: Container(color: Colors.transparent),
             ),
 
+          // شريط التقدم
           Positioned(
             bottom: 8,
             left: 10,
