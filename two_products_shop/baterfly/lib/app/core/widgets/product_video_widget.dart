@@ -136,7 +136,7 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget>
                 allowScrubbing: true,
                 padding: EdgeInsets.zero,
                 colors: const VideoProgressColors(
-                  playedColor: Colors.blueAccent,
+                  playedColor: Color.fromARGB(255, 68, 74, 255),
                   backgroundColor: Colors.white24,
                   bufferedColor: Colors.lightBlue,
                 ),
