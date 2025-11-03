@@ -53,10 +53,10 @@ class _HomePageState extends State<HomePage>
 
   List<String> _toImages(dynamic v) {
     const fallback = [
-      'assets/products/product1.jpg',
-      'assets/products/product2.jpg',
-      'assets/products/product3.jpg',
-      'assets/products/product4.jpg',
+      'assets/images/image_1.jpg',
+      'assets/images/image_2.jpg',
+      'assets/images/image_3.jpg',
+      'assets/images/image_4.jpg',
     ];
     if (v == null) return fallback;
     if (v is List) {
