@@ -16,7 +16,7 @@ class AppLogo extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(
-          "لمسة حرير",
+          "BaterFly",
           style: TextStyle(
             fontSize: size * 0.45,
             fontWeight: FontWeight.w700,
