@@ -1,4 +1,5 @@
 // lib/app/features/catalog/widgets/product_grid.dart
+import 'package:baterfly/app/features/catalog/widgets/product_card/animated_image_slider.dart';
 import 'package:flutter/material.dart';
 import 'product_card/product_card.dart';
 
@@ -69,7 +70,12 @@ class ProductGrid extends StatelessWidget {
               child: child,
             ),
           ),
-          child: ProductCard(images: images, price: price, rating: rating),
+          child: ProductCard(
+            images: images,
+            price: price,
+            rating: rating,
+            imageWidget: AnimatedImageSlider(images: images),
+          ),
         );
       },
     );
