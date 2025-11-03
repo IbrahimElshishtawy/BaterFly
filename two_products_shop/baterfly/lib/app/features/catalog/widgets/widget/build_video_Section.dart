@@ -29,7 +29,7 @@ class BuildVideoSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
-                '🎬 اكتشف نتائج منتجاتنا المذهلة!',
+                'تجارب عملائنا مع منتجاتنا',
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
