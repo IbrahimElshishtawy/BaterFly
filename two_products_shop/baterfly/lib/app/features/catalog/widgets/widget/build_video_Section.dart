@@ -10,7 +10,7 @@ class BuildVideoSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final crossAxisCount = width > 1000
-        ? 3
+        ? 4
         : width > 600
         ? 2
         : 1;
@@ -41,7 +41,7 @@ class BuildVideoSection extends StatelessWidget {
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 3,
+                itemCount: 4, // ✅ عدد الفيديوهات بقى 4
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: 20,
