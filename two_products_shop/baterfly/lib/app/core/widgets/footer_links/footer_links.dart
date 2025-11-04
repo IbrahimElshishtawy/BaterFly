@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'footer_desktop_columns.dart';
 import 'footer_mobile_columns.dart';
 import 'footer_helpers.dart';
-import 'footer_icons.dart';
+import 'footer_icons.dart' hide FooterIconLink;
 import 'footer_web_button.dart';
 
 class FooterLinks extends StatelessWidget {
@@ -108,7 +108,7 @@ class FooterLinks extends StatelessWidget {
                           ),
 
                           Text(
-                            '© 2025 لمسة حرير',
+                            '© 2025 BaterFly',
                             style: t.textTheme.bodySmall?.copyWith(
                               color: Colors.white.withOpacity(0.72),
                               letterSpacing: .1,
