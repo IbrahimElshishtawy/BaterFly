@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 class ProductCardWidget extends StatelessWidget {
   final Map<String, dynamic> product;
 
-  const ProductCardWidget({super.key, required this.product});
+  const ProductCardWidget({
+    super.key,
+    required this.product,
+    required bool whiteText,
+  });
 
   @override
   Widget build(BuildContext context) {
