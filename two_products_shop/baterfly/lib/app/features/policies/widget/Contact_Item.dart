@@ -17,6 +17,8 @@ class ContactItem extends StatelessWidget {
     required this.title,
     required this.text,
     required this.url,
+    required Color bgColor,
+    required Color textColor,
   });
 
   @override
