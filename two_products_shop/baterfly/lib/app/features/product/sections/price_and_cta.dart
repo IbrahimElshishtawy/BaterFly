@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:baterfly/app/core/routing/app_routes.dart';
 import 'package:flutter/material.dart';
 import '../widgets/section_card.dart';
 
@@ -9,6 +10,9 @@ class PriceAndCTA extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isWeb = MediaQuery.of(context).size.width > 700;
+
+    // تعريف المنتج التجريبي
+    final myProduct = {'id': 1, 'name': 'منتج تجريبي', 'price': 2000};
 
     return SectionCard(
       title: "احجزي الآن واحصلي على نتائج فورية ✨",
@@ -32,7 +36,13 @@ class PriceAndCTA extends StatelessWidget {
             MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.checkout,
+                    arguments: {'product': myProduct},
+                  );
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 50,
