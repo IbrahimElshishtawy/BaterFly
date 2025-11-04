@@ -28,7 +28,9 @@ class AppRouter {
 
       case AppRoutes.product:
         final args = s.arguments as Map<String, dynamic>? ?? {};
-        return MaterialPageRoute(builder: (_) => ProductPage(product: args));
+        return MaterialPageRoute(
+          builder: (_) => ProductPage(productId: args['productId']),
+        );
 
       case AppRoutes.checkout:
         final args = s.arguments as Map<String, dynamic>? ?? {};
