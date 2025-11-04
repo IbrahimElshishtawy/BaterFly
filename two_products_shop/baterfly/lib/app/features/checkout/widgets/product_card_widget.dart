@@ -3,21 +3,20 @@ import 'package:flutter/material.dart';
 
 class ProductCardWidget extends StatelessWidget {
   final Map<String, dynamic> product;
+  final bool whiteText; // خليته field
 
   const ProductCardWidget({
     super.key,
     required this.product,
-    required bool whiteText,
+    this.whiteText = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final p = product;
-    final price = (p['price'] as num).toDouble();
-    final total = price * 1;
 
     return Card(
-      color: Colors.white,
+      color: Colors.white.withOpacity(0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: const BorderSide(color: Colors.black12),
@@ -31,7 +30,6 @@ class ProductCardWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
                 (p['image'] as String?) ?? 'assets/images/image_1.jpg',
-
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
@@ -43,21 +41,23 @@ class ProductCardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    p['name'],
-                    style: const TextStyle(
+                    'BatterFly',
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
+                      color: whiteText ? Colors.white : Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    '$total ج.م',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                      color: Colors.teal,
-                    ),
-                  ),
+
+                  // const SizedBox(height: 10),
+                  // Text(
+                  //   '$total ج.م',
+                  //   style: const TextStyle(
+                  //     fontWeight: FontWeight.w800,
+                  //     fontSize: 16,
+                  //     color: Colors.teal,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
