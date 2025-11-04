@@ -142,18 +142,18 @@ class _ContactItem extends StatelessWidget {
       child: InkWell(
         onTap: () =>
             launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.black12),
             boxShadow: const [
               BoxShadow(
-                color: Color(0x08000000),
-                blurRadius: 8,
-                offset: Offset(0, 4),
+                color: Color(0x14000000), // subtle shadow
+                blurRadius: 10,
+                offset: Offset(0, 5),
               ),
             ],
           ),
@@ -161,16 +161,16 @@ class _ContactItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 42,
-                height: 42,
+                width: 44,
+                height: 44,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 22),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
