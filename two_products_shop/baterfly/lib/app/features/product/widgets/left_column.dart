@@ -1,29 +1,33 @@
 import 'package:flutter/material.dart';
-import 'section_card.dart';
-import 'usage_accordion.dart';
 
 class LeftColumn extends StatelessWidget {
-  final String descText;
-  final String usageText;
+  final String imageUrl;
+  final String shortDesc;
+
   const LeftColumn({
     super.key,
-    required this.descText,
-    required this.usageText,
+    required this.imageUrl,
+    required this.shortDesc,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SectionCard(
-          icon: Icons.description_outlined,
-          title: 'وصف المنتج',
-          child: Text(descText),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.network(
+            imageUrl,
+            width: 150,
+            height: 150,
+            fit: BoxFit.cover,
+          ),
         ),
-        SectionCard(
-          icon: Icons.rule_outlined,
-          title: 'طريقة الاستخدام',
-          child: UsageAccordion(text: usageText),
+        const SizedBox(height: 10),
+        Text(
+          shortDesc,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white70),
         ),
       ],
     );
