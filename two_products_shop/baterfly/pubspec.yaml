@@ -21,6 +21,7 @@ dependencies:
   video_player: ^2.10.0
   flutter_animate: ^4.5.2
   lucide_flutter: ^0.552.0
+  get: ^4.7.2
 
 dev_dependencies:
   flutter_test:
