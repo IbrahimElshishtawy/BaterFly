@@ -1,4 +1,3 @@
-// lib/app/features/catalog/widgets/product_card/product_card.dart
 // ignore_for_file: unnecessary_underscores, deprecated_member_use
 
 import 'package:flutter/material.dart';
@@ -11,10 +10,8 @@ class ProductCard extends StatefulWidget {
   final double? rating;
   final double? price;
   final double topRadius;
-
   final bool autoPlay;
   final Duration interval;
-
   final VoidCallback? onTap;
 
   const ProductCard({
@@ -27,6 +24,7 @@ class ProductCard extends StatefulWidget {
     this.interval = const Duration(seconds: 3),
     this.onTap,
     required AnimatedImageSlider imageWidget,
+    required Text priceWidget,
   });
 
   @override
@@ -73,37 +71,39 @@ class _ProductCardState extends State<ProductCard> {
           else
             ImageAny(imgs.first),
 
-          if (widget.rating != null)
-            PositionedDirectional(
-              top: 8,
-              start: 8,
-              child: _badge(
-                context,
-                child: const Row(
-                  children: [
-                    Icon(
+          // 🔹 التقييم أو "جديد"
+          PositionedDirectional(
+            top: 8,
+            start: 8,
+            child: _badge(
+              context,
+              filled: true,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.rating != null && widget.rating! > 0)
+                    const Icon(
                       Icons.star_rounded,
                       size: 14,
-                      color: Color(0xFFFFC107),
+                      color: Colors.amber,
                     ),
-                    SizedBox(width: 4),
-                  ],
-                ),
+                  if (widget.rating != null && widget.rating! > 0)
+                    const SizedBox(width: 4),
+                  Text(
+                    widget.rating != null && widget.rating! > 0
+                        ? widget.rating!.toStringAsFixed(1)
+                        : 'جديد',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
-          if (widget.rating != null)
-            PositionedDirectional(
-              top: 8,
-              start: 36,
-              child: _badge(
-                context,
-                child: Text(
-                  widget.rating!.toStringAsFixed(1),
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
-            ),
+          ),
 
+          // 🔹 السعر أو "اطلب الآن"
           if (widget.price != null)
             PositionedDirectional(
               bottom: 8,
@@ -113,7 +113,10 @@ class _ProductCardState extends State<ProductCard> {
                 filled: true,
                 child: Text(
                   '${widget.price!.toStringAsFixed(0)} ج.م',
-                  style: const TextStyle(fontWeight: FontWeight.w800),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
