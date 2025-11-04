@@ -145,6 +145,14 @@ class _HomePageState extends State<HomePage>
                                 imageWidget: AnimatedImageSlider(
                                   images: images,
                                 ),
+                                priceWidget: Text(
+                                  '\$${price?.toStringAsFixed(2) ?? 'N/A'}',
+                                  style: const TextStyle(
+                                    color: Colors.orangeAccent,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
                               ),
                             );
                           }, childCount: midIndex),
@@ -153,7 +161,7 @@ class _HomePageState extends State<HomePage>
 
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 30),
+                          padding: const EdgeInsets.symmetric(vertical: 30),
                           child: BuildVideoSection(),
                         ),
                       ),
@@ -173,14 +181,21 @@ class _HomePageState extends State<HomePage>
                             if (index >= items.length) return null;
                             final m = items[index];
                             final images = _getProductImages(index);
-                            final price = (m['price'] as num?)?.toDouble();
                             final rating = ((m['avg_rating'] ?? 0) as num?)
                                 ?.toDouble();
 
                             return ProductHover(
                               child: ProductCard(
                                 images: images,
-                                price: price,
+                                // بدل السعر هنحط النص "اطلب الآن"
+                                priceWidget: const Text(
+                                  'اطلب الآن',
+                                  style: TextStyle(
+                                    color: Colors.orangeAccent,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
                                 rating: rating,
                                 onTap: () {
                                   Navigator.pushNamed(
