@@ -95,12 +95,8 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   /// 🔹 روابط الويب (لما الشاشة تكون كبيرة)
   List<Widget> _desktopLinks(BuildContext context) => [
-    NavLink(text: 'الرئيسية', onTap: () => _go(context, '/'), route: '/'),
-    NavLink(
-      text: 'اتصل بنا',
-      onTap: () => _go(context, '/contact'),
-      route: '/contact',
-    ),
+    NavLink(text: 'الرئيسية', route: '/'),
+    NavLink(text: 'اتصل بنا', route: '/contact'),
     const SizedBox(width: 8),
     SearchBox(onTap: () => _openSearch(context)),
     const SizedBox(width: 8),
