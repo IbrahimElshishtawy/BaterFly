@@ -14,7 +14,7 @@ class ReturnsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       endDrawer: const CustomDrawer(),
-      appBar: SiteAppBar(transparent: true),
+      appBar: SiteAppBar(transparent: false),
       body: Stack(
         children: [
           const GradientBackground(),
