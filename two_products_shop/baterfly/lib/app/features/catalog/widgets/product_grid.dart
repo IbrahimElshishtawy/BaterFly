@@ -75,6 +75,7 @@ class ProductGrid extends StatelessWidget {
             price: price,
             rating: rating,
             imageWidget: AnimatedImageSlider(images: images),
+            priceWidget: Text('\$${price?.toStringAsFixed(2) ?? 'N/A'}'),
           ),
         );
       },
