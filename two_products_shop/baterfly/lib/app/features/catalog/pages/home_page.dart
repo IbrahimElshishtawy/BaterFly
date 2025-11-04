@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:baterfly/app/core/widgets/site_app_bar/CustomDrawer.dart';
 import 'package:baterfly/app/features/catalog/widgets/product_card/animated_image_slider.dart';
 import 'package:baterfly/app/features/catalog/widgets/widget/build_video_Section.dart';
 import 'package:flutter/material.dart';
@@ -84,26 +85,7 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: Drawer(
-        child: SafeArea(
-          child: ListView(
-            children: const [
-              ListTile(
-                title: Center(
-                  child: Text(
-                    'الأقسام',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-              Divider(),
-              ListTile(title: Text('سياسة الاستبدال والاسترجاع')),
-              ListTile(title: Text('سياسة الشحن')),
-              ListTile(title: Text('التواصل مع الدعم')),
-            ],
-          ),
-        ),
-      ),
+      endDrawer: const CustomDrawer(),
       appBar: SiteAppBar(transparent: false),
       body: Stack(
         children: [
@@ -130,23 +112,6 @@ class _HomePageState extends State<HomePage>
 
                   return CustomScrollView(
                     slivers: [
-                      /// 🏷️ العنوان الرئيسي
-                      SliverToBoxAdapter(
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          child: const Text(
-                            'BatteryFly',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-
-                      /// 🔹 الجزء الأول من المنتجات
                       SliverPadding(
                         padding: EdgeInsets.fromLTRB(side, 16, side, 16),
                         sliver: SliverGrid(
@@ -167,7 +132,6 @@ class _HomePageState extends State<HomePage>
 
                             return ProductHover(
                               child: ProductCard(
-                                // ✅ استبدال الصورة بالأنيميشن
                                 images: images,
                                 price: price,
                                 rating: rating,
@@ -187,15 +151,13 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
 
-                      /// 🎥 قسم الفيديوهات
-                      const SliverToBoxAdapter(
+                      SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 30),
                           child: BuildVideoSection(),
                         ),
                       ),
 
-                      /// 💄 الجزء الثاني من المنتجات
                       SliverPadding(
                         padding: EdgeInsets.fromLTRB(side, 16, side, 16),
                         sliver: SliverGrid(
@@ -236,7 +198,6 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
 
-                      /// ⚙️ الفوتر
                       const SliverToBoxAdapter(child: FooterLinks()),
                     ],
                   );
