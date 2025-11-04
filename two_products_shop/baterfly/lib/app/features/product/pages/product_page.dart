@@ -1,4 +1,6 @@
 import 'package:baterfly/app/core/widgets/footer_links/footer_links.dart';
+import 'package:baterfly/app/core/widgets/site_app_bar/CustomDrawer.dart';
+import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../sections/product_title.dart';
@@ -12,6 +14,8 @@ class ProductPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      endDrawer: const CustomDrawer(),
+      appBar: SiteAppBar(transparent: false),
       body: Stack(
         children: [
           const GradientBackground(),
