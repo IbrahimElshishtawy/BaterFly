@@ -8,8 +8,6 @@ class OrderSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final price = (product['price'] as num?)?.toDouble() ?? 0.0;
-
     return Card(
       color: Colors.white.withOpacity(0.1),
       elevation: 4,
@@ -30,48 +28,49 @@ class OrderSummary extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ProductCardWidget(product: product, whiteText: true),
-            const SizedBox(height: 14),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('السعر', style: TextStyle(color: Colors.white70)),
-                Text(
-                  '${price.toStringAsFixed(0)} ج.م',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            const Divider(color: Colors.white30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'الإجمالي الكلي',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  '${total.toStringAsFixed(0)} ج.م',
-                  style: const TextStyle(
-                    color: Color(0xFF2A82FF),
-                    fontWeight: FontWeight.w800,
-                    fontSize: 17,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'السعر يشمل ضريبة القيمة المضافة (إن وجدت)',
-              style: TextStyle(fontSize: 12.5, color: Colors.white70),
-            ),
+            // هنا شيلنا كل حاجة متعلقة بالـ price
+            // const SizedBox(height: 14),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     const Text('السعر', style: TextStyle(color: Colors.white70)),
+            //     Text(
+            //       '${price.toStringAsFixed(0)} ج.م',
+            //       style: const TextStyle(
+            //         fontWeight: FontWeight.w700,
+            //         color: Colors.white,
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(height: 6),
+            // const Divider(color: Colors.white30),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     const Text(
+            //       'الإجمالي الكلي',
+            //       style: TextStyle(
+            //         fontWeight: FontWeight.w700,
+            //         fontSize: 16,
+            //         color: Colors.white,
+            //       ),
+            //     ),
+            //     Text(
+            //       '${total.toStringAsFixed(0)} ج.م',
+            //       style: const TextStyle(
+            //         color: Color(0xFF2A82FF),
+            //         fontWeight: FontWeight.w800,
+            //         fontSize: 17,
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(height: 8),
+            // const Text(
+            //   'السعر يشمل ضريبة القيمة المضافة (إن وجدت)',
+            //   style: TextStyle(fontSize: 12.5, color: Colors.white70),
+            // ),
           ],
         ),
       ),
