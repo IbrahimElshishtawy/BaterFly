@@ -40,3 +40,10 @@ flutter:
     - assets/video/video_2.mp4
     - assets/video/video_3.mp4
     - assets/video/video_4.mp4
+
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/font/Cairo-Regular.ttf
+        - asset: assets/font/Cairo-Bold.ttf
+          weight: 700
