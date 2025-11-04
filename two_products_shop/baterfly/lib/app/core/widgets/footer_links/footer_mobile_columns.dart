@@ -1,5 +1,5 @@
+import 'package:baterfly/app/core/widgets/site_app_bar/nav_link.dart';
 import 'package:flutter/material.dart';
-import 'footer_helpers.dart';
 
 class FooterMobileColumns extends StatelessWidget {
   const FooterMobileColumns({super.key});
@@ -8,9 +8,15 @@ class FooterMobileColumns extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const FooterMuted('منتجات عناية واكسسوارات مختارة بعناية.'),
+        const Text(
+          'منتجات عناية واكسسوارات مختارة بعناية.',
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
         const SizedBox(height: 8),
-        const FooterMuted('شحن سريع داخل مصر واسترجاع خلال 14 يوم.'),
+        const Text(
+          'شحن سريع داخل مصر واسترجاع خلال 14 يوم.',
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
         const SizedBox(height: 16),
         Wrap(
           spacing: 18,
@@ -23,29 +29,6 @@ class FooterMobileColumns extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-}
-
-// عنصر مخصص للتنقل الداخلي داخل التطبيق
-class NavLink extends StatelessWidget {
-  final String text;
-  final String route;
-
-  const NavLink({super.key, required this.text, required this.route});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, route),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-          decoration: TextDecoration.underline,
-        ),
-      ),
     );
   }
 }
