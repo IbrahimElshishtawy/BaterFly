@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:baterfly/app/data/static/product_data.dart';
 import 'package:flutter/material.dart';
 
@@ -12,39 +13,70 @@ class ProductDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SectionCard(
-          title: "أهم المميزات",
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: ProductData.mainBenefits
-                .map(
-                  (b) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      "• $b",
-                      style: const TextStyle(fontSize: 16, height: 1.4),
-                    ),
+    final isWeb = MediaQuery.of(context).size.width > 700;
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              padding: EdgeInsets.all(isWeb ? 32 : 16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: Colors.white.withOpacity(0.25)),
+              ),
+              child: Column(
+                children: [
+                  SectionCard(
+                    title: "أهم المميزات",
+                    transparent: true,
+                    content: _buildBullets(ProductData.mainBenefits),
                   ),
-                )
-                .toList(),
+
+                  IngredientChips(ingredients: ProductData.ingredients),
+
+                  UsageAccordion(steps: ProductData.usage),
+
+                  SafetyList(items: ProductData.safety),
+
+                  SectionCard(
+                    title: "مميزات إضافية",
+                    transparent: true,
+                    content: _buildBullets(ProductData.highlights, icon: "✨"),
+                  ),
+
+                  const TrustRow(),
+                ],
+              ),
+            ),
           ),
         ),
-        IngredientChips(ingredients: ProductData.ingredients),
-        UsageAccordion(steps: ProductData.usage),
-        SafetyList(items: ProductData.safety),
-        SectionCard(
-          title: "مميزات إضافية",
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: ProductData.highlights
-                .map((h) => Text("✨ $h", style: const TextStyle(fontSize: 16)))
-                .toList(),
-          ),
-        ),
-        const TrustRow(),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildBullets(List<String> list, {String icon = "•"}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: list
+          .map(
+            (item) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(
+                "$icon $item",
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.4,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 }
