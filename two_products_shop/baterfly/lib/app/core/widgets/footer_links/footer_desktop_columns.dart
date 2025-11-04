@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable, deprecated_member_use
-
 import 'package:baterfly/app/core/widgets/site_app_bar/nav_link.dart';
 import 'package:flutter/material.dart';
 import 'footer_helpers.dart';
@@ -9,13 +7,6 @@ class FooterDesktopColumns extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colTitle = TextStyle(
-      color: Colors.white.withOpacity(0.92),
-      fontWeight: FontWeight.w800,
-      fontSize: 14,
-      letterSpacing: .2,
-    );
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -24,7 +15,7 @@ class FooterDesktopColumns extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
-              FooterColHeader('لمسة حرير'),
+              FooterColHeader('BaterFly'),
               SizedBox(height: 10),
               FooterMuted('منتجات عناية واكسسوارات مختارة بعناية.'),
               FooterMuted('شحن سريع داخل مصر واسترجاع خلال 14 يوم.'),
@@ -32,37 +23,19 @@ class FooterDesktopColumns extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 24),
-        // عمود سياسات
+        // عمود السياسات
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              NavLink(
-                text: 'سياسة الاستبدال والاسترجاع',
-                route: '/returns',
-                onTap: () {
-                  Navigator.pushNamed(context, '/returns');
-                },
-              ),
-              NavLink(
-                text: 'سياسة الشحن',
-                route: '/shipping',
-                onTap: () {
-                  Navigator.pushNamed(context, '/shipping');
-                },
-              ),
-              NavLink(
-                text: 'الدعم الفني واتساب',
-                route: '/support',
-                onTap: () {
-                  Navigator.pushNamed(context, '/support');
-                },
-              ),
+              NavLink(text: 'سياسة الاستبدال والاسترجاع', route: '/returns'),
+              NavLink(text: 'سياسة الشحن', route: '/shipping'),
+              NavLink(text: 'الدعم الفني واتساب', route: '/support'),
             ],
           ),
         ),
         const SizedBox(width: 24),
-        // عمود الدعم
+        // عمود الدعم والتواصل
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
