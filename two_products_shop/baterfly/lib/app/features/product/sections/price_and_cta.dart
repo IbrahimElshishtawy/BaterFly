@@ -2,22 +2,33 @@ import 'package:flutter/material.dart';
 import '../widgets/section_card.dart';
 
 class PriceAndCTA extends StatelessWidget {
-  final Map product;
-  const PriceAndCTA({super.key, required this.product});
+  const PriceAndCTA({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final price = product['price'] ?? 0;
     return SectionCard(
-      title: "Buy Now",
-      child: Column(
+      title: "احجزي الآن واحصلي على نتائج فورية ✨",
+      content: Column(
         children: [
-          Text(
-            "\$${price.toString()}",
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          const Text(
+            "السعر: 550 جنيه مصري",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 10),
-          ElevatedButton(onPressed: () {}, child: const Text("Add to Cart")),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {},
+            child: const Text(
+              "اطلبي الآن",
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
         ],
       ),
     );

@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 
 class SafetyList extends StatelessWidget {
-  final List items;
+  final List<String> items;
+
   const SafetyList({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) return const SizedBox.shrink();
-
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Safety Information",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            "⚠️ تعليمات الأمان:",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
+          const SizedBox(height: 8),
           ...items.map(
-            (item) => ListTile(
-              leading: const Icon(Icons.check_circle_outline),
-              title: Text(item.toString()),
+            (item) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                "• $item",
+                style: const TextStyle(fontSize: 15, height: 1.3),
+              ),
             ),
           ),
         ],

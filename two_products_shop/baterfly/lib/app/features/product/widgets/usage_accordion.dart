@@ -1,33 +1,21 @@
 import 'package:flutter/material.dart';
 
-class UsageAccordion extends StatefulWidget {
-  final String? usage;
-  const UsageAccordion({super.key, this.usage});
+class UsageAccordion extends StatelessWidget {
+  final List<String> steps;
 
-  @override
-  State<UsageAccordion> createState() => _UsageAccordionState();
-}
-
-class _UsageAccordionState extends State<UsageAccordion> {
-  bool expanded = false;
+  const UsageAccordion({super.key, required this.steps});
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionPanelList(
-      expansionCallback: (i, isOpen) {
-        setState(() => expanded = !isOpen);
-      },
-      children: [
-        ExpansionPanel(
-          isExpanded: expanded,
-          headerBuilder: (_, __) =>
-              const ListTile(title: Text("Usage Instructions")),
-          body: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(widget.usage ?? "No usage info provided."),
-          ),
-        ),
-      ],
+    return ExpansionTile(
+      title: const Text("📋 طريقة الاستخدام"),
+      children: steps
+          .map(
+            (s) => ListTile(
+              title: Text(s, style: const TextStyle(fontSize: 15, height: 1.3)),
+            ),
+          )
+          .toList(),
     );
   }
 }

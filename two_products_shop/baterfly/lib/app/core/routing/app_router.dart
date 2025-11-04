@@ -30,13 +30,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => HomePage());
 
       case AppRoutes.product:
-        final args = s.arguments as Map<String, dynamic>? ?? {};
-        final productId = args['productId'] is int
-            ? args['productId'] as int
-            : 0;
-        return MaterialPageRoute(
-          builder: (_) => ProductPage(productId: productId),
-        );
+        return MaterialPageRoute(builder: (_) => ProductPage());
 
       case AppRoutes.checkout:
         final args = s.arguments as Map<String, dynamic>? ?? {};
