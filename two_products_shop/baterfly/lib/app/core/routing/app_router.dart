@@ -3,7 +3,7 @@ import 'package:baterfly/app/features/cart/pages/cart_page.dart';
 import 'package:baterfly/app/features/contact/pages/contact_page.dart';
 import 'package:baterfly/app/features/policies/pages/returns_page.dart';
 import 'package:baterfly/app/features/policies/pages/support_page.dart';
-import 'package:baterfly/app/features/policies/shipping_page.dart';
+import 'package:baterfly/app/features/policies/pages/shipping_page.dart';
 import '../../features/catalog/pages/home_page.dart';
 import '../../features/product/pages/product_page.dart';
 import '../../features/checkout/pages/checkout_page.dart';

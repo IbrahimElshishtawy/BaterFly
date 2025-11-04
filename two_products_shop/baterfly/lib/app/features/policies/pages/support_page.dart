@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:baterfly/app/features/policies/widget/Contact_Item.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../core/widgets/footer_links/footer_links.dart';
 import '../../../core/widgets/site_app_bar/site_app_bar.dart';
 
@@ -54,14 +54,14 @@ class SupportPage extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 // طرق التواصل
-                const _ContactItem(
+                const ContactItem(
                   icon: Icons.chat_outlined,
                   color: Color(0xFF25D366),
                   title: 'واتساب الدعم الفني',
                   text: 'تواصل مباشرة مع فريق خدمة العملاء على مدار الساعة.',
                   url: 'https://wa.me/201234567890',
                 ),
-                const _ContactItem(
+                const ContactItem(
                   icon: Icons.email_outlined,
                   color: Color(0xFF4285F4),
                   title: 'البريد الإلكتروني',
@@ -69,7 +69,7 @@ class SupportPage extends StatelessWidget {
                       'يمكنك مراسلتنا عبر البريد للحصول على دعم أو تقديم ملاحظات.',
                   url: 'mailto:support@lamsethareer.com',
                 ),
-                const _ContactItem(
+                const ContactItem(
                   icon: Icons.phone_in_talk_outlined,
                   color: Color(0xFFFF9800),
                   title: 'الاتصال الهاتفي',
@@ -113,94 +113,6 @@ class SupportPage extends StatelessWidget {
                 const SizedBox(height: 60),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ContactItem extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String title;
-  final String text;
-  final String url;
-
-  const _ContactItem({
-    required this.icon,
-    required this.color,
-    required this.title,
-    required this.text,
-    required this.url,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: InkWell(
-        onTap: () =>
-            launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.black12),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x14000000), // subtle shadow
-                blurRadius: 10,
-                offset: Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: color, size: 22),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 16.5,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF0E1A2A),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      text,
-                      style: const TextStyle(
-                        fontSize: 15.5,
-                        height: 1.6,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: Colors.black45,
-              ),
-            ],
           ),
         ),
       ),

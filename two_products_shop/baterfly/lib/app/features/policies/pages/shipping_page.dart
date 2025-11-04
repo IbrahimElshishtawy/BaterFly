@@ -7,8 +7,8 @@ import 'package:baterfly/app/features/policies/widget/Policy_Item.dart';
 import 'package:baterfly/app/features/product/widgets/gradient_bg.dart';
 import 'package:flutter/material.dart';
 
-class ReturnsPage extends StatelessWidget {
-  const ReturnsPage({super.key});
+class ShippingPage extends StatelessWidget {
+  const ShippingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class ReturnsPage extends StatelessWidget {
       appBar: SiteAppBar(transparent: true),
       body: Stack(
         children: [
-          const GradientBackground(),
+          const GradientBackground(), // الخلفية Gradient
           CustomScrollView(
             slivers: [
               SliverPadding(
@@ -36,13 +36,13 @@ class ReturnsPage extends StatelessWidget {
                           Row(
                             children: const [
                               Icon(
-                                Icons.assignment_return_outlined,
+                                Icons.local_shipping_outlined,
                                 color: Colors.white,
                                 size: 28,
                               ),
                               SizedBox(width: 8),
                               Text(
-                                'سياسة الاستبدال والاسترجاع',
+                                'سياسة الشحن والتوصيل',
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
@@ -53,92 +53,81 @@ class ReturnsPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 24),
 
-                          // كارد المقدمة
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white24,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.white30),
-                            ),
-                            child: const Text(
-                              'نحرص في "BatterFly" على رضا عملائنا التام عن مشترياتهم. إذا واجهت أي مشكلة في المنتج الذي استلمته، يمكنك طلب استبداله أو استرجاعه خلال فترة محددة وفقًا للشروط التالية:',
-                              style: TextStyle(
-                                fontSize: 16,
-                                height: 1.8,
-                                color: Colors.white,
-                              ),
+                          // فقرة تمهيدية
+                          const Text(
+                            'نلتزم في "لمسة حرير" بتوصيل طلباتكم بسرعة وأمان إلى جميع محافظات مصر. نعمل مع شركاء شحن موثوقين لضمان تجربة تسوق سهلة ومريحة. فيما يلي تفاصيل سياسة الشحن الخاصة بنا:',
+                            style: TextStyle(
+                              fontSize: 16,
+                              height: 1.8,
+                              color: Colors.white,
                             ),
                           ),
-
                           const SizedBox(height: 28),
 
                           // البنود
                           const PolicyItem(
                             number: '1',
-                            title: 'مدة الاسترجاع والاستبدال',
+                            title: 'مدة التوصيل',
                             text:
-                                'يمكنك طلب استرجاع أو استبدال المنتج خلال 14 يومًا من تاريخ الاستلام بشرط أن يكون المنتج في حالته الأصلية ولم يُستخدم أو يُفتح.',
+                                'تُسلَّم الطلبات داخل القاهرة والجيزة خلال 2-3 أيام عمل، بينما باقي المحافظات خلال 3-5 أيام عمل من تاريخ تأكيد الطلب.',
                             textColor: Colors.white,
                             bgColor: Colors.white24,
                           ),
                           const PolicyItem(
                             number: '2',
-                            title: 'حالة المنتج عند الإرجاع',
+                            title: 'رسوم الشحن',
                             text:
-                                'يجب أن يكون المنتج مغلفًا كما تم استلامه مع جميع الملحقات والفاتورة الأصلية. في حال وجود تلف أو استخدام للمنتج لا يُقبل الطلب.',
+                                'تُحدد رسوم الشحن حسب موقع العميل والوزن الإجمالي للطلب. قد تتوفر عروض خاصة للشحن المجاني في فترات محددة.',
                             textColor: Colors.white,
                             bgColor: Colors.white24,
                           ),
                           const PolicyItem(
                             number: '3',
-                            title: 'المنتجات غير القابلة للإرجاع',
+                            title: 'تتبع الشحنة',
                             text:
-                                'المنتجات الشخصية أو التي تُستخدم مباشرة على البشرة لا يمكن إرجاعها بعد فتح التغليف حفاظًا على السلامة الصحية.',
+                                'بمجرد شحن طلبك، ستتلقى رسالة عبر واتساب أو البريد الإلكتروني تحتوي على رقم التتبع لتتمكن من متابعة الطلب حتى الاستلام.',
                             textColor: Colors.white,
                             bgColor: Colors.white24,
                           ),
                           const PolicyItem(
                             number: '4',
-                            title: 'رسوم الشحن والإرجاع',
+                            title: 'محاولات التسليم',
                             text:
-                                'يُخصم مبلغ الشحن من المبلغ المسترد ما لم يكن سبب الإرجاع خطأ من طرفنا أو وجود خلل في المنتج.',
+                                'يقوم مندوب الشحن بمحاولتين للتسليم. في حال عدم الرد أو تأجيل الاستلام، يتم التواصل مع العميل لتحديد موعد جديد.',
                             textColor: Colors.white,
                             bgColor: Colors.white24,
                           ),
                           const PolicyItem(
                             number: '5',
-                            title: 'طريقة استرداد المبلغ',
+                            title: 'تلف أو فقدان أثناء الشحن',
                             text:
-                                'يتم استرداد المبلغ خلال 5-7 أيام عمل عبر نفس وسيلة الدفع المستخدمة في الطلب.',
+                                'نضمن استبدال أو استرجاع أي منتج تعرض للتلف أثناء النقل بعد التحقق من البلاغ خلال 24 ساعة من الاستلام.',
                             textColor: Colors.white,
                             bgColor: Colors.white24,
                           ),
-
                           const SizedBox(height: 32),
 
-                          // كارد الدعم الفني
+                          // ملاحظة ختامية
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
                               color: Colors.white24,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: Colors.white30),
                             ),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: const [
                                 Icon(
-                                  Icons.headset_mic_outlined,
+                                  Icons.info_outline,
                                   color: Colors.white,
-                                  size: 26,
+                                  size: 24,
                                 ),
-                                SizedBox(width: 12),
+                                SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    'لأي استفسار إضافي أو لبدء طلب استرجاع، يمكنك التواصل معنا عبر صفحة الدعم الفني أو على واتساب.',
+                                    'يرجى التأكد من إدخال عنوان التوصيل ورقم الهاتف بشكل صحيح لتجنب أي تأخير في الشحن.',
                                     style: TextStyle(
                                       fontSize: 15.5,
                                       height: 1.6,
@@ -149,7 +138,6 @@ class ReturnsPage extends StatelessWidget {
                               ],
                             ),
                           ),
-
                           const SizedBox(height: 32),
                         ],
                       ),
