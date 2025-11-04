@@ -4,13 +4,9 @@ import 'package:flutter/material.dart';
 
 class NavLink extends StatefulWidget {
   final String text;
-  final VoidCallback onTap;
-  const NavLink({
-    super.key,
-    required this.text,
-    required this.onTap,
-    required String route,
-  });
+  final String route;
+
+  const NavLink({super.key, required this.text, required this.route});
 
   @override
   State<NavLink> createState() => _NavLinkState();
@@ -19,20 +15,26 @@ class NavLink extends StatefulWidget {
 class _NavLinkState extends State<NavLink> {
   bool _hover = false;
 
+  void _navigate(BuildContext context) {
+    Navigator.of(context).pushNamed(widget.route);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
       cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: InkWell(
+        onTap: () => _navigate(context),
+        borderRadius: BorderRadius.circular(6),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: Colors.white.withOpacity(_hover ? .95 : 0),
+                color: Colors.white.withOpacity(_hover ? 1.0 : 0),
                 width: 2,
               ),
             ),
@@ -40,10 +42,10 @@ class _NavLinkState extends State<NavLink> {
           child: Text(
             widget.text,
             style: TextStyle(
-              color: Colors.white.withOpacity(_hover ? 1 : .88),
+              color: Colors.white.withOpacity(_hover ? 1 : 0.88),
               fontWeight: FontWeight.w700,
-              fontSize: 13.5,
-              letterSpacing: .2,
+              fontSize: 14,
+              letterSpacing: 0.3,
             ),
           ),
         ),
