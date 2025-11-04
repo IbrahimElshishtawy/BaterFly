@@ -1,11 +1,18 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:lucide_flutter/lucide_flutter.dart';
 import 'index.dart';
 
 class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool transparent;
-  const SiteAppBar({super.key, this.transparent = false});
+  final String title; // 🔹 العنوان اللي هيظهر في النص
+
+  const SiteAppBar({
+    super.key,
+    this.transparent = false,
+    this.title = 'BatteryFly',
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -18,43 +25,75 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       backgroundColor: bg,
-      elevation: transparent ? 0 : 1,
+      elevation: transparent ? 0 : 2,
       automaticallyImplyLeading: false,
+      centerTitle: true, // 🔹 يخلي النص في النص
       titleSpacing: 0,
-      title: Padding(
-        padding: EdgeInsets.symmetric(horizontal: isWide ? 28 : 16),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [Color(0xFF4B9EFF), Color(0xFFFF7A00)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ).createShader(bounds),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.6,
+                shadows: [
+                  Shadow(
+                    color: Colors.black54,
+                    blurRadius: 8,
+                    offset: Offset(1, 2),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+
+      /// 🔹 الأكشنز اللي في اليمين واليسار (زي السلة أو المينيو)
+      leadingWidth: 120,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 12),
         child: Row(
           children: [
             InkWell(
               onTap: () => _go(context, '/'),
               borderRadius: BorderRadius.circular(8),
               child: Row(
-                children: const [
-                  Icon(Icons.blur_on, color: Colors.white, size: 22),
-                  SizedBox(width: 8),
-                  Text(
-                    'لمسة حرير',
+                children: [
+                  Icon(LucideIcons.droplets, color: Colors.white, size: 22),
+                  const SizedBox(width: 6),
+                  const Text(
+                    'BFly',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                       letterSpacing: .3,
                     ),
                   ),
                 ],
               ),
             ),
-            const Spacer(),
-            if (isWide)
-              ..._desktopLinks(context)
-            else
-              ..._mobileActions(context),
           ],
         ),
       ),
+
+      actions: [
+        if (isWide) ..._desktopLinks(context) else ..._mobileActions(context),
+      ],
     );
   }
 
+  /// 🔹 روابط الويب (لما الشاشة تكون كبيرة)
   List<Widget> _desktopLinks(BuildContext context) => [
     NavLink(text: 'الرئيسية', onTap: () => _go(context, '/'), route: '/'),
     NavLink(
@@ -65,29 +104,21 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     const SizedBox(width: 8),
     SearchBox(onTap: () => _openSearch(context)),
     const SizedBox(width: 8),
-    BadgeIcon(
-      icon: Icons.shopping_bag_outlined,
-      tooltip: 'السلة',
-      onTap: () => _go(context, '/cart'),
-    ),
     const SizedBox(width: 8),
     WebButton(
       label: 'دخول الأدمن',
       icon: Icons.admin_panel_settings_outlined,
       onTap: () => _go(context, '/admin/login'),
     ),
+    const SizedBox(width: 12),
   ];
 
+  /// 🔹 أكشنات الموبايل (بحث - سلة - مينيو)
   List<Widget> _mobileActions(BuildContext context) => [
     IconButton(
       tooltip: 'بحث',
       onPressed: () => _openSearch(context),
       icon: const Icon(Icons.search, color: Colors.white),
-    ),
-    IconButton(
-      tooltip: 'السلة',
-      onPressed: () => _go(context, '/cart'),
-      icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
     ),
     Builder(
       builder: (c) => IconButton(
