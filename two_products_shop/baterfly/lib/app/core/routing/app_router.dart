@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:baterfly/app/features/cart/pages/cart_page.dart';
 import 'package:baterfly/app/features/contact/pages/contact_page.dart';
 import 'package:baterfly/app/features/policies/pages/returns_page.dart';
 import 'package:baterfly/app/features/policies/pages/support_page.dart';
 import 'package:baterfly/app/features/policies/shipping_page.dart';
-import 'package:flutter/material.dart';
 import '../../features/catalog/pages/home_page.dart';
 import '../../features/product/pages/product_page.dart';
 import '../../features/checkout/pages/checkout_page.dart';
@@ -16,10 +16,13 @@ class AppRouter {
     switch (s.name) {
       case AppRoutes.home:
         return MaterialPageRoute(builder: (_) => const HomePage());
+
       case AppRoutes.returns:
         return MaterialPageRoute(builder: (_) => const ReturnsPage());
+
       case AppRoutes.shipping:
         return MaterialPageRoute(builder: (_) => const ShippingPage());
+
       case AppRoutes.support:
         return MaterialPageRoute(builder: (_) => const SupportPage());
 
@@ -28,13 +31,18 @@ class AppRouter {
 
       case AppRoutes.product:
         final args = s.arguments as Map<String, dynamic>? ?? {};
+        final productId = args['productId'] is int
+            ? args['productId'] as int
+            : 0;
         return MaterialPageRoute(
-          builder: (_) => ProductPage(productId: args['productId']),
+          builder: (_) => ProductPage(productId: productId),
         );
 
       case AppRoutes.checkout:
         final args = s.arguments as Map<String, dynamic>? ?? {};
-        return MaterialPageRoute(builder: (_) => CheckoutPage(product: args));
+        return MaterialPageRoute(
+          builder: (_) => CheckoutPage(product: args['product']),
+        );
 
       case AppRoutes.adminLogin:
         return MaterialPageRoute(builder: (_) => const AdminLoginPage());
