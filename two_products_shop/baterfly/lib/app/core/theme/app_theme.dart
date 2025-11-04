@@ -6,6 +6,7 @@ class AppTheme {
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
     scaffoldBackgroundColor: AppColors.background,
     useMaterial3: true,
+    fontFamily: 'Cairo',
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
       elevation: 0.2,
