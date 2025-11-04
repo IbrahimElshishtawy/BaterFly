@@ -27,15 +27,24 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SupportPage());
 
       case AppRoutes.catalog:
-        return MaterialPageRoute(builder: (_) => HomePage());
+        return MaterialPageRoute(builder: (_) => const HomePage());
 
       case AppRoutes.product:
-        return MaterialPageRoute(builder: (_) => ProductPage());
+        return MaterialPageRoute(builder: (_) => const ProductPage());
 
       case AppRoutes.checkout:
-        final args = s.arguments as Map<String, dynamic>? ?? {};
+        // تأكد من أن الـ arguments موجودة وأنه Map<String, dynamic>
+        final args = s.arguments;
+        Map<String, dynamic> productArgs = {};
+        if (args != null && args is Map<String, dynamic>) {
+          productArgs = args;
+        }
+
         return MaterialPageRoute(
-          builder: (_) => CheckoutPage(product: args['product']),
+          builder: (_) => CheckoutPage(
+            // لو product مش موجود هيمرر null بأمان
+            product: productArgs['product'],
+          ),
         );
 
       case AppRoutes.adminLogin:
