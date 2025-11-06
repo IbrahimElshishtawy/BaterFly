@@ -23,6 +23,18 @@ class _CheckoutFormState extends State<CheckoutForm> {
 
   bool _sending = false;
 
+  String? _selectedCity;
+  String? _selectedArea;
+
+  // 🔹 المدن والمناطق
+  final Map<String, List<String>> _areasByCity = {
+    'القاهرة': ['مدينة نصر', 'مصر الجديدة', 'المعادي', 'الزيتون', 'شبرا'],
+    'الجيزة': ['الهرم', 'الدقي', 'العجوزة', 'إمبابة', 'أكتوبر'],
+    'الإسكندرية': ['سموحة', 'العصافرة', 'محرم بك', 'المنتزه'],
+    'طنطا': ['القرشي', 'سيجر', 'الجمهورية', 'الاستاد'],
+    'المنصورة': ['حي الجامعة', 'طلخا', 'جديلة', 'شارع جيهان'],
+  };
+
   String? _vName(String? v) =>
       (v == null || v.trim().length < 10) ? 'الاسم لا يقل عن 10 أحرف' : null;
 
@@ -48,31 +60,36 @@ class _CheckoutFormState extends State<CheckoutForm> {
     setState(() => _sending = true);
 
     try {
-      // 🔹 رفع البيانات لـ Supabase
       final response = await Supabase.instance.client
-          .from('orders')
+          .from('order')
           .insert({
-            'name': _name.text.trim(),
+            'full_name': _name.text.trim(),
             'phone1': _phone1.text.trim(),
             'phone2': _phone2.text.trim(),
-            'address': _address.text.trim(),
-            'product_name': widget.product['name'] ?? 'منتج بدون اسم',
+            'city': _selectedCity,
+            'area': _selectedArea,
+            'address_text': _address.text.trim(),
+            'address_norm': '',
+            'notes': '',
+            'status': 'pending',
+            'payment_method': 'cash_on_delivery',
+            'product_id': widget.product['id'],
             'quantity': 1,
-            'price': widget.product['price'] ?? 0,
-            'created_at': DateTime.now().toIso8601String(),
+            'ip': '',
+            'session_id': DateTime.now().millisecondsSinceEpoch.toString(),
+            'create_at': DateTime.now().toIso8601String(),
           })
-          .select('id')
+          .select('order_no')
           .single();
 
-      final orderId = response['id'].toString();
+      final orderNo = response['order_no'].toString();
 
-      // 🔹 الانتقال لصفحة الشكر
       if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => ThankYouPage(
-              orderNo: orderId,
+              orderNo: orderNo,
               productName: widget.product['name'] ?? 'منتجك',
             ),
           ),
@@ -149,7 +166,60 @@ class _CheckoutFormState extends State<CheckoutForm> {
           ),
           const SizedBox(height: 12),
 
-          // العنوان
+          // اختيار المدينة
+          DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'المدينة',
+              prefixIcon: const Icon(Icons.location_city),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            value: _selectedCity,
+            items: _areasByCity.keys
+                .map((city) => DropdownMenuItem(value: city, child: Text(city)))
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedCity = value;
+                _selectedArea = null; // إعادة ضبط المنطقة
+              });
+            },
+            validator: (v) => v == null ? 'اختار المدينة' : null,
+          ),
+          const SizedBox(height: 12),
+
+          // اختيار المنطقة
+          DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'المنطقة',
+              prefixIcon: const Icon(Icons.map_outlined),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            value: _selectedArea,
+            items:
+                (_selectedCity == null
+                        ? <String>[]
+                        : _areasByCity[_selectedCity] ?? [])
+                    .map(
+                      (area) =>
+                          DropdownMenuItem(value: area, child: Text(area)),
+                    )
+                    .toList(),
+            onChanged: (value) => setState(() => _selectedArea = value),
+            validator: (v) => v == null ? 'اختار المنطقة' : null,
+          ),
+          const SizedBox(height: 12),
+
+          // العنوان الكامل
           TextFormField(
             controller: _address,
             decoration: InputDecoration(
