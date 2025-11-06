@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AdminService {
   final _db = Supabase.instance.client;
 
-  // Orders
+  // ================= ORDERS =================
   Future<List<Map<String, dynamic>>> fetchOrders() async {
     final res = await _db
         .from('orders')
@@ -22,7 +22,7 @@ class AdminService {
     await _db.from('orders').update({'status': status}).eq('id', id);
   }
 
-  // Products (basic)
+  // ================= PRODUCTS =================
   Future<List<Map<String, dynamic>>> fetchProducts() async {
     final res = await _db
         .from('products')
@@ -44,12 +44,13 @@ class AdminService {
     await _db.from('products').delete().eq('id', id);
   }
 
-  // Reviews
+  // ================= REVIEWS =================
   Future<List<Map<String, dynamic>>> fetchReviews() async {
     final res = await _db
         .from('product_reviews')
         .select()
         .order('created_at', ascending: false);
+
     return List<Map<String, dynamic>>.from(res);
   }
 
@@ -58,16 +59,5 @@ class AdminService {
         .from('product_reviews')
         .update({'is_verified': isVerified})
         .eq('id', id);
-  }
-
-  // Settings
-  Future<Map<String, dynamic>?> fetchSettings() async {
-    final res = await _db.from('settings').select().limit(1).single();
-    return Map<String, dynamic>.from(res);
-  }
-
-  Future<void> updateSettings(Map<String, dynamic> data) async {
-    // if settings table has single row you can upsert:
-    await _db.from('settings').upsert(data);
   }
 }
