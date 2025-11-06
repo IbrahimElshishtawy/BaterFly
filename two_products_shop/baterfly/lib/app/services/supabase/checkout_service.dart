@@ -6,6 +6,9 @@ class CheckoutService {
   final supabase = Supabase.instance.client;
 
   Future<String> sendOrder({required Map<String, dynamic> orderData}) async {
+    orderData.remove("id");
+    orderData.remove("order_no");
+
     final response = await supabase
         .from("orders")
         .insert(orderData)
