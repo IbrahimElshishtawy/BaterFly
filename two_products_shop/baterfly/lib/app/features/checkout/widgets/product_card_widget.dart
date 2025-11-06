@@ -1,4 +1,6 @@
 // lib/app/features/catalog/widgets/product_card_widget.dart
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 
 class ProductCardWidget extends StatelessWidget {

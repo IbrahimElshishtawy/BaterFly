@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:baterfly/app/features/checkout/widgets/product_card_widget.dart';
 import 'package:flutter/material.dart';
 

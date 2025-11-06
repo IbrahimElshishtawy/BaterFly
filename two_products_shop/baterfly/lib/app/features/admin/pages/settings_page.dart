@@ -1,10 +1,8 @@
-// lib/app/features/admin/pages/settings_page.dart
-// ignore_for_file: unnecessary_underscores, deprecated_member_use
+// pages/settings_page.dart
+// ignore_for_file: use_build_context_synchronously
 
+import 'package:baterfly/app/services/supabase/admin_service.dart';
 import 'package:flutter/material.dart';
-import '../../../core/widgets/site_app_bar/site_app_bar.dart';
-import '../../../features/product/widgets/gradient_bg.dart';
-import '../../../services/supabase/supabase_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -14,10 +12,13 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  final _sb = Supa.client;
-  final whatsapp = TextEditingController();
-  final email = TextEditingController();
-  bool saving = false;
+  final AdminService _svc = AdminService();
+  bool loading = true;
+  Map<String, dynamic>? settings;
+
+  final _whatsapp = TextEditingController();
+  final _email = TextEditingController();
+  final _shipping = TextEditingController();
 
   @override
   void initState() {
@@ -26,99 +27,49 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _load() async {
-    final res = await _sb.from('settings').select().eq('id', 1).maybeSingle();
-    if (res != null) {
-      whatsapp.text = res['whatsapp_number'] ?? '';
-      email.text = res['support_email'] ?? '';
-    }
+    final s = await _svc.fetchSettings();
+    settings = s;
+    _whatsapp.text = s?['whatsapp_number'] ?? '';
+    _email.text = s?['suport_email'] ?? '';
+    _shipping.text = s?['shipping_matrix'] ?? '';
+    setState(() => loading = false);
   }
 
   Future<void> _save() async {
-    setState(() => saving = true);
-    await _sb
-        .from('settings')
-        .update({'whatsapp_number': whatsapp.text, 'support_email': email.text})
-        .eq('id', 1);
-    setState(() => saving = false);
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('تم الحفظ بنجاح')));
-    }
+    await _svc.updateSettings({
+      'id': settings?['id'] ?? 1,
+      'whatsapp_number': _whatsapp.text,
+      'suport_email': _email.text,
+      'shipping_matrix': _shipping.text,
+    });
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('تم الحفظ')));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const SiteAppBar(transparent: false),
-      body: Stack(
+    if (loading) return const Center(child: CircularProgressIndicator());
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
         children: [
-          const GradientBackground(),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: ListView(
-              children: [
-                const SizedBox(height: 24),
-
-                // حقل رقم واتساب مع أيقونة
-                TextField(
-                  controller: whatsapp,
-                  decoration: InputDecoration(
-                    labelText: 'رقم واتساب',
-                    labelStyle: TextStyle(color: Theme.of(context).hintColor),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.95),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.black12),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14),
-                    prefixIcon: const Icon(Icons.phone, color: Colors.teal),
-                  ),
-                ),
-                const SizedBox(height: 18),
-
-                // حقل بريد الدعم مع أيقونة
-                TextField(
-                  controller: email,
-                  decoration: InputDecoration(
-                    labelText: 'بريد الدعم',
-                    labelStyle: TextStyle(color: Theme.of(context).hintColor),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.95),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.black12),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14),
-                    prefixIcon: const Icon(Icons.email, color: Colors.teal),
-                  ),
-                ),
-                const SizedBox(height: 30),
-
-                // زر حفظ التغييرات
-                ElevatedButton(
-                  onPressed: saving ? null : _save,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 48),
-                    backgroundColor: Colors.teal,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: saving
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'حفظ التغييرات',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                ),
-              ],
-            ),
+          TextFormField(
+            controller: _whatsapp,
+            decoration: const InputDecoration(labelText: 'WhatsApp'),
           ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: _email,
+            decoration: const InputDecoration(labelText: 'Support Email'),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: _shipping,
+            decoration: const InputDecoration(labelText: 'Shipping Matrix'),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(onPressed: _save, child: const Text('حفظ الإعدادات')),
         ],
       ),
     );
