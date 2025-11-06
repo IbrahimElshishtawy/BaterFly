@@ -1,6 +1,8 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:baterfly/app/core/widgets/Reviews_Slider.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/CustomDrawer.dart';
+import 'package:baterfly/app/data/models/review_model.dart';
 import 'package:baterfly/app/features/catalog/widgets/product_card/animated_image_slider.dart';
 import 'package:baterfly/app/features/catalog/widgets/widget/build_video_Section.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +55,6 @@ class _HomePageState extends State<HomePage>
     return (rows as List).cast<Map<String, dynamic>>();
   }
 
-  /// 🔹 صور محلية من assets
   List<String> _localImages() {
     return const [
       'assets/images/image_1.jpg',
@@ -63,7 +64,6 @@ class _HomePageState extends State<HomePage>
     ];
   }
 
-  /// 🔹 ترجع مجموعة صور لكل منتج (هيتبدلوا بشكل انيميشن)
   List<String> _getProductImages(int index) {
     final imgs = _localImages();
     return [
@@ -210,6 +210,44 @@ class _HomePageState extends State<HomePage>
                               ),
                             );
                           }, childCount: items.length - midIndex),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                            child: ReviewsSlider(
+                              reviews: [
+                                ReviewModel(
+                                  id: 1,
+                                  productId: 101,
+                                  fullName: "Ahmed",
+                                  rating: 5,
+                                  comment: "منتج رائع جدًا 👌",
+                                  isVerified: true,
+                                  status: "approved",
+                                ),
+                                ReviewModel(
+                                  id: 2,
+                                  productId: 102,
+                                  fullName: "Sara",
+                                  rating: 4,
+                                  comment: "جميل بس محتاج تحسين بسيط",
+                                  isVerified: false,
+                                  status: "pending",
+                                ),
+                                ReviewModel(
+                                  id: 3,
+                                  productId: 103,
+                                  fullName: "Omar",
+                                  rating: 5,
+                                  comment: "ممتاز أنصح بيه 🔥",
+                                  isVerified: true,
+                                  status: "approved",
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
 
