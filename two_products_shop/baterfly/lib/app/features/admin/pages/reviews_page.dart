@@ -1,4 +1,3 @@
-// pages/reviews_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/reviews_controller.dart';
@@ -15,19 +14,32 @@ class ReviewsPage extends StatelessWidget {
           if (ctrl.loading) {
             return const Center(child: CircularProgressIndicator());
           }
+
+          if (ctrl.reviews.isEmpty) {
+            return const Center(child: Text("لا توجد تقييمات حتى الآن"));
+          }
+
           return ListView.separated(
             padding: const EdgeInsets.all(16),
-            separatorBuilder: (_, _) => const SizedBox(height: 10),
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemCount: ctrl.reviews.length,
             itemBuilder: (context, i) {
               final r = ctrl.reviews[i];
+
               return Card(
+                elevation: 3,
                 child: ListTile(
-                  title: Text(r['full_name'] ?? 'مستخدم'),
+                  title: Text(
+                    r['product_name'] ?? 'منتج غير معروف',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Rating: ${r['ratting'] ?? '-'}'),
+                      const SizedBox(height: 6),
+                      Text("Order: ${r['order_no'] ?? '-'}"),
+                      Text("Rating: ⭐ ${r['rating'] ?? 0}"),
+                      const SizedBox(height: 4),
                       Text(r['comment'] ?? ''),
                     ],
                   ),
