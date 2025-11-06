@@ -134,8 +134,9 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                           label: "كلمة المرور",
                           obscure: obscure,
                           validator: (v) {
-                            if (v == null || v.isEmpty)
+                            if (v == null || v.isEmpty) {
                               return "أدخل كلمة المرور";
+                            }
                             if (v.length < 8) return "8 أحرف على الأقل";
                             return null;
                           },
