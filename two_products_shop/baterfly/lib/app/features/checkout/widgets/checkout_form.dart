@@ -20,23 +20,13 @@ class _CheckoutFormState extends State<CheckoutForm> {
   final _phone1 = TextEditingController();
   final _phone2 = TextEditingController();
   final _address = TextEditingController();
+  final _city = TextEditingController();
+  final _area = TextEditingController();
 
   bool _sending = false;
 
-  String? _selectedCity;
-  String? _selectedArea;
-
   final CheckoutService _service = CheckoutService();
 
-  final Map<String, List<String>> _areasByCity = {
-    'القاهرة': ['مدينة نصر', 'مصر الجديدة', 'المعادي', 'الزيتون', 'شبرا'],
-    'الجيزة': ['الهرم', 'الدقي', 'العجوزة', 'إمبابة', 'أكتوبر'],
-    'الإسكندرية': ['سموحة', 'العصافرة', 'محرم بك', 'المنتزه'],
-    'طنطا': ['القرشي', 'سيجر', 'الجمهورية', 'الاستاد'],
-    'المنصورة': ['حي الجامعة', 'طلخا', 'جديلة', 'شارع جيهان'],
-  };
-
-  // ✅ Validators
   String? _vName(String? v) =>
       (v == null || v.trim().length < 10) ? 'الاسم لا يقل عن 10 أحرف' : null;
 
@@ -52,9 +42,11 @@ class _CheckoutFormState extends State<CheckoutForm> {
   }
 
   String? _vAddress(String? v) =>
-      (v == null || v.trim().length < 15) ? 'العنوان لا يقل عن 15 حرف' : null;
+      (v == null || v.trim().length < 10) ? 'العنوان لا يقل عن 10 أحرف' : null;
 
-  // ✅ Send Order to Supabase
+  String? _vCityArea(String? v) =>
+      (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null;
+
   Future<void> _submitOrder() async {
     if (!_form.currentState!.validate()) return;
 
@@ -66,8 +58,8 @@ class _CheckoutFormState extends State<CheckoutForm> {
           'full_name': _name.text.trim(),
           'phone1': _phone1.text.trim(),
           'phone2': _phone2.text.trim(),
-          'city': _selectedCity,
-          'area': _selectedArea,
+          'city': _city.text.trim(),
+          'area': _area.text.trim(),
           'address_text': _address.text.trim(),
           'address_norm': '',
           'notes': '',
@@ -75,13 +67,13 @@ class _CheckoutFormState extends State<CheckoutForm> {
           'payment_method': 'cash_on_delivery',
           'product_id': widget.product['id'],
           'quantity': 1,
-          //'id': '',
           'session_id': DateTime.now().millisecondsSinceEpoch.toString(),
           'created_at': DateTime.now().toIso8601String(),
         },
       );
 
       if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -106,73 +98,47 @@ class _CheckoutFormState extends State<CheckoutForm> {
       key: _form,
       child: Column(
         children: [
-          // ✅ اسم العميل (يسمح بحروف)
           _buildTextField(
             controller: _name,
             label: 'الاسم الكامل',
             icon: Icons.person_outline,
             validator: _vName,
-            keyboardType: TextInputType.text,
-            formatters: [
-              FilteringTextInputFormatter.allow(
-                RegExp(r'[a-zA-Z\u0600-\u06FF ]'),
-              ),
-            ],
           ),
           const SizedBox(height: 12),
 
-          // ✅ رقم الهاتف 1 (أرقام فقط)
           _buildTextField(
             controller: _phone1,
             label: 'رقم الهاتف 1',
             icon: Icons.phone_android,
-            validator: _vPhoneRequired,
             keyboardType: TextInputType.phone,
+            validator: _vPhoneRequired,
             formatters: [FilteringTextInputFormatter.digitsOnly],
           ),
           const SizedBox(height: 12),
 
-          // ✅ رقم الهاتف 2 (أرقام فقط)
           _buildTextField(
             controller: _phone2,
             label: 'رقم الهاتف 2 (اختياري)',
             icon: Icons.phone,
-            validator: _vPhoneOptional,
             keyboardType: TextInputType.phone,
+            validator: _vPhoneOptional,
             formatters: [FilteringTextInputFormatter.digitsOnly],
           ),
           const SizedBox(height: 12),
 
-          DropdownButtonFormField<String>(
-            value: _selectedCity,
-            decoration: _decoration('المدينة', Icons.location_city),
-            items: _areasByCity.keys
-                .map((city) => DropdownMenuItem(value: city, child: Text(city)))
-                .toList(),
-            onChanged: (v) => setState(() {
-              _selectedCity = v;
-              _selectedArea = null;
-            }),
-            validator: (v) => v == null ? 'اختار المدينة' : null,
+          _buildTextField(
+            controller: _city,
+            label: 'المدينة',
+            icon: Icons.location_city,
+            validator: _vCityArea,
           ),
           const SizedBox(height: 12),
 
-          DropdownButtonFormField<String>(
-            value: _selectedArea,
-            decoration: _decoration('المنطقة', Icons.map_outlined),
-            items:
-                (_selectedCity == null
-                        ? <String>[]
-                        : _areasByCity[_selectedCity] ?? <String>[])
-                    .map(
-                      (area) => DropdownMenuItem<String>(
-                        value: area,
-                        child: Text(area),
-                      ),
-                    )
-                    .toList(),
-            onChanged: (v) => setState(() => _selectedArea = v),
-            validator: (v) => v == null ? 'اختار المنطقة' : null,
+          _buildTextField(
+            controller: _area,
+            label: 'المنطقة',
+            icon: Icons.map,
+            validator: _vCityArea,
           ),
           const SizedBox(height: 12),
 
@@ -190,7 +156,6 @@ class _CheckoutFormState extends State<CheckoutForm> {
     );
   }
 
-  // ✅ Decoration wrapper
   InputDecoration _decoration(String text, IconData icon) => InputDecoration(
     labelText: text,
     prefixIcon: Icon(icon),
@@ -202,7 +167,6 @@ class _CheckoutFormState extends State<CheckoutForm> {
     ),
   );
 
-  // ✅ Submit button
   Widget _buildSubmitBtn() => SizedBox(
     width: double.infinity,
     child: DecoratedBox(
@@ -233,7 +197,6 @@ class _CheckoutFormState extends State<CheckoutForm> {
     ),
   );
 
-  // ✅ Flexible TextField Builder
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
