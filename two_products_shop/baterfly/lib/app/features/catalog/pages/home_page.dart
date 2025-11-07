@@ -5,6 +5,7 @@ import 'package:baterfly/app/core/widgets/site_app_bar/CustomDrawer.dart';
 import 'package:baterfly/app/data/models/review_model.dart';
 import 'package:baterfly/app/features/catalog/widgets/product_card/animated_image_slider.dart';
 import 'package:baterfly/app/features/catalog/widgets/widget/build_video_Section.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -51,6 +52,10 @@ class _HomePageState extends State<HomePage>
         .order('reviews_count', ascending: false)
         .order('avg_rating', ascending: false)
         .limit(60);
+
+    if (kDebugMode) {
+      print(rows);
+    } // Add this to verify the data being fetched
 
     return (rows as List).cast<Map<String, dynamic>>();
   }
@@ -158,14 +163,12 @@ class _HomePageState extends State<HomePage>
                           }, childCount: midIndex),
                         ),
                       ),
-
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 30),
                           child: BuildVideoSection(),
                         ),
                       ),
-
                       SliverPadding(
                         padding: EdgeInsets.fromLTRB(side, 16, side, 16),
                         sliver: SliverGrid(
@@ -187,7 +190,6 @@ class _HomePageState extends State<HomePage>
                             return ProductHover(
                               child: ProductCard(
                                 images: images,
-                                // بدل السعر هنحط النص "اطلب الآن"
                                 priceWidget: const Text(
                                   'اطلب الآن',
                                   style: TextStyle(
@@ -250,7 +252,6 @@ class _HomePageState extends State<HomePage>
                           ),
                         ),
                       ),
-
                       const SliverToBoxAdapter(child: FooterLinks()),
                     ],
                   );
