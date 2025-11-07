@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:baterfly/app/features/admin/pages/products_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
