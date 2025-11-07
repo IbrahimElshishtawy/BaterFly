@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, file_names
+
 import 'package:baterfly/app/data/models/review_model.dart';
 import 'package:flutter/material.dart';
 
