@@ -35,10 +35,8 @@ class _HomePageState extends State<HomePage>
     super.dispose();
   }
 
-  // بدل Supabase: نجيب الداتا من ProductData
   List<Map<String, dynamic>> _loadLocalProducts() {
-    // هنا ممكن تعمل لستة من المنتجات حسب الحاجة
-    return List.generate(4, (index) {
+    return List.generate(1, (index) {
       return {
         'id': index + 1,
         'name': ProductData.name,
@@ -71,7 +69,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    final items = _loadLocalProducts(); // استخدمنا الداتا المحلية
+    final items = _loadLocalProducts();
     final midIndex = (items.length / 2).floor();
 
     return Scaffold(
