@@ -29,7 +29,7 @@ class ReviewsFilterBar extends StatelessWidget {
                   : Colors.black87,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 2),
           ChoiceChip(
             label: const Text('الموثّق فقط'),
             selected: currentFilter == 'verified',
@@ -41,7 +41,7 @@ class ReviewsFilterBar extends StatelessWidget {
                   : Colors.black87,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 2),
           ChoiceChip(
             label: const Text('غير الموثّق'),
             selected: currentFilter == 'unverified',
