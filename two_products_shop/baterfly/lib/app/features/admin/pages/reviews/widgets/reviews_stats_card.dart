@@ -76,9 +76,6 @@ class ReviewsStatsCard extends StatelessWidget {
     );
   }
 
-  // -----------------------------
-  //   إجمالي التقييمات
-  // -----------------------------
   Widget _totalColumn() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,9 +93,6 @@ class ReviewsStatsCard extends StatelessWidget {
     );
   }
 
-  // -----------------------------
-  //   الكروت الصغيرة (Stat Chips)
-  // -----------------------------
   Widget _statChip({
     required String label,
     required int value,
