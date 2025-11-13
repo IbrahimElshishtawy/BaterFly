@@ -1,21 +1,10 @@
-// ignore_for_file: overridden_fields
-
-import '../../domain/entities/review.dart';
-
-class ReviewModel extends Review {
-  @override
+class ReviewModel {
   final int id;
-  @override
   final int productId;
-  @override
   final String fullName;
-  @override
   final int rating;
-  @override
   final String comment;
-  @override
   final bool isVerified;
-  @override
   final String status;
 
   ReviewModel({
@@ -26,37 +15,17 @@ class ReviewModel extends Review {
     required this.comment,
     required this.isVerified,
     required this.status,
-  }) : super(
-         id: id,
-         productId: productId,
-         fullName: fullName,
-         rating: rating,
-         comment: comment,
-         isVerified: isVerified,
-         status: status,
-       );
+  });
 
   factory ReviewModel.fromMap(Map<String, dynamic> map) {
     return ReviewModel(
-      id: map['id']?.toint() ?? '',
-      productId: map['product_id'] ?? 0,
-      fullName: map['full_name'] ?? '',
-      rating: (map['rating'] is int)
-          ? map['rating']
-          : int.tryParse(map['rating'].toString()) ?? 0,
-      comment: map['comment'] ?? '',
-      isVerified: map['is_verified'] ?? false,
-      status: map['status'] ?? 'pending',
+      id: map['id'] as int,
+      productId: (map['product_id'] ?? 0) as int,
+      fullName: (map['customer_name'] ?? map['full_name'] ?? '') as String,
+      rating: (map['rating'] as num?)?.toInt() ?? 0,
+      comment: (map['comment'] ?? '') as String,
+      isVerified: map['is_verified'] == true,
+      status: (map['status'] ?? 'approved') as String,
     );
   }
-
-  Map<String, dynamic> toMap() => {
-    'id': id,
-    'product_id': productId,
-    'full_name': fullName,
-    'rating': rating,
-    'comment': comment,
-    'is_verified': isVerified,
-    'status': status,
-  };
 }
