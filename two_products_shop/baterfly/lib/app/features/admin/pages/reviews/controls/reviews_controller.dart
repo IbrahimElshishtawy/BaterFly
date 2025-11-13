@@ -13,12 +13,14 @@ class ReviewsController extends ChangeNotifier {
     notifyListeners();
 
     reviews = await _service.fetchReviews();
+    debugPrint('REVIEWS: $reviews'); // debug اختياري
 
     loading = false;
     notifyListeners();
   }
 
   Future<void> verify(int id, bool val) async {
+    debugPrint('VERIFY CALLED: id=$id, val=$val'); // deb
     await _service.verifyReview(id, val);
     await load(); // reload after update
   }
