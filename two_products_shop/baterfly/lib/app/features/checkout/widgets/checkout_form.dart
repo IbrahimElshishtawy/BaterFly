@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, prefer_final_fields
+// ignore_for_file: unused_field, prefer_final_fields, deprecated_member_use
 
 import 'package:baterfly/app/features/checkout/pages/thank_you_page.dart';
 import 'package:baterfly/app/services/supabase/checkout_service.dart';
@@ -16,6 +16,7 @@ class CheckoutForm extends StatefulWidget {
 
 class _CheckoutFormState extends State<CheckoutForm> {
   final _form = GlobalKey<FormState>();
+
   final _name = TextEditingController();
   final _phone1 = TextEditingController();
   final _phone2 = TextEditingController();
@@ -23,11 +24,12 @@ class _CheckoutFormState extends State<CheckoutForm> {
   final _city = TextEditingController();
   final _area = TextEditingController();
   final _quantity = TextEditingController(text: '1');
+  final _notes = TextEditingController(); // ملاحظات (اختياري)
 
   bool _sending = false;
   final CheckoutService _service = CheckoutService();
 
-  /// وحدة الكمية: gram أو liter
+  /// وحدة الكمية: gram أو liter (للواجهة فقط)
   String _quantityUnit = 'gram';
 
   String? _vName(String? v) =>
@@ -52,9 +54,10 @@ class _CheckoutFormState extends State<CheckoutForm> {
 
   String? _vQuantity(String? v) {
     if (v == null || v.trim().isEmpty) return 'أدخل الكمية';
-    final num? parsed = num.tryParse(v.trim());
-    if (parsed == null || parsed <= 0)
-      return 'الكمية يجب أن تكون رقمًا أكبر من صفر';
+    final int? parsed = int.tryParse(v.trim());
+    if (parsed == null || parsed <= 0) {
+      return 'الكمية يجب أن تكون رقمًا صحيحًا أكبر من صفر';
+    }
     return null;
   }
 
@@ -64,27 +67,32 @@ class _CheckoutFormState extends State<CheckoutForm> {
     setState(() => _sending = true);
 
     try {
-      final qty = num.parse(_quantity.text.trim());
+      final int qty = int.parse(_quantity.text.trim());
 
-      final orderId = await _service.sendOrder(
-        orderData: {
-          'full_name': _name.text.trim(),
-          'phone1': _phone1.text.trim(),
-          'phone2': _phone2.text.trim(),
-          'city': _city.text.trim(),
-          'area': _area.text.trim(),
-          'address_text': _address.text.trim(),
-          'address_norm': '',
-          'notes': '',
-          'status': 'pending',
-          'payment_method': 'cash_on_delivery',
-          'product_id': widget.product['id'],
-          'quantity': qty,
-          'quantity_unit': _quantityUnit, // 👈 وحدة الكمية (gram أو liter)
-          'session_id': DateTime.now().millisecondsSinceEpoch.toString(),
-          'created_at': DateTime.now().toIso8601String(),
-        },
-      );
+      // نبني الداتا
+      final Map<String, dynamic> data = {
+        'full_name': _name.text.trim(),
+        'phone1': _phone1.text.trim(),
+        'phone2': _phone2.text.trim(), // اختياري
+        'city': _city.text.trim(),
+        'area': _area.text.trim(),
+        'address_text': _address.text.trim(),
+        'address_norm': '', // زي ما كانت عندك قبل كده
+        'notes': _notes.text.trim(), // اختياري
+        'status': 'pending',
+        'payment_method': 'cash_on_delivery',
+        'product_id': widget.product['id'],
+        'quantity': qty,
+        'session_id': DateTime.now().millisecondsSinceEpoch.toString(),
+        'created_at': DateTime.now().toIso8601String(),
+      };
+      data.removeWhere((key, value) {
+        if (value == null) return true;
+        if (value is String && value.trim().isEmpty) return true;
+        return false;
+      });
+
+      final orderId = await _service.sendOrder(orderData: data);
 
       if (!mounted) return;
 
@@ -165,11 +173,10 @@ class _CheckoutFormState extends State<CheckoutForm> {
                   controller: _quantity,
                   decoration: _decoration('الكمية', Icons.scale),
                   keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
+                    signed: false,
+                    decimal: false,
                   ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                  ],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: _vQuantity,
                 ),
               ),
@@ -178,7 +185,10 @@ class _CheckoutFormState extends State<CheckoutForm> {
                 flex: 3,
                 child: DropdownButtonFormField<String>(
                   value: _quantityUnit,
-                  decoration: _decoration('الوحدة', Icons.category),
+                  decoration: _decoration(
+                    'الوحدة (للعميل فقط)',
+                    Icons.category,
+                  ),
                   items: const [
                     DropdownMenuItem(value: 'gram', child: Text('جرام')),
                     DropdownMenuItem(
@@ -200,6 +210,16 @@ class _CheckoutFormState extends State<CheckoutForm> {
             controller: _address,
             decoration: _decoration('العنوان الكامل', Icons.home_outlined),
             validator: _vAddress,
+            maxLines: 2,
+          ),
+          const SizedBox(height: 12),
+
+          TextFormField(
+            controller: _notes,
+            decoration: _decoration(
+              'ملاحظات (اختياري)',
+              Icons.note_alt_outlined,
+            ),
             maxLines: 2,
           ),
           const SizedBox(height: 20),
