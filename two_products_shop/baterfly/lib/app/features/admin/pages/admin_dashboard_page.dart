@@ -54,7 +54,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
 
   Widget _buildSidebar() {
     return Container(
-      width: 170,
+      width: 150,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.deepPurple.shade800, Colors.deepPurple.shade600],
@@ -64,11 +64,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
       ),
       child: Column(
         children: [
-          const SizedBox(height: 30),
+          const SizedBox(height: 60),
 
           Lottie.network(
             "https://assets5.lottiefiles.com/packages/lf20_zrqthn6o.json",
-            height: 120,
+            height: 100,
           ),
 
           const SizedBox(height: 12),
