@@ -26,7 +26,9 @@ class AdminService {
   Future<List<Map<String, dynamic>>> fetchReviews() async {
     final res = await _db
         .from('product_reviews')
-        .select()
+        .select(
+          'id, rating, comment, is_verified, created_at, order_no, product_name',
+        )
         .order('created_at', ascending: false);
 
     return List<Map<String, dynamic>>.from(res);
