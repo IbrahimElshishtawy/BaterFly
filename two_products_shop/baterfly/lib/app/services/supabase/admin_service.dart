@@ -24,26 +24,45 @@ class AdminService {
 
   // ================= REVIEWS =================
 
+  bool _normalizeIsVerified(dynamic v) {
+    return v == true || v == 1 || v == 'true';
+  }
+
   Future<List<Map<String, dynamic>>> fetchReviews() async {
     final res = await _db
         .from('product_reviews')
-        .select('*, product:products(name), order:orders(order_no, full_name)')
+        .select() // مفيش join هنا
         .order('created_at', ascending: false);
 
-    return res.map((r) {
-      return {
-        ...r,
-        'product_name': r['product']?['name'],
-        'order_no': r['order']?['order_no'],
-        'customer_name': r['order']?['full_name'],
-      };
-    }).toList();
+    final list = List<Map<String, dynamic>>.from(
+      (res as List).map((r) {
+        final map = Map<String, dynamic>.from(r as Map);
+
+        // توحيد is_verified كبوليان
+        map['is_verified'] = _normalizeIsVerified(map['is_verified']);
+
+        // علشان الـ UI ما يتكسرش، نزود مفاتيح وهمية لو مش موجودة
+        map.putIfAbsent('product_name', () => null);
+        map.putIfAbsent('order_no', () => null);
+        map.putIfAbsent('customer_name', () => null);
+
+        return map;
+      }),
+    );
+
+    // debug اختياري
+    // print('REVIEWS FROM DB: $list');
+
+    return list;
   }
 
   Future<void> verifyReview(int id, bool isVerified) async {
-    await _db
-        .from('product_reviews')
-        .update({'is_verified': isVerified})
-        .eq('id', id);
+    final updatePayload = {
+      'is_verified': isVerified, // لو العمود Boolean
+      // لو العمود INT:
+      // 'is_verified': isVerified ? 1 : 0,
+    };
+
+    await _db.from('product_reviews').update(updatePayload).eq('id', id);
   }
 }

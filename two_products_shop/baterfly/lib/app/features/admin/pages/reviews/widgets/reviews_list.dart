@@ -1,4 +1,6 @@
 // pages/widgets/reviews_list.dart
+// ignore_for_file: unnecessary_underscores, deprecated_member_use
+
 import 'package:flutter/material.dart';
 
 class ReviewsList extends StatelessWidget {
