@@ -22,28 +22,6 @@ class AdminService {
     await _db.from('orders').update({'status': status}).eq('id', id);
   }
 
-  // ================= PRODUCTS =================
-  Future<List<Map<String, dynamic>>> fetchProducts() async {
-    final res = await _db
-        .from('products')
-        .select()
-        .order('id', ascending: true);
-    return List<Map<String, dynamic>>.from(res);
-  }
-
-  Future<int> createProduct(Map<String, dynamic> data) async {
-    final resp = await _db.from('products').insert(data).select('id').single();
-    return resp['id'];
-  }
-
-  Future<void> updateProduct(int id, Map<String, dynamic> data) async {
-    await _db.from('products').update(data).eq('id', id);
-  }
-
-  Future<void> deleteProduct(int id) async {
-    await _db.from('products').delete().eq('id', id);
-  }
-
   // ================= REVIEWS =================
   Future<List<Map<String, dynamic>>> fetchReviews() async {
     final res = await _db
