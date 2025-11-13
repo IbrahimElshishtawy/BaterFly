@@ -23,15 +23,21 @@ class AdminService {
   }
 
   // ================= REVIEWS =================
+
   Future<List<Map<String, dynamic>>> fetchReviews() async {
     final res = await _db
         .from('product_reviews')
-        .select(
-          'id, rating, comment, is_verified, created_at, order_no, product_name',
-        )
+        .select('*, product:products(name), order:orders(order_no, full_name)')
         .order('created_at', ascending: false);
 
-    return List<Map<String, dynamic>>.from(res);
+    return res.map((r) {
+      return {
+        ...r,
+        'product_name': r['product']?['name'],
+        'order_no': r['order']?['order_no'],
+        'customer_name': r['order']?['full_name'],
+      };
+    }).toList();
   }
 
   Future<void> verifyReview(int id, bool isVerified) async {
