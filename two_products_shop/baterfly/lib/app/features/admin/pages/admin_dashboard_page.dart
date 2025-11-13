@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'orders_page.dart';
+import 'order/orders_page.dart';
 import 'reviews_page.dart';
 
 class AdminDashboardPage extends StatefulWidget {
@@ -20,7 +20,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
   bool _disposed = false;
   late final List<Widget> _pages;
 
-  final _titles = ['الطلبات', 'المنتجات', 'التقييمات'];
+  final _titles = ['الطلبات', 'التقييمات'];
 
   @override
   void initState() {
@@ -54,7 +54,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
 
   Widget _buildSidebar() {
     return Container(
-      width: 250,
+      width: 170,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.deepPurple.shade800, Colors.deepPurple.shade600],
@@ -87,8 +87,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
           ),
 
           _navItem(0, Icons.receipt_long, "الطلبات"),
-          _navItem(1, Icons.inventory_2, "المنتجات"),
-          _navItem(2, Icons.rate_review, "التقييمات"),
+          _navItem(1, Icons.rate_review, "التقييمات"),
         ],
       ),
     );
