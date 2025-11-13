@@ -15,6 +15,10 @@ class ReviewsPage extends StatefulWidget {
 class _ReviewsPageState extends State<ReviewsPage> {
   String _filter = 'all';
 
+  bool _isVerified(dynamic value) {
+    return value == true || value == 1 || value == 'true';
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -25,11 +29,24 @@ class _ReviewsPageState extends State<ReviewsPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // فلترة الريفيوز حسب الفلتر الحالي
           final reviews = ctrl.reviews.where((r) {
-            if (_filter == 'verified') return r['is_verified'] == true;
-            if (_filter == 'unverified') return r['is_verified'] != true;
+            final bool isVerified = _isVerified(r['is_verified']);
+
+            if (_filter == 'verified') return isVerified;
+            if (_filter == 'unverified') return !isVerified;
             return true;
           }).toList();
+
+          // حساب الإحصائيات باستخدام نفس المنطق
+          final int verifiedCount = ctrl.reviews.where((r) {
+            return _isVerified(r['is_verified']);
+          }).length;
+
+          final int unverifiedCount = ctrl.reviews.where((r) {
+            final bool isVerified = _isVerified(r['is_verified']);
+            return !isVerified;
+          }).length;
 
           return LayoutBuilder(
             builder: (context, constraints) {
@@ -67,12 +84,8 @@ class _ReviewsPageState extends State<ReviewsPage> {
                   // Stats
                   ReviewsStatsCard(
                     total: ctrl.reviews.length,
-                    verified: ctrl.reviews
-                        .where((r) => r['is_verified'] == true)
-                        .length,
-                    unverified: ctrl.reviews
-                        .where((r) => r['is_verified'] != true)
-                        .length,
+                    verified: verifiedCount,
+                    unverified: unverifiedCount,
                     isWide: isWide,
                   ),
 
