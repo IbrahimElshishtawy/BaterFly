@@ -42,62 +42,77 @@ class ReviewsList extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 10,
-            ),
-            title: Text(
-              'Butterfly Product',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Column(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 6),
-                Text(
-                  'Order: ${r['order_no'] ?? '-'}',
-                  style: const TextStyle(fontSize: 12),
-                ),
-                Text(
-                  'Rating: ⭐ ${r['rating'] ?? 0}',
-                  style: const TextStyle(fontSize: 12),
-                ),
-                const SizedBox(height: 4),
-                if ((r['comment'] ?? '').toString().isNotEmpty)
-                  Text(r['comment'], style: const TextStyle(fontSize: 13)),
-              ],
-            ),
-            trailing: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                // -------- اليسار: بيانات التقييم --------
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        r['product_name'] ?? 'منتج غير معروف',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Order: ${r['order_no'] ?? '-'}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      Text(
+                        'Rating: ⭐ ${r['rating'] ?? 0}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      const SizedBox(height: 4),
+                      if ((r['comment'] ?? '').toString().isNotEmpty)
+                        Text(
+                          r['comment'],
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                    ],
                   ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    isVerified ? 'مُوثَّق' : 'غير مُوثَّق',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: statusColor,
+                ),
+
+                const SizedBox(width: 12),
+
+                // -------- اليمين: حالة التوثيق + السويتش --------
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: statusColor.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        isVerified ? 'مُوثَّق' : 'غير مُوثَّق',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: statusColor,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Transform.scale(
-                  scale: 0.9,
-                  child: Switch(
-                    value: isVerified,
-                    onChanged: (val) => onToggleVerified(r['id'] as int, val),
-                  ),
+                    const SizedBox(height: 8),
+                    Transform.scale(
+                      scale: 0.9,
+                      child: Switch(
+                        value: isVerified,
+                        onChanged: (val) =>
+                            onToggleVerified(r['id'] as int, val),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
