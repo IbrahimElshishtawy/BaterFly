@@ -36,6 +36,24 @@ class OrdersList extends StatelessWidget {
         final status = (o['status'] ?? '').toString();
         final statusClr = statusColor(status);
 
+        // الكمية
+        final num quantity = num.tryParse(o['quantity'].toString()) ?? 1;
+
+        // الوحدة
+        final String unit = (o['quantity_unit'] ?? 'unit').toString();
+
+        String unitLabel;
+        switch (unit) {
+          case 'gram':
+            unitLabel = 'جرام';
+            break;
+          case 'liter':
+            unitLabel = 'لتر';
+            break;
+          default:
+            unitLabel = 'وحدة';
+        }
+
         return Card(
           elevation: 1.5,
           shape: RoundedRectangleBorder(
@@ -63,12 +81,19 @@ class OrdersList extends StatelessWidget {
                   'Order #${o['order_no'] ?? o['id']}',
                   style: const TextStyle(fontSize: 12),
                 ),
+
+                // 🟢 الكمية + الوحدة
+                Text(
+                  'الكمية المطلوبة: $quantity $unitLabel',
+                  style: const TextStyle(fontSize: 12),
+                ),
+
+                // العنوان
                 if ((o['address_text'] ?? '').toString().isNotEmpty)
                   Text(o['address_text'], style: const TextStyle(fontSize: 12)),
               ],
             ),
             trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Container(
