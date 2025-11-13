@@ -83,6 +83,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
         'payment_method': 'cash_on_delivery',
         'product_id': widget.product['id'],
         'quantity': qty,
+        'quantity_unit': _quantityUnit,
         'session_id': DateTime.now().millisecondsSinceEpoch.toString(),
         'created_at': DateTime.now().toIso8601String(),
       };
