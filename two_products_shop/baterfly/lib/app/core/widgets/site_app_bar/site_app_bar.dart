@@ -11,7 +11,7 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SiteAppBar({
     super.key,
     this.transparent = false,
-    this.title = 'BatteryFly',
+    this.title = 'ButteryFly',
   });
 
   @override
