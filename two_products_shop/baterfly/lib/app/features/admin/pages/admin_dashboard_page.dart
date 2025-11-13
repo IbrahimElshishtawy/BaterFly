@@ -54,7 +54,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
 
   Widget _buildSidebar() {
     return Container(
-      width: 150,
+      width: 160,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.deepPurple.shade800, Colors.deepPurple.shade600],
