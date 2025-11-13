@@ -1,9 +1,9 @@
 // pages/reviews_page.dart
+import 'package:baterfly/app/features/admin/pages/reviews/controls/reviews_controller.dart';
 import 'package:baterfly/app/features/admin/pages/reviews/widgets/reviews_list.dart';
 import 'package:baterfly/app/features/admin/pages/reviews/widgets/reviews_stats_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../controllers/reviews_controller.dart';
 
 class ReviewsPage extends StatefulWidget {
   const ReviewsPage({super.key});
@@ -15,10 +15,6 @@ class ReviewsPage extends StatefulWidget {
 class _ReviewsPageState extends State<ReviewsPage> {
   String _filter = 'all';
 
-  bool _isVerified(dynamic value) {
-    return value == true || value == 1 || value == 'true';
-  }
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -29,23 +25,43 @@ class _ReviewsPageState extends State<ReviewsPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // لو حصل خطأ في الـ load
+          if (ctrl.errorMessage != null) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    ctrl.errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: () => ctrl.load(),
+                    child: const Text('إعادة المحاولة'),
+                  ),
+                ],
+              ),
+            );
+          }
+
           // فلترة الريفيوز حسب الفلتر الحالي
           final reviews = ctrl.reviews.where((r) {
-            final bool isVerified = _isVerified(r['is_verified']);
+            final bool isVerified = r['is_verified'] == true;
 
             if (_filter == 'verified') return isVerified;
             if (_filter == 'unverified') return !isVerified;
             return true;
           }).toList();
 
-          // حساب الإحصائيات باستخدام نفس المنطق
+          // حساب الإحصائيات
           final int verifiedCount = ctrl.reviews.where((r) {
-            return _isVerified(r['is_verified']);
+            return r['is_verified'] == true;
           }).length;
 
           final int unverifiedCount = ctrl.reviews.where((r) {
-            final bool isVerified = _isVerified(r['is_verified']);
-            return !isVerified;
+            return r['is_verified'] != true;
           }).length;
 
           return LayoutBuilder(
