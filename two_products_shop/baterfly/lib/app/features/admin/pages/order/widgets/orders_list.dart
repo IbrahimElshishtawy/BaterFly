@@ -30,7 +30,7 @@ class OrdersList extends StatelessWidget {
     return ListView.separated(
       padding: EdgeInsets.all(isTablet || isWide ? 16 : 8),
       itemCount: orders.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => const SizedBox(height: 15),
       itemBuilder: (context, i) {
         final o = orders[i];
         final status = (o['status'] ?? '').toString();
@@ -62,7 +62,7 @@ class OrdersList extends StatelessWidget {
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: 10,
+              vertical: 12,
             ),
             leading: CircleAvatar(
               radius: isWide ? 20 : 18,
@@ -114,7 +114,7 @@ class OrdersList extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 PopupMenuButton<String>(
                   tooltip: 'تغيير الحالة',
                   onSelected: (v) async {
