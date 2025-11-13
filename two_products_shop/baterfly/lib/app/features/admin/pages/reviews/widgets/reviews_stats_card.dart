@@ -48,7 +48,8 @@ class ReviewsStatsCard extends StatelessWidget {
                   ],
                 )
               : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     _totalColumn(),
                     const SizedBox(height: 12),
