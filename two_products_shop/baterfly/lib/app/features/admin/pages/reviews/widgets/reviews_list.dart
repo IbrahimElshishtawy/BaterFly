@@ -17,6 +17,10 @@ class ReviewsList extends StatelessWidget {
 
   Color _statusColor(bool verified) => verified ? Colors.green : Colors.orange;
 
+  bool _isVerified(dynamic value) {
+    return value == true || value == 1 || value == 'true';
+  }
+
   @override
   Widget build(BuildContext context) {
     if (reviews.isEmpty) {
@@ -34,7 +38,7 @@ class ReviewsList extends StatelessWidget {
       itemCount: reviews.length,
       itemBuilder: (context, i) {
         final r = reviews[i];
-        final bool isVerified = r['is_verified'] == true;
+        final bool isVerified = _isVerified(r['is_verified']);
         final statusColor = _statusColor(isVerified);
 
         return Card(
