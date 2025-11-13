@@ -19,6 +19,15 @@ class ReviewsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (reviews.isEmpty) {
+      return const Center(
+        child: Text(
+          'لا توجد تقييمات حتى الآن',
+          style: TextStyle(color: Colors.grey),
+        ),
+      );
+    }
+
     return ListView.separated(
       padding: EdgeInsets.all(isTablet || isWide ? 16 : 8),
       separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -39,7 +48,7 @@ class ReviewsList extends StatelessWidget {
               vertical: 10,
             ),
             title: Text(
-              r['product_name'] ?? 'منتج غير معروف',
+              'Butterfly Product',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Column(
@@ -60,8 +69,8 @@ class ReviewsList extends StatelessWidget {
               ],
             ),
             trailing: Column(
-              mainAxisSize: MainAxisSize.min, // 👈 يمنع overflow
-              mainAxisAlignment: MainAxisAlignment.center, // 👈 في النص
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Container(
@@ -84,7 +93,7 @@ class ReviewsList extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Transform.scale(
-                  scale: 0.9, // تصغير بسيط للـ Switch
+                  scale: 0.9,
                   child: Switch(
                     value: isVerified,
                     onChanged: (val) => onToggleVerified(r['id'] as int, val),
