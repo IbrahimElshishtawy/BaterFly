@@ -22,10 +22,13 @@ class _CheckoutFormState extends State<CheckoutForm> {
   final _address = TextEditingController();
   final _city = TextEditingController();
   final _area = TextEditingController();
+  final _quantity = TextEditingController(text: '1');
 
   bool _sending = false;
-
   final CheckoutService _service = CheckoutService();
+
+  /// وحدة الكمية: gram أو liter
+  String _quantityUnit = 'gram';
 
   String? _vName(String? v) =>
       (v == null || v.trim().length < 10) ? 'الاسم لا يقل عن 10 أحرف' : null;
@@ -36,7 +39,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
   }
 
   String? _vPhoneOptional(String? v) {
-    if (v!.isEmpty) return null;
+    if (v == null || v.isEmpty) return null;
     final ok = RegExp(r'^\d{8,15}$').hasMatch(v.trim());
     return ok ? null : 'رقم غير صالح';
   }
@@ -47,12 +50,22 @@ class _CheckoutFormState extends State<CheckoutForm> {
   String? _vCityArea(String? v) =>
       (v == null || v.trim().isEmpty) ? 'هذا الحقل مطلوب' : null;
 
+  String? _vQuantity(String? v) {
+    if (v == null || v.trim().isEmpty) return 'أدخل الكمية';
+    final num? parsed = num.tryParse(v.trim());
+    if (parsed == null || parsed <= 0)
+      return 'الكمية يجب أن تكون رقمًا أكبر من صفر';
+    return null;
+  }
+
   Future<void> _submitOrder() async {
     if (!_form.currentState!.validate()) return;
 
     setState(() => _sending = true);
 
     try {
+      final qty = num.parse(_quantity.text.trim());
+
       final orderId = await _service.sendOrder(
         orderData: {
           'full_name': _name.text.trim(),
@@ -66,7 +79,8 @@ class _CheckoutFormState extends State<CheckoutForm> {
           'status': 'pending',
           'payment_method': 'cash_on_delivery',
           'product_id': widget.product['id'],
-          'quantity': 1,
+          'quantity': qty,
+          'quantity_unit': _quantityUnit, // 👈 وحدة الكمية (gram أو liter)
           'session_id': DateTime.now().millisecondsSinceEpoch.toString(),
           'created_at': DateTime.now().toIso8601String(),
         },
@@ -139,6 +153,46 @@ class _CheckoutFormState extends State<CheckoutForm> {
             label: 'المنطقة',
             icon: Icons.map,
             validator: _vCityArea,
+          ),
+          const SizedBox(height: 12),
+
+          // 🔹 الكمية + نوعها (جرام / لتر)
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: TextFormField(
+                  controller: _quantity,
+                  decoration: _decoration('الكمية', Icons.scale),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
+                  validator: _vQuantity,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 3,
+                child: DropdownButtonFormField<String>(
+                  value: _quantityUnit,
+                  decoration: _decoration('الوحدة', Icons.category),
+                  items: const [
+                    DropdownMenuItem(value: 'gram', child: Text('جرام')),
+                    DropdownMenuItem(
+                      value: 'liter',
+                      child: Text('زجاجة / لتر'),
+                    ),
+                  ],
+                  onChanged: (v) {
+                    if (v == null) return;
+                    setState(() => _quantityUnit = v);
+                  },
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
 
