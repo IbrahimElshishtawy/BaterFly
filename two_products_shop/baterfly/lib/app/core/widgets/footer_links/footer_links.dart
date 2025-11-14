@@ -4,6 +4,8 @@ import 'footer_desktop_columns.dart';
 import 'footer_mobile_columns.dart';
 import 'footer_helpers.dart';
 import 'footer_icons.dart' hide FooterIconLink;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'footer_web_button.dart';
 
 class FooterLinks extends StatelessWidget {
@@ -77,13 +79,13 @@ class FooterLinks extends StatelessWidget {
                             url: 'https://facebook.com',
                             icon: Icons.facebook,
                           ),
-                          const FooterIconLink(
+                          FooterIconLink(
                             url: 'https://instagram.com',
-                            icon: Icons.camera_alt_outlined,
+                            icon: FontAwesomeIcons.instagram,
                           ),
                           const FooterIconLink(
                             url: 'https://wa.me/201234567890',
-                            icon: Icons.chat_outlined,
+                            icon: FontAwesomeIcons.whatsapp,
                           ),
 
                           Container(
