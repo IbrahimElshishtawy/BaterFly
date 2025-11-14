@@ -33,7 +33,6 @@ class ReviewsSlider extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ⭐ التقييم
                 Row(
                   children: [
                     Icon(Icons.star, color: Colors.amber, size: 22),
@@ -50,7 +49,6 @@ class ReviewsSlider extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                // 👤 اسم العميل
                 Text(
                   r.fullName.isNotEmpty ? r.fullName : "عميل",
                   style: const TextStyle(
@@ -61,7 +59,6 @@ class ReviewsSlider extends StatelessWidget {
 
                 const SizedBox(height: 6),
 
-                // 💬 التعليق
                 Expanded(
                   child: Text(
                     r.comment,
