@@ -12,9 +12,7 @@ class HomeReviewsSection extends StatelessWidget {
     try {
       final res = await db
           .from('product_reviews')
-          .select(
-            'id, product_id, rating, comment, is_verified, status, full_name, customer_name',
-          )
+          .select('id, product_id, rating, comment, is_verified, customer_name')
           .eq('is_verified', true)
           .order('created_at', ascending: false)
           .limit(10);
@@ -27,11 +25,10 @@ class HomeReviewsSection extends StatelessWidget {
         return ReviewModel(
           id: m['id'] as int,
           productId: (m['product_id'] ?? 0) as int,
-          fullName: (m['customer_name'] ?? m['full_name'] ?? '') as String,
+          fullName: (m['customer_name'] ?? '') as String,
           rating: (m['rating'] as num?)?.toInt() ?? 0,
           comment: (m['comment'] ?? '') as String,
           isVerified: m['is_verified'] == true,
-          status: (m['status'] ?? 'approved') as String,
         );
       }).toList();
     } catch (e, s) {
@@ -61,7 +58,7 @@ class HomeReviewsSection extends StatelessWidget {
               child: Center(
                 child: Text(
                   'حصل خطأ أثناء تحميل التقييمات',
-                  style: TextStyle(color: Colors.red.shade600),
+                  style: TextStyle(color: Colors.redAccent),
                 ),
               ),
             ),

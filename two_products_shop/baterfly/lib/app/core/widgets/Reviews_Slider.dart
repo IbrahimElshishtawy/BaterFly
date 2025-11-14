@@ -1,3 +1,6 @@
+// ignore_for_file: deprecated_member_use
+
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:baterfly/app/data/models/review_model.dart';
 
@@ -9,65 +12,148 @@ class ReviewsSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 220,
+      height: 210,
       child: PageView.builder(
         itemCount: reviews.length,
-        controller: PageController(viewportFraction: 0.85),
+        controller: PageController(viewportFraction: 0.78),
         itemBuilder: (context, index) {
           final r = reviews[index];
 
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 8,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.star, color: Colors.amber, size: 22),
-                    const SizedBox(width: 4),
-                    Text(
-                      r.rating.toString(),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+          final String initial = r.fullName.isNotEmpty
+              ? r.fullName.characters.first
+              : 'ع';
+
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOut,
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(22),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.10), // شفافية
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.20),
+                      width: 1.3,
                     ),
-                  ],
-                ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.18),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /// الصف العلوي: اسم + أفاتار / التقييم
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // 👤 Avatar + Name
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundColor: Colors.white.withOpacity(0.25),
+                                child: Text(
+                                  initial,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    r.fullName.isNotEmpty ? r.fullName : "عميل",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  if (r.isVerified)
+                                    Text(
+                                      'تقييم موثَّق',
+                                      style: TextStyle(
+                                        color: Colors.greenAccent.shade100,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
 
-                const SizedBox(height: 10),
+                          // ⭐ Rating chip
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.amber.shade400,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  r.rating.toString(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
 
-                Text(
-                  r.fullName.isNotEmpty ? r.fullName : "عميل",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                      const SizedBox(height: 12),
+
+                      // فاصل بسيط
+                      Container(
+                        height: 1,
+                        width: double.infinity,
+                        color: Colors.white.withOpacity(0.12),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      /// 💬 Comment
+                      Expanded(
+                        child: Text(
+                          r.comment,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.95),
+                            fontSize: 14,
+                            height: 1.4,
+                          ),
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 6),
-
-                Expanded(
-                  child: Text(
-                    r.comment,
-                    style: const TextStyle(fontSize: 14),
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+              ),
             ),
           );
         },
