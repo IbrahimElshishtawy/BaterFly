@@ -1,113 +1,79 @@
-// ignore_for_file: deprecated_member_use, file_names
-
-import 'package:baterfly/app/data/models/review_model.dart';
 import 'package:flutter/material.dart';
+import 'package:baterfly/app/data/models/review_model.dart';
 
-class ReviewsSlider extends StatefulWidget {
+class ReviewsSlider extends StatelessWidget {
   final List<ReviewModel> reviews;
 
   const ReviewsSlider({super.key, required this.reviews});
 
   @override
-  State<ReviewsSlider> createState() => _ReviewsSliderState();
-}
-
-class _ReviewsSliderState extends State<ReviewsSlider>
-    with SingleTickerProviderStateMixin {
-  int index = 0;
-  late AnimationController _controller;
-  late Animation<double> _fade;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-
-    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-
-    _controller.forward();
-
-    // تبديل التعليقات كل 3 ثواني
-    Future.delayed(const Duration(seconds: 3), _changeReview);
-  }
-
-  void _changeReview() {
-    if (!mounted) return;
-    _controller.reverse().then((_) {
-      setState(() {
-        index = (index + 1) % widget.reviews.length;
-      });
-      _controller.forward();
-    });
-
-    Future.delayed(const Duration(seconds: 3), _changeReview);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (widget.reviews.isEmpty) {
-      return const Center(child: Text("لا يوجد تقييمات بعد"));
-    }
+    return SizedBox(
+      height: 220,
+      child: PageView.builder(
+        itemCount: reviews.length,
+        controller: PageController(viewportFraction: 0.85),
+        itemBuilder: (context, index) {
+          final r = reviews[index];
 
-    final item = widget.reviews[index];
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 8,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ⭐ التقييم
+                Row(
+                  children: [
+                    Icon(Icons.star, color: Colors.amber, size: 22),
+                    const SizedBox(width: 4),
+                    Text(
+                      r.rating.toString(),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
 
-    return FadeTransition(
-      opacity: _fade,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              spreadRadius: 1,
+                const SizedBox(height: 10),
+
+                // 👤 اسم العميل
+                Text(
+                  r.fullName.isNotEmpty ? r.fullName : "عميل",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                // 💬 التعليق
+                Expanded(
+                  child: Text(
+                    r.comment,
+                    style: const TextStyle(fontSize: 14),
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              item.fullName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (i) {
-                return Icon(
-                  i < item.rating ? Icons.star : Icons.star_border,
-                  size: 18,
-                  color: Colors.amber,
-                );
-              }),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              item.comment,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
