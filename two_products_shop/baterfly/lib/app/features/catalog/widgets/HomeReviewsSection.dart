@@ -9,16 +9,35 @@ class HomeReviewsSection extends StatelessWidget {
   Future<List<ReviewModel>> _loadVerifiedReviews() async {
     final db = Supabase.instance.client;
 
-    final res = await db
-        .from('product_reviews')
-        .select() // أو حدد الأعمدة لو حابب
-        .eq('is_verified', true)
-        .order('created_at', ascending: false)
-        .limit(10);
+    try {
+      final res = await db
+          .from('product_reviews')
+          .select(
+            'id, product_id, rating, comment, is_verified, status, full_name, customer_name',
+          )
+          .eq('is_verified', true)
+          .order('created_at', ascending: false)
+          .limit(10);
 
-    final list = List<Map<String, dynamic>>.from(res as List);
+      print('HOME VERIFIED RAW: $res');
 
-    return list.map((m) => ReviewModel.fromMap(m)).toList();
+      final list = List<Map<String, dynamic>>.from(res as List);
+
+      return list.map((m) {
+        return ReviewModel(
+          id: m['id'] as int,
+          productId: (m['product_id'] ?? 0) as int,
+          fullName: (m['customer_name'] ?? m['full_name'] ?? '') as String,
+          rating: (m['rating'] as num?)?.toInt() ?? 0,
+          comment: (m['comment'] ?? '') as String,
+          isVerified: m['is_verified'] == true,
+          status: (m['status'] ?? 'approved') as String,
+        );
+      }).toList();
+    } catch (e, s) {
+      print('ERROR LOADING HOME REVIEWS: $e\n$s');
+      rethrow;
+    }
   }
 
   @override
@@ -27,7 +46,6 @@ class HomeReviewsSection extends StatelessWidget {
       future: _loadVerifiedReviews(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // لودينج بسيط
           return const SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 20),
@@ -36,8 +54,21 @@ class HomeReviewsSection extends StatelessWidget {
           );
         }
 
+        if (snapshot.hasError) {
+          return SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Text(
+                  'حصل خطأ أثناء تحميل التقييمات',
+                  style: TextStyle(color: Colors.red.shade600),
+                ),
+              ),
+            ),
+          );
+        }
+
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          // لو مفيش ريفيوز موثقة → ما نعرضش السكشن
           return const SliverToBoxAdapter(child: SizedBox.shrink());
         }
 
