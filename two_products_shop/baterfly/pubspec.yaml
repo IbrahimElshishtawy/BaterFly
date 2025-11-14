@@ -24,6 +24,9 @@ dependencies:
   get: ^4.7.2
   lottie: ^3.3.2
   provider: ^6.1.5+1
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
+  
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +41,7 @@ flutter:
     - assets/images/image_2.jpg
     - assets/images/image_3.jpg
     - assets/images/image_4.jpg
+    - assets/images/icons.jpg
     - assets/video/video_1.mp4
     - assets/video/video_2.mp4
     - assets/video/video_3.mp4
@@ -49,3 +53,18 @@ flutter:
         - asset: assets/font/Cairo-Regular.ttf
         - asset: assets/font/Cairo-Bold.ttf
           weight: 700
+
+
+  
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icons.jpg"
+
+
+flutter_native_splash:
+  color: "#FFFFFFFF"        
+  image: assets/images/icons.jpg
+  ios: true
+  android: true
+  web: false

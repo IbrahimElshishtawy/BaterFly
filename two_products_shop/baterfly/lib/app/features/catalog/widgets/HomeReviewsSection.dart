@@ -1,5 +1,8 @@
+// ignore_for_file: file_names
+
 import 'package:baterfly/app/core/widgets/Reviews_Slider.dart';
 import 'package:baterfly/app/data/models/review_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,7 +20,9 @@ class HomeReviewsSection extends StatelessWidget {
           .order('created_at', ascending: false)
           .limit(10);
 
-      print('HOME VERIFIED RAW: $res');
+      if (kDebugMode) {
+        print('HOME VERIFIED RAW: $res');
+      }
 
       final list = List<Map<String, dynamic>>.from(res as List);
 
@@ -32,7 +37,9 @@ class HomeReviewsSection extends StatelessWidget {
         );
       }).toList();
     } catch (e, s) {
-      print('ERROR LOADING HOME REVIEWS: $e\n$s');
+      if (kDebugMode) {
+        print('ERROR LOADING HOME REVIEWS: $e\n$s');
+      }
       rethrow;
     }
   }

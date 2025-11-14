@@ -1,4 +1,5 @@
 // services/admin_service.dart
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AdminService {
@@ -36,7 +37,9 @@ class AdminService {
     final list = List<Map<String, dynamic>>.from(res as List);
 
     // Debug عشان تشوف الداتا من Supabase
-    print('REVIEWS FROM DB RAW: $list');
+    if (kDebugMode) {
+      print('REVIEWS FROM DB RAW: $list');
+    }
 
     return list;
   }
@@ -51,6 +54,8 @@ class AdminService {
         .eq('id', id)
         .select(); // نرجع الصف بعد التحديث (للدebug)
 
-    print('UPDATED ROW: $res');
+    if (kDebugMode) {
+      print('UPDATED ROW: $res');
+    }
   }
 }

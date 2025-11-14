@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:baterfly/app/core/widgets/site_app_bar/CustomDrawer.dart';
-import 'package:baterfly/app/data/models/review_model.dart';
 import 'package:baterfly/app/data/static/product_data.dart';
 import 'package:baterfly/app/features/catalog/widgets/HomeReviewsSection.dart';
 import 'package:baterfly/app/features/catalog/widgets/product_card/animated_image_slider.dart';

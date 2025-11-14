@@ -13,8 +13,6 @@ class SupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // رقم التليفون في فورمات دولي (مصر)
-    const String phoneInternational = '+201098338348';
-    const String phoneLocal = '01098338348';
 
     return Scaffold(
       endDrawer: const CustomDrawer(),
