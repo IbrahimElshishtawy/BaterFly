@@ -12,6 +12,10 @@ class SupportPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // رقم التليفون في فورمات دولي (مصر)
+    const String phoneInternational = '+201098338348';
+    const String phoneLocal = '01098338348';
+
     return Scaffold(
       endDrawer: const CustomDrawer(),
       appBar: SiteAppBar(transparent: false),
@@ -55,7 +59,8 @@ class SupportPage extends StatelessWidget {
 
                           // فقرة ترحيبية
                           const Text(
-                            'يسعدنا دائمًا تواصلك معنا لأي استفسار أو ملاحظة تتعلق بطلباتك أو منتجاتنا. فريق خدمة العملاء متاح لمساعدتك عبر الوسائل التالية:',
+                            'يسعدنا دائمًا تواصلك معنا لأي استفسار أو ملاحظة تتعلق بطلباتك أو منتجاتنا. '
+                            'فريق خدمة العملاء متاح لمساعدتك عبر وسائل التواصل التالية:',
                             style: TextStyle(
                               fontSize: 16,
                               height: 1.8,
@@ -64,17 +69,20 @@ class SupportPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 32),
 
-                          // طرق التواصل
+                          // واتساب
                           const ContactItem(
                             icon: Icons.chat_outlined,
                             color: Color(0xFF25D366),
                             title: 'واتساب الدعم الفني',
                             text:
-                                'تواصل مباشرة مع فريق خدمة العملاء على مدار الساعة.',
-                            url: 'https://wa.me/201234567890',
+                                'تواصل مباشرة مع فريق خدمة العملاء على رقم الواتساب الرسمي.',
+                            // 201098338348 بدون علامة +
+                            url: 'https://wa.me/201098338348',
                             bgColor: Colors.white24,
                             textColor: Colors.white,
                           ),
+
+                          // البريد الإلكتروني
                           const ContactItem(
                             icon: Icons.email_outlined,
                             color: Color(0xFF4285F4),
@@ -85,16 +93,46 @@ class SupportPage extends StatelessWidget {
                             bgColor: Colors.white24,
                             textColor: Colors.white,
                           ),
+
+                          // الاتصال الهاتفي
                           const ContactItem(
                             icon: Icons.phone_in_talk_outlined,
                             color: Color(0xFFFF9800),
                             title: 'الاتصال الهاتفي',
                             text:
-                                'متاح يوميًا من الساعة 10 صباحًا حتى 8 مساءً.',
-                            url: 'tel:+201234567890',
+                                'يمكنك الاتصال بنا مباشرة على الرقم 01098338348 يوميًا من الساعة 10 صباحًا حتى 8 مساءً.',
+                            url: 'tel:+201098338348',
                             bgColor: Colors.white24,
                             textColor: Colors.white,
                           ),
+
+                          const SizedBox(height: 20),
+
+                          // فيسبوك
+                          const ContactItem(
+                            icon: Icons.facebook,
+                            color: Color(0xFF1877F2),
+                            title: 'صفحتنا على فيسبوك',
+                            text:
+                                'تابع أحدث الأخبار والعروض وتواصل معنا عبر فيسبوك.',
+                            url:
+                                'https://www.facebook.com/share/1AHY1dexwG/', // رابط صفحتك
+                            bgColor: Colors.white24,
+                            textColor: Colors.white,
+                          ),
+
+                          // إنستجرام
+                          const ContactItem(
+                            icon: Icons.camera_alt_outlined,
+                            color: Color(0xFFE1306C),
+                            title: 'حساب إنستجرام',
+                            text:
+                                'شاهد صور المنتجات ونتائج العملاء عبر حسابنا على إنستجرام.',
+                            url: 'https://www.instagram.com/m.almounir/',
+                            bgColor: Colors.white24,
+                            textColor: Colors.white,
+                          ),
+
                           const SizedBox(height: 36),
 
                           // نص ختامي
@@ -117,7 +155,8 @@ class SupportPage extends StatelessWidget {
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    'يرجى تزويدنا برقم الطلب عند التواصل لتسريع عملية المساعدة.',
+                                    'يرجى تزويدنا برقم الطلب عند التواصل لتسريع عملية المساعدة، '
+                                    'وسنكون سعيدين بخدمتك في أقرب وقت ممكن.',
                                     style: TextStyle(
                                       fontSize: 15.5,
                                       height: 1.6,
