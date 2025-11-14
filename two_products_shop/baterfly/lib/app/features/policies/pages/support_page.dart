@@ -87,7 +87,7 @@ class SupportPage extends StatelessWidget {
                             title: 'البريد الإلكتروني',
                             text:
                                 'يمكنك مراسلتنا عبر البريد للحصول على دعم أو تقديم ملاحظات.',
-                            url: 'mailto:support@lamsethareer.com',
+                            url: 'shishtawyhima@gmail.com',
                             bgColor: Colors.white24,
                             textColor: Colors.white,
                           ),
