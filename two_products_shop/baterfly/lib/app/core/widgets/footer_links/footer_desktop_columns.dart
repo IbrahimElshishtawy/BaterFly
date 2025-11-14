@@ -22,19 +22,23 @@ class FooterDesktopColumns extends StatelessWidget {
             ],
           ),
         ),
+
         const SizedBox(width: 24),
+
         // عمود السياسات
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: const [
               NavLink(text: 'سياسة الاستبدال والاسترجاع', route: '/returns'),
               NavLink(text: 'سياسة الشحن', route: '/shipping'),
-              NavLink(text: 'الدعم الفني واتساب', route: '/support'),
+              NavLink(text: 'الدعم الفني والتواصل', route: '/support'),
             ],
           ),
         ),
+
         const SizedBox(width: 24),
+
         // عمود الدعم والتواصل
         Expanded(
           child: Column(
@@ -42,12 +46,24 @@ class FooterDesktopColumns extends StatelessWidget {
             children: const [
               FooterColHeader('الدعم والتواصل'),
               SizedBox(height: 10),
+
+              // واتساب
               FooterLink(
-                text: 'الدعم الفني واتساب',
-                url: 'https://wa.me/201234567890',
+                text: 'الدعم الفني عبر واتساب',
+                url: 'https://wa.me/201098338348',
               ),
-              FooterLink(text: 'فيسبوك', url: 'https://facebook.com'),
-              FooterLink(text: 'إنستغرام', url: 'https://instagram.com'),
+
+              // فيسبوك
+              FooterLink(
+                text: 'فيسبوك',
+                url: 'https://www.facebook.com/share/1AHY1dexwG/',
+              ),
+
+              // انستجرام
+              FooterLink(
+                text: 'إنستجرام',
+                url: 'https://www.instagram.com/m.almounir/',
+              ),
             ],
           ),
         ),
