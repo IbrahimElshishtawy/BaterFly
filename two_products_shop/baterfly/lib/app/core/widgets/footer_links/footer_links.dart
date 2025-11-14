@@ -76,15 +76,15 @@ class FooterLinks extends StatelessWidget {
                         alignment: WrapAlignment.center,
                         children: [
                           const FooterIconLink(
-                            url: 'https://facebook.com',
+                            url: 'https://www.facebook.com/share/1AHY1dexwG/',
                             icon: Icons.facebook,
                           ),
                           FooterIconLink(
-                            url: 'https://instagram.com',
+                            url: 'https://www.instagram.com/m.almounir/',
                             icon: FontAwesomeIcons.instagram,
                           ),
                           const FooterIconLink(
-                            url: 'https://wa.me/201234567890',
+                            url: 'https://wa.me/201098338348',
                             icon: FontAwesomeIcons.whatsapp,
                           ),
 
@@ -110,7 +110,7 @@ class FooterLinks extends StatelessWidget {
                           ),
 
                           Text(
-                            '© 2025 BaterFly',
+                            '© 2025 ButterFly',
                             style: t.textTheme.bodySmall?.copyWith(
                               color: Colors.white.withOpacity(0.72),
                               letterSpacing: .1,
