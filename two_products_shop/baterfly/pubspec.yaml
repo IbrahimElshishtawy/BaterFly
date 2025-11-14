@@ -26,6 +26,7 @@ dependencies:
   provider: ^6.1.5+1
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.4.0
+  rename: ^3.1.0
   
 
 dev_dependencies:
@@ -63,7 +64,8 @@ flutter_icons:
 
 
 flutter_native_splash:
-  color: "#FFFFFFFF"        
+  color: "#FFFFFF"        
+  color_dark: "#FFFFFF"
   image: assets/images/icons.jpg
   ios: true
   android: true
