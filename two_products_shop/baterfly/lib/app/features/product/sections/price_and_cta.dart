@@ -10,7 +10,7 @@ class PriceAndCTA extends StatelessWidget {
 
   // دالة لفتح الواتساب
   void _openWhatsApp() async {
-    const phoneNumber = '+201234567890'; // حط رقمك هنا
+    const phoneNumber = '+201098338348'; // حط رقمك هنا
     final message = Uri.encodeComponent(
       "مرحبًا، أريد الاستفسار عن سعر المنتج 💬",
     );
