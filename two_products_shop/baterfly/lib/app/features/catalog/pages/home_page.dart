@@ -5,6 +5,7 @@ import 'package:baterfly/app/data/static/product_data.dart';
 import 'package:baterfly/app/features/catalog/widgets/HomeReviewsSection.dart';
 import 'package:baterfly/app/features/catalog/widgets/product_card/animated_image_slider.dart';
 import 'package:baterfly/app/features/catalog/widgets/widget/build_video_Section.dart';
+import 'package:baterfly/app/features/reviews/widgets/review_section.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/utils/responsive.dart';
@@ -25,7 +26,7 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ac = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 320),
+    duration: const Duration(milliseconds: 300),
   )..forward();
 
   @override
@@ -40,10 +41,11 @@ class _HomePageState extends State<HomePage>
         'id': index + 1,
         'name': ProductData.name,
         'slug': 'ceramide-butterfly-$index',
-
-        'avg_rating': 4.5,
+        'avg_rating': 'rating${(index % 5) + 1}',
         'reviews_count': 12,
         'active': true,
+        // لو عندك سعر في ProductData ضيفه هنا:
+        // 'price': ProductData.price,
       };
     });
   }
@@ -89,6 +91,7 @@ class _HomePageState extends State<HomePage>
 
               return CustomScrollView(
                 slivers: [
+                  // الجزء الأول من الجريد
                   SliverPadding(
                     padding: EdgeInsets.fromLTRB(side, 16, side, 16),
                     sliver: SliverGrid(
@@ -135,12 +138,16 @@ class _HomePageState extends State<HomePage>
                       }, childCount: midIndex),
                     ),
                   ),
+
+                  // سيكشن الفيديو
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 30),
                       child: BuildVideoSection(),
                     ),
                   ),
+
+                  // الجزء الثاني من الجريد
                   SliverPadding(
                     padding: EdgeInsets.fromLTRB(side, 16, side, 16),
                     sliver: SliverGrid(
@@ -186,7 +193,26 @@ class _HomePageState extends State<HomePage>
                       }, childCount: items.length - midIndex),
                     ),
                   ),
+
+                  // سيكشن مراجعات عامة (لو عندك ويدجت لده)
                   const HomeReviewsSection(),
+
+                  // ⭐ سيكشن التقييم/المراجعة في الهوم
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 24,
+                      ),
+                      child: ReviewSection(
+                        // قيم ثابتة للهوم، عدل حسب تعريف ReviewSection عندك
+                        orderNo: 'HOME_SECTION',
+                        productId: 1,
+                      ),
+                    ),
+                  ),
+
+                  // الفوتر
                   const SliverToBoxAdapter(child: FooterLinks()),
                 ],
               );
