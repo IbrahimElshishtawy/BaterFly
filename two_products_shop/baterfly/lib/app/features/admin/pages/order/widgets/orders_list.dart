@@ -84,6 +84,10 @@ class OrdersList extends StatelessWidget {
                   style: const TextStyle(fontSize: 12),
                 ),
 
+                Text(
+                  'الهاتف: ${o['phone'] ?? '-'}',
+                  style: const TextStyle(fontSize: 12),
+                ),
                 // 🟢 الكمية + الوحدة
                 Text(
                   'الكمية المطلوبة: $quantity $unitLabel',
