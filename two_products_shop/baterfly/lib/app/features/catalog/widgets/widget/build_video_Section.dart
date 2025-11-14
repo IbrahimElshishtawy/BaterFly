@@ -12,8 +12,10 @@ class BuildVideoSection extends StatelessWidget {
     final crossAxisCount = width > 1000
         ? 4
         : width > 600
+        ? 3
+        : width > 400
         ? 2
-        : 1;
+        : 2;
 
     return Container(
       width: double.infinity,
