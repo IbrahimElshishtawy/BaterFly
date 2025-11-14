@@ -9,7 +9,11 @@ import 'star_rating.dart';
 
 class ReviewSection extends StatefulWidget {
   final int productId;
-  const ReviewSection({super.key, required this.productId});
+  const ReviewSection({
+    super.key,
+    required this.productId,
+    required String orderNo,
+  });
 
   @override
   State<ReviewSection> createState() => _ReviewSectionState();
