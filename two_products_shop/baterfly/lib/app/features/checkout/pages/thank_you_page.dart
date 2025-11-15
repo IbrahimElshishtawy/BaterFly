@@ -97,7 +97,7 @@ class _ThankYouPageState extends State<ThankYouPage> {
 
                           ReviewSection(
                             orderNo: widget.orderNo,
-                            productId: int.tryParse(widget.productName) ?? 0,
+                            productName: widget.productName,
                           ),
 
                           SizedBox(
