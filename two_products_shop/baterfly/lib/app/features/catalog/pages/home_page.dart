@@ -27,6 +27,7 @@ class HomePage extends StatelessWidget {
         'avg_rating': (index % 5) + 1,
         'reviews_count': 12,
         'active': true,
+        // لو عندك سعر في ProductData ضيفه هنا:
         // 'price': ProductData.price,
       };
     });
@@ -120,7 +121,6 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
 
-                  // سيكشن الفيديو
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 30),
@@ -128,7 +128,6 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
 
-                  // الجزء الثاني من الجريد
                   SliverPadding(
                     padding: EdgeInsets.fromLTRB(side, 16, side, 16),
                     sliver: SliverGrid(
