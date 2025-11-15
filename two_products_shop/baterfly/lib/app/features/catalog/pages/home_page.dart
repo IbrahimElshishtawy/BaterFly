@@ -24,7 +24,7 @@ class HomePage extends StatelessWidget {
           'id': index + 1,
           'name': ProductData.name,
           'slug': 'ceramide-butterfly-$index',
-          'avg_rating': (index % 5) + 1,
+          'rating': (index % 5) + 1,
           'reviews_count': 12,
           'active': true,
         };
@@ -84,7 +84,7 @@ class HomePage extends StatelessWidget {
                         final m = _items[i];
                         final images = _getProductImages(i);
                         final price = (m['price'] as num?)?.toDouble();
-                        final rating = (m['avg_rating'] as num?)?.toDouble();
+                        final rating = (m['rating'] as num?)?.toDouble();
 
                         return SizedBox(
                           height: 260,
