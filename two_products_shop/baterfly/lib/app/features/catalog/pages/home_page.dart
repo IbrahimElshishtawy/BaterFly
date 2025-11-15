@@ -15,25 +15,8 @@ import '../../product/widgets/gradient_bg.dart';
 import '../../product/widgets/product_hover.dart';
 import '../widgets/product_card/product_card.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ac = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 300),
-  )..forward();
-
-  @override
-  void dispose() {
-    _ac.dispose();
-    super.dispose();
-  }
 
   List<Map<String, dynamic>> _loadLocalProducts() {
     return List.generate(1, (index) {
@@ -41,10 +24,9 @@ class _HomePageState extends State<HomePage>
         'id': index + 1,
         'name': ProductData.name,
         'slug': 'ceramide-butterfly-$index',
-        'avg_rating': 'rating${(index % 5) + 1}',
+        'avg_rating': (index % 5) + 1,
         'reviews_count': 12,
         'active': true,
-        // لو عندك سعر في ProductData ضيفه هنا:
         // 'price': ProductData.price,
       };
     });
@@ -106,8 +88,7 @@ class _HomePageState extends State<HomePage>
                         final m = items[i];
                         final images = _getProductImages(i);
                         final price = (m['price'] as num?)?.toDouble();
-                        final rating = ((m['avg_rating'] ?? 0) as num?)
-                            ?.toDouble();
+                        final rating = (m['avg_rating'] as num?)?.toDouble();
 
                         return SizedBox(
                           height: 260,
@@ -162,8 +143,7 @@ class _HomePageState extends State<HomePage>
                         if (index >= items.length) return null;
                         final m = items[index];
                         final images = _getProductImages(index);
-                        final rating = ((m['avg_rating'] ?? 0) as num?)
-                            ?.toDouble();
+                        final rating = (m['avg_rating'] as num?)?.toDouble();
 
                         return SizedBox(
                           height: 260,
@@ -194,10 +174,8 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
 
-                  // سيكشن مراجعات عامة (لو عندك ويدجت لده)
                   const HomeReviewsSection(),
 
-                  // ⭐ سيكشن التقييم/المراجعة في الهوم
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -205,14 +183,12 @@ class _HomePageState extends State<HomePage>
                         vertical: 24,
                       ),
                       child: ReviewSection(
-                        // قيم ثابتة للهوم، عدل حسب تعريف ReviewSection عندك
                         orderNo: 'HOME_SECTION',
-                        productId: 1,
+                        productName: ProductData.name,
                       ),
                     ),
                   ),
 
-                  // الفوتر
                   const SliverToBoxAdapter(child: FooterLinks()),
                 ],
               );
