@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -41,9 +41,7 @@ class _ReviewSectionState extends State<ReviewSection> {
         "comment": commentCtrl.text,
       });
 
-      setState(() {
-        isSent = true;
-      });
+      setState(() => isSent = true);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("✅ شكراً لك! تم إرسال تقييمك بنجاح")),
@@ -65,89 +63,106 @@ class _ReviewSectionState extends State<ReviewSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Divider(color: Colors.white24),
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.symmetric(vertical: 20),
+        width: MediaQuery.of(context).size.width > 600 ? 500 : double.infinity,
 
-        const Text(
-          "⭐ قيم تجربتك",
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        // ⭐ Stars Rating
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(5, (i) {
-            return IconButton(
-              onPressed: isSent
-                  ? null
-                  : () {
-                      setState(() => selectedRating = i + 1);
-                    },
-              icon: Icon(
-                i < selectedRating ? Icons.star : Icons.star_border,
-                color: Colors.amber,
-                size: 32,
-              ),
-            );
-          }),
-        ),
-
-        const SizedBox(height: 10),
-
-        // 💬 Comment
-        TextField(
-          controller: commentCtrl,
-          enabled: !isSent,
-          maxLines: 3,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: "اكتب تعليقك هنا...",
-            hintStyle: const TextStyle(color: Colors.white54),
-            filled: true,
-            fillColor: Colors.white.withOpacity(0.1),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 20,
+              spreadRadius: 1,
             ),
-          ),
+          ],
         ),
 
-        const SizedBox(height: 18),
-
-        // ✅ Submit Button
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: isSent ? null : submitReview,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              backgroundColor: isSent ? Colors.green : Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              "⭐ قيم تجربتك معنا",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            child: isSubmitting
-                ? const CircularProgressIndicator(color: Colors.black)
-                : Text(
-                    isSent ? "✅ تم إرسال التقييم" : "إرسال التقييم",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.bold,
-                    ),
+
+            const SizedBox(height: 14),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (i) {
+                return IconButton(
+                  onPressed: isSent
+                      ? null
+                      : () {
+                          setState(() => selectedRating = i + 1);
+                        },
+                  icon: Icon(
+                    i < selectedRating ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                    size: 32,
                   ),
-          ),
-        ),
+                );
+              }),
+            ),
 
-        const SizedBox(height: 24),
-      ],
+            const SizedBox(height: 10),
+
+            // 💬 Comment
+            TextField(
+              controller: commentCtrl,
+              enabled: !isSent,
+              maxLines: 3,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: "شاركنا رأيك...",
+                hintStyle: const TextStyle(color: Colors.white54),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.08),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.white24),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 18),
+
+            // Submit Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isSent ? null : submitReview,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: isSent ? Colors.green : Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: isSubmitting
+                    ? const CircularProgressIndicator(color: Colors.black)
+                    : Text(
+                        isSent ? "تم إرسال التقييم" : "إرسال التقييم",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
