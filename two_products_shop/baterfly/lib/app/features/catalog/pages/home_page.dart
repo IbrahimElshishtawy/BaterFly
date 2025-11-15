@@ -24,7 +24,7 @@ class HomePage extends StatelessWidget {
           'id': index + 1,
           'name': ProductData.name,
           'slug': 'ceramide-butterfly-$index',
-          'rating': (index % 5) + 1,
+          'rating': 4.5,
           'reviews_count': 12,
           'active': true,
         };
