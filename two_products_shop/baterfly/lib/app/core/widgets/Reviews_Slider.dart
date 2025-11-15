@@ -12,7 +12,7 @@ class ReviewsSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 210,
+      height: 300,
       child: PageView.builder(
         itemCount: reviews.length,
         controller: PageController(viewportFraction: 0.78),
