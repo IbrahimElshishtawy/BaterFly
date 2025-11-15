@@ -44,8 +44,8 @@ class _ReviewSectionState extends State<ReviewSection> {
         "product_name": widget.productName,
         "rating": selectedRating,
         "comment": commentCtrl.text.trim(),
-        // تأكد إن عندك عمود full_name في جدول product_reviews
-        "full_name": nameCtrl.text.trim(),
+
+        "customer_name": nameCtrl.text.trim(),
       });
 
       setState(() => isSent = true);
@@ -144,7 +144,6 @@ class _ReviewSectionState extends State<ReviewSection> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // العنوان
             Align(
               alignment: Alignment.centerRight,
               child: Text(
@@ -184,7 +183,6 @@ class _ReviewSectionState extends State<ReviewSection> {
 
             const SizedBox(height: 18),
 
-            // الاسم الكامل
             _buildInput(
               label: "الاسم الكامل",
               hint: "اكتب اسمك هنا",
@@ -193,7 +191,6 @@ class _ReviewSectionState extends State<ReviewSection> {
 
             const SizedBox(height: 14),
 
-            // التعليق
             _buildInput(
               label: "تعليقك",
               hint: "اكتب تعليقًا مفيدًا عن تجربتك",
@@ -203,7 +200,6 @@ class _ReviewSectionState extends State<ReviewSection> {
 
             const SizedBox(height: 20),
 
-            // زر الإرسال
             SizedBox(
               height: 48,
               child: ElevatedButton(
