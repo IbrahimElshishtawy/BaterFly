@@ -11,12 +11,15 @@ class OrdersList extends StatelessWidget {
   final bool isTablet;
   final Future<void> Function(int id, String status) onChangeStatus;
 
+  final Future<void> Function(int id) onDeleteOrder;
+
   const OrdersList({
     super.key,
     required this.orders,
     required this.isWide,
     required this.isTablet,
     required this.onChangeStatus,
+    required this.onDeleteOrder,
   });
 
   // ==========================
@@ -35,6 +38,31 @@ class OrdersList extends StatelessWidget {
     } else {
       debugPrint('لا يمكن فتح واتساب للرقم: $phone');
     }
+  }
+
+  // ==========================
+  Future<bool> _confirmDelete(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('تأكيد الحذف'),
+        content: const Text(
+          'هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذه العملية.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('حذف'),
+          ),
+        ],
+      ),
+    );
+
+    return result ?? false;
   }
 
   @override
@@ -171,10 +199,21 @@ class OrdersList extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
+
+                // ==========================
+                // منيو: تغيير حالة + حذف
+                // ==========================
                 PopupMenuButton<String>(
-                  tooltip: 'تغيير الحالة',
+                  tooltip: 'خيارات الطلب',
                   onSelected: (v) async {
-                    await onChangeStatus(o['id'] as int, v);
+                    if (v == 'delete') {
+                      final ok = await _confirmDelete(context);
+                      if (ok) {
+                        await onDeleteOrder(o['id'] as int);
+                      }
+                    } else {
+                      await onChangeStatus(o['id'] as int, v);
+                    }
                   },
                   itemBuilder: (_) => const [
                     PopupMenuItem(
@@ -187,6 +226,14 @@ class OrdersList extends StatelessWidget {
                     ),
                     PopupMenuItem(value: 'shipped', child: Text('تم الشحن')),
                     PopupMenuItem(value: 'done', child: Text('مكتمل')),
+                    PopupMenuDivider(),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text(
+                        'حذف الطلب',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
                   ],
                   child: const Icon(Icons.more_vert, size: 20),
                 ),
