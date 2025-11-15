@@ -89,6 +89,13 @@ class OrdersPage extends StatelessWidget {
                             isTablet: isTablet,
                             onChangeStatus: (id, status) =>
                                 ctrl.changeStatus(id, status),
+
+                            // ✅ هنا ربطنا الحذف بالكنترولر
+                            onDeleteOrder: (id) => ctrl.deleteOrder(
+                              id,
+                              // نرسل الـ context لو عايز تعرض SnackBar مثلاً
+                              context,
+                            ),
                           ),
                         ),
                       ],
