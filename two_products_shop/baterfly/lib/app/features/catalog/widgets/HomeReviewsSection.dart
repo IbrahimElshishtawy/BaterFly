@@ -1,210 +1,101 @@
 // ignore_for_file: file_names
 
+import 'package:baterfly/app/core/widgets/Reviews_Slider.dart';
 import 'package:baterfly/app/data/models/review_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ReviewsSlider extends StatefulWidget {
-  final List<ReviewModel> reviews;
+class HomeReviewsSection extends StatelessWidget {
+  const HomeReviewsSection({super.key});
 
-  const ReviewsSlider({super.key, required this.reviews});
+  Future<List<ReviewModel>> _loadVerifiedReviews() async {
+    final db = Supabase.instance.client;
 
-  @override
-  State<ReviewsSlider> createState() => _ReviewsSliderState();
-}
+    try {
+      final res = await db
+          .from('product_reviews')
+          .select('id, product_id, rating, comment, is_verified, customer_name')
+          .eq('is_verified', true)
+          .order('created_at', ascending: false)
+          .limit(10);
 
-class _ReviewsSliderState extends State<ReviewsSlider> {
-  late final PageController _pageController;
-  int _current = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(
-      viewportFraction: 0.8, // يخلي الكارت اللي في النص كبير والباقي باين وراه
-      initialPage: 0,
-    );
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  String _safeName(String name) {
-    if (name.trim().isEmpty) return 'عميل';
-    return name;
+      if (kDebugMode) {
+        print('HOME VERIFIED RAW: $res');
+      }
+      final list = List<Map<String, dynamic>>.from(res as List);
+      return list.map((m) => ReviewModel.fromMap(m)).toList();
+    } catch (e, s) {
+      if (kDebugMode) {
+        print('ERROR LOADING HOME REVIEWS: $e\n$s');
+      }
+      rethrow;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.reviews.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    return FutureBuilder<List<ReviewModel>>(
+      future: _loadVerifiedReviews(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
 
-    return PageView.builder(
-      controller: _pageController,
-      itemCount: widget.reviews.length,
-      onPageChanged: (i) {
-        setState(() => _current = i);
-      },
-      itemBuilder: (context, index) {
-        final review = widget.reviews[index];
-
-        return AnimatedBuilder(
-          animation: _pageController,
-          builder: (context, child) {
-            double value = 0;
-            if (_pageController.position.haveDimensions) {
-              value = _pageController.page! - index;
-            } else {
-              value = _current - index.toDouble();
-            }
-
-            // قيمة من 0 إلى 1 لتكبير/تصغير الكارت
-            value = (1 - (value.abs() * 0.25)).clamp(0.85, 1.0);
-
-            final double scale = value;
-            final double opacity = 0.5 + (value - 0.85) * 3; // تقريباً 0.5 - 1
-
-            return Center(
-              child: Transform.scale(
-                scale: scale,
-                child: Opacity(
-                  opacity: opacity.clamp(0.4, 1.0),
-                  child: _buildCard(review),
+        if (snapshot.hasError) {
+          return const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Text(
+                  'حصل خطأ أثناء تحميل التقييمات',
+                  style: TextStyle(color: Colors.redAccent),
                 ),
               ),
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+          );
+        }
 
-  Widget _buildCard(ReviewModel review) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            Colors.white.withOpacity(0.16),
-            Colors.white.withOpacity(0.04),
-          ],
-        ),
-        border: Border.all(color: Colors.white.withOpacity(0.35)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.35),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // أول صف: الاسم + تقييم موثّق + النجمة والرقم
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // الاسم و"تقييم موثّق"
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _safeName(review.fullName),
-                    textDirection: TextDirection.rtl,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.verified,
-                              color: Colors.greenAccent,
-                              size: 14,
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              'تقييم موثّق',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SliverToBoxAdapter(child: SizedBox.shrink());
+        }
 
-              // التقييم
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.amber, size: 18),
-                    const SizedBox(width: 4),
-                    Text(
-                      review.rating.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+        final reviews = snapshot.data!;
+
+        return SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 32.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Center(
+                      child: Text(
+                        'بعض آراء وتجارب عملائنا مع ButterFly',
+                        textDirection: TextDirection.rtl,
+                        style: TextStyle(fontSize: 14, color: Colors.white70),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(height: 24),
 
-          const SizedBox(height: 12),
-
-          // نص التعليق
-          Expanded(
-            child: Text(
-              review.comment,
-              textDirection: TextDirection.rtl,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                height: 1.5,
-              ),
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
+                SizedBox(height: 210, child: ReviewsSlider(reviews: reviews)),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
