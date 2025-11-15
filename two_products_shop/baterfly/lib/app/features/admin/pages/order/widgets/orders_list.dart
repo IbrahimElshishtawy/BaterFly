@@ -2,6 +2,7 @@
 // ignore_for_file: unnecessary_underscores, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'order_status_utils.dart';
 
 class OrdersList extends StatelessWidget {
@@ -17,6 +18,24 @@ class OrdersList extends StatelessWidget {
     required this.isTablet,
     required this.onChangeStatus,
   });
+
+  // ==========================
+  // فتح واتساب
+  // ==========================
+  Future<void> _openWhatsApp(String rawPhone) async {
+    // تنظيف الرقم
+    final phone = rawPhone.replaceAll(RegExp(r'[^0-9+]'), '');
+
+    if (phone.isEmpty) return;
+
+    final uri = Uri.parse('https://wa.me/$phone');
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      debugPrint('لا يمكن فتح واتساب للرقم: $phone');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +56,9 @@ class OrdersList extends StatelessWidget {
         final o = orders[i];
         final status = (o['status'] ?? '').toString();
         final statusClr = statusColor(status);
+
+        // رقم الهاتف
+        final String phone = (o['phone1'] ?? o['phone2']).toString();
 
         // الكمية
         final num quantity = num.tryParse(o['quantity'].toString()) ?? 1;
@@ -68,7 +90,12 @@ class OrdersList extends StatelessWidget {
             ),
             leading: CircleAvatar(
               radius: isWide ? 20 : 18,
-              backgroundColor: Colors.deepPurple.withOpacity(0.08),
+              backgroundColor: const Color.fromARGB(
+                255,
+                58,
+                85,
+                183,
+              ).withOpacity(0.08),
               child: const Icon(Icons.person_outline, color: Colors.deepPurple),
             ),
             title: Text(
@@ -79,21 +106,44 @@ class OrdersList extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
+
                 Text(
                   'Order #${o['order_no'] ?? o['id']}',
                   style: const TextStyle(fontSize: 12),
                 ),
 
-                Text(
-                  'الهاتف: ${o['phone'] ?? '-'}',
-                  style: const TextStyle(fontSize: 12),
-                ),
-                // 🟢 الكمية + الوحدة
+                // ==========================
+                // الهاتف (قابل للضغط)
+                // ==========================
+                if (phone.isNotEmpty)
+                  InkWell(
+                    onTap: () => _openWhatsApp(phone),
+                    child: Text(
+                      'الهاتف: $phone',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        decoration: TextDecoration.underline,
+                        color: Colors.green,
+                      ),
+                    ),
+                  )
+                else
+                  const Text('الهاتف: -', style: TextStyle(fontSize: 12)),
+
                 Text(
                   'الكمية المطلوبة: $quantity $unitLabel',
                   style: const TextStyle(fontSize: 12),
                 ),
 
+                Text(
+                  'city: ${o['city'] ?? '-'}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+
+                Text(
+                  'area: ${o['area'] ?? '-'}',
+                  style: const TextStyle(fontSize: 12),
+                ),
                 // العنوان
                 if ((o['address_text'] ?? '').toString().isNotEmpty)
                   Text(o['address_text'], style: const TextStyle(fontSize: 12)),
