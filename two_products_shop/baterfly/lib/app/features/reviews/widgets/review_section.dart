@@ -1,18 +1,16 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../data/datasources/remote/reviews_remote.dart';
-import '../controllers/review_controller.dart';
-import 'star_rating.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ReviewSection extends StatefulWidget {
-  final int productId;
+  final String orderNo;
+  final String productName;
+
   const ReviewSection({
     super.key,
-    required this.productId,
-    required String orderNo,
+    required this.orderNo,
+    required this.productName,
   });
 
   @override
@@ -20,108 +18,227 @@ class ReviewSection extends StatefulWidget {
 }
 
 class _ReviewSectionState extends State<ReviewSection> {
-  final _remote = ReviewsRemote();
-  final _ctrl = ReviewController();
-  late Future<List<Map<String, dynamic>>> f;
-  final name = TextEditingController();
-  final comment = TextEditingController();
-  int rating = 5;
-  bool sending = false;
+  int selectedRating = 0;
+  final TextEditingController nameCtrl = TextEditingController();
+  final TextEditingController commentCtrl = TextEditingController();
+  bool isSubmitting = false;
+  bool isSent = false;
 
-  @override
-  void initState() {
-    super.initState();
-    f = _remote.listApproved(widget.productId);
-  }
-
-  Future<void> _submit() async {
-    setState(() => sending = true);
-    final err = await _ctrl.add(
-      productId: widget.productId,
-      fullName: name.text,
-      rating: rating,
-      comment: comment.text,
-    );
-    setState(() => sending = false);
-    if (err != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+  Future<void> submitReview() async {
+    if (selectedRating == 0 ||
+        nameCtrl.text.trim().isEmpty ||
+        commentCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("⚠ من فضلك اختر تقييم، واكتب اسمك وتعليقك"),
+        ),
+      );
       return;
     }
-    name.clear();
-    comment.clear();
-    setState(() => f = _remote.listApproved(widget.productId));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('تم إرسال التقييم للمراجعة')));
+
+    setState(() => isSubmitting = true);
+
+    try {
+      await Supabase.instance.client.from("product_reviews").insert({
+        "order_no": widget.orderNo,
+        "product_name": widget.productName,
+        "rating": selectedRating,
+        "comment": commentCtrl.text.trim(),
+        // تأكد إن عندك عمود full_name في جدول product_reviews
+        "full_name": nameCtrl.text.trim(),
+      });
+
+      setState(() => isSent = true);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("✅ شكراً لك! تم إرسال تقييمك بنجاح")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("❌ حدث خطأ أثناء الإرسال: $e")));
+    }
+
+    setState(() => isSubmitting = false);
+  }
+
+  @override
+  void dispose() {
+    nameCtrl.dispose();
+    commentCtrl.dispose();
+    super.dispose();
+  }
+
+  Widget _buildInput({
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+    int maxLines = 1,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          textDirection: TextDirection.rtl,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          enabled: !isSent,
+          maxLines: maxLines,
+          style: const TextStyle(color: Colors.white),
+          textDirection: TextDirection.rtl,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintTextDirection: TextDirection.rtl,
+            hintStyle: const TextStyle(color: Colors.white54),
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.06),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 10,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.white24),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.white24),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Colors.orangeAccent),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('التقييمات', style: AppTextStyles.title),
-        const SizedBox(height: 12),
-        FutureBuilder<List<Map<String, dynamic>>>(
-          future: f,
-          builder: (_, s) {
-            if (!s.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            final items = s.data!;
-            if (items.isEmpty) return const Text('لا توجد تقييمات بعد');
-            return Column(
-              children: items.map((r) {
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(r['full_name']),
-                  subtitle: Text(r['comment']),
-                  trailing: StarRating(value: (r['rating'] as num).toDouble()),
-                );
-              }).toList(),
-            );
-          },
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 24),
+        padding: const EdgeInsets.all(20),
+        constraints: const BoxConstraints(maxWidth: 600),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.35),
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(color: Colors.white.withOpacity(0.25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.35),
+              blurRadius: 25,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
-        const SizedBox(height: 20),
-        const Text('أضف تقييمك', style: AppTextStyles.title),
-        const SizedBox(height: 8),
-        Row(
-          children: List.generate(5, (i) {
-            final idx = i + 1;
-            return IconButton(
-              onPressed: () => setState(() => rating = idx),
-              icon: Icon(
-                idx <= rating ? Icons.star_rounded : Icons.star_border_rounded,
-                color: Colors.amber,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // العنوان
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                "أضف تقييمك",
+                textDirection: TextDirection.rtl,
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            );
-          }),
-        ),
-        TextField(
-          controller: name,
-          decoration: const InputDecoration(labelText: 'الاسم الكامل'),
-        ),
-        TextField(
-          controller: comment,
-          decoration: const InputDecoration(labelText: 'اكتب تعليقًا مفيدًا'),
-          maxLines: 3,
-        ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: sending ? null : _submit,
-          style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-          child: sending
-              ? const SizedBox(
-                  height: 18,
-                  width: 18,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
+            ),
+
+            const SizedBox(height: 14),
+
+            // النجوم
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: List.generate(5, (i) {
+                final filled = i < selectedRating;
+                return IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: isSent
+                      ? null
+                      : () {
+                          setState(() => selectedRating = i + 1);
+                        },
+                  icon: Icon(
+                    filled ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                    size: 30,
                   ),
-                )
-              : const Text('إرسال'),
+                );
+              }),
+            ),
+
+            const SizedBox(height: 18),
+
+            // الاسم الكامل
+            _buildInput(
+              label: "الاسم الكامل",
+              hint: "اكتب اسمك هنا",
+              controller: nameCtrl,
+            ),
+
+            const SizedBox(height: 14),
+
+            // التعليق
+            _buildInput(
+              label: "تعليقك",
+              hint: "اكتب تعليقًا مفيدًا عن تجربتك",
+              controller: commentCtrl,
+              maxLines: 3,
+            ),
+
+            const SizedBox(height: 20),
+
+            // زر الإرسال
+            SizedBox(
+              height: 48,
+              child: ElevatedButton(
+                onPressed: isSent ? null : submitReview,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isSent
+                      ? Colors.green
+                      : const Color(0xffFF007A),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 4,
+                ),
+                child: isSubmitting
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        isSent ? "تم إرسال تقييمك" : "إرسال",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
