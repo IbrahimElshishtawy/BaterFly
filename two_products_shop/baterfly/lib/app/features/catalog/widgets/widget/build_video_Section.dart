@@ -1,10 +1,27 @@
 // ignore_for_file: file_names, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/widgets/product_video_widget.dart';
 
-class BuildVideoSection extends StatelessWidget {
+class BuildVideoSection extends StatefulWidget {
   const BuildVideoSection({super.key});
+
+  @override
+  State<BuildVideoSection> createState() => _BuildVideoSectionState();
+}
+
+class _BuildVideoSectionState extends State<BuildVideoSection> {
+  final supabase = Supabase.instance.client;
+
+  Future<List<Map<String, dynamic>>> _fetchVideos() async {
+    final response = await supabase
+        .from('videos')
+        .select('id, video_url, title')
+        .order('id', ascending: true);
+
+    return (response as List).map((e) => e as Map<String, dynamic>).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,62 +54,91 @@ class BuildVideoSection extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 4,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  childAspectRatio: 16 / 9,
-                ),
-                itemBuilder: (context, index) {
-                  final videos = [
-                    {
-                      'url': 'assets/video/video_1.mp4',
-                      'title': 'تجربت سيرراميد بترفلاي الشعرلي مع الشعر ',
-                    },
-                    {
-                      'url': 'assets/video/video_2.mp4',
-                      'title': 'نتيجة سيراميد بترفلاي مع الشعر المتهالك ',
-                    },
-                    {
-                      'url': 'assets/video/video_3.mp4',
-                      'title': ' نتيجة سيراميد بترفلاي مع الشر النبيتي ',
-                    },
-                    {'url': 'assets/video/video_4.mp4', 'title': ' '},
-                  ];
 
-                  final video = videos[index];
-                  return Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: ProductVideoWidget(videoUrl: video['url']!),
+              const SizedBox(height: 20),
+
+              // هنا التعديل الحقيقي
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: _fetchVideos(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: CircularProgressIndicator(color: Colors.white),
                       ),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          borderRadius: const BorderRadius.vertical(
-                            bottom: Radius.circular(15),
-                          ),
-                        ),
-                        child: Text(
-                          video['title']!,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Text(
+                        'حدث خطأ أثناء تحميل الفيديوهات',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
                         ),
                       ),
-                    ],
+                    );
+                  }
+
+                  final videos = snapshot.data ?? [];
+
+                  if (videos.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40),
+                      child: Text(
+                        'لا توجد فيديوهات حالياً',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    );
+                  }
+
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: videos.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                      childAspectRatio: 16 / 9,
+                    ),
+                    itemBuilder: (context, index) {
+                      final video = videos[index];
+
+                      return Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: ProductVideoWidget(
+                              videoUrl: video['video_url']!,
+                            ),
+                          ),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              borderRadius: const BorderRadius.vertical(
+                                bottom: Radius.circular(15),
+                              ),
+                            ),
+                            child: Text(
+                              video['title']!,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               ),
