@@ -63,7 +63,7 @@ class ReturnsPage extends StatelessWidget {
                               border: Border.all(color: Colors.white30),
                             ),
                             child: const Text(
-                              'نحرص في "BatterFly" على رضا عملائنا التام عن مشترياتهم. إذا واجهت أي مشكلة في المنتج الذي استلمته، يمكنك طلب استبداله أو استرجاعه خلال فترة محددة وفقًا للشروط التالية:',
+                              'نحرص في "ButterFly & Melina Cosmetics" على رضا عملائنا التام عن مشترياتهم. إذا واجهت أي مشكلة في المنتج الذي استلمته، يمكنك طلب استبداله أو استرجاعه خلال فترة محددة وفقًا للشروط التالية:',
                               style: TextStyle(
                                 fontSize: 16,
                                 height: 1.8,
