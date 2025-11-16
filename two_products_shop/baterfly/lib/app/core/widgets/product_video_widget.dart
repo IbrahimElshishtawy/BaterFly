@@ -5,7 +5,9 @@ import 'package:video_player/video_player.dart';
 
 class ProductVideoWidget extends StatefulWidget {
   final String videoUrl;
-  const ProductVideoWidget({Key? key, required this.videoUrl})
+  final String? overlayText;
+
+  const ProductVideoWidget({Key? key, required this.videoUrl, this.overlayText})
     : super(key: key);
 
   @override
@@ -23,8 +25,8 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget>
   void initState() {
     super.initState();
 
-    // ✅ استخدم asset بدل networkUrl
-    _controller = VideoPlayerController.asset(widget.videoUrl)
+    // تشغيل الفيديو من الإنترنت
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
       ..initialize().then((_) {
         if (_controller.value.size.width > 0 &&
             _controller.value.size.height > 0) {
@@ -94,6 +96,22 @@ class _ProductVideoWidgetState extends State<ProductVideoWidget>
               child: VideoPlayer(_controller),
             ),
           ),
+          if (widget.overlayText != null && widget.overlayText!.isNotEmpty)
+            Positioned(
+              top: 20,
+              left: 20,
+              right: 20,
+              child: Text(
+                widget.overlayText!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  shadows: [Shadow(color: Colors.black, blurRadius: 8)],
+                ),
+              ),
+            ),
 
           // زر تشغيل عند الإيقاف
           if (!_isPlaying)
