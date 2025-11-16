@@ -15,10 +15,12 @@ class FooterDesktopColumns extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
-              FooterColHeader('BaterFly'),
+              FooterColHeader('ButterFly'),
               SizedBox(height: 10),
-              FooterMuted('منتجات عناية واكسسوارات مختارة بعناية.'),
-              FooterMuted('شحن سريع داخل مصر واسترجاع خلال 14 يوم.'),
+              FooterMuted('منتجات عناية مختارة بعناية.'),
+              FooterMuted(
+                'شحن سريع داخل مصر خلال 3 ايام و يوجد سياسه استراجع لصمان حقوقك.',
+              ),
             ],
           ),
         ),
