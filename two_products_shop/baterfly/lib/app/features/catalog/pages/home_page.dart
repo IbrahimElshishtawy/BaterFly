@@ -1,19 +1,23 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:baterfly/app/services/supabase/Product_Service.dart';
+import 'package:flutter/material.dart';
+
 import 'package:baterfly/app/core/widgets/site_app_bar/CustomDrawer.dart';
-import 'package:baterfly/app/data/static/product_data.dart';
+import 'package:baterfly/app/core/utils/responsive.dart';
+import 'package:baterfly/app/core/widgets/footer_links/footer_links.dart';
+import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
+
 import 'package:baterfly/app/features/catalog/widgets/HomeReviewsSection.dart';
 import 'package:baterfly/app/features/catalog/widgets/product_card/animated_image_slider.dart';
 import 'package:baterfly/app/features/catalog/widgets/widget/build_video_Section.dart';
 import 'package:baterfly/app/features/reviews/widgets/review_section.dart';
-import 'package:flutter/material.dart';
 
-import '../../../core/utils/responsive.dart';
-import '../../../core/widgets/footer_links/footer_links.dart';
-import '../../../core/widgets/site_app_bar/site_app_bar.dart';
-import '../../product/widgets/gradient_bg.dart';
-import '../../product/widgets/product_hover.dart';
-import '../widgets/product_card/product_card.dart';
+import 'package:baterfly/app/features/product/widgets/gradient_bg.dart';
+import 'package:baterfly/app/features/product/widgets/product_hover.dart';
+import 'package:baterfly/app/features/catalog/widgets/product_card/product_card.dart';
+
+import 'package:baterfly/app/data/models/product_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,25 +27,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static final List<Map<String, dynamic>> _items =
-      List<Map<String, dynamic>>.generate(1, (index) {
-        return {
-          'id': index + 1,
-          'name': ProductData.name,
-          'slug': 'ceramide-butterfly-$index',
-          'rating': 4.5,
-          'reviews_count': 12,
-          'active': true,
-        };
-      });
+  final _service = ProductService();
+  late Future<List<ProductModel>> _futureProducts;
 
-  List<String> _getProductImages(int index) {
-    final imgs = ProductData.images;
-    return [
-      imgs[index % imgs.length],
-      imgs[(index + 1) % imgs.length],
-      imgs[(index + 2) % imgs.length],
-    ];
+  @override
+  void initState() {
+    super.initState();
+    _futureProducts = _service.getActiveProducts();
   }
 
   int _cols(double w) {
@@ -53,9 +45,10 @@ class _HomePageState extends State<HomePage> {
     return 1;
   }
 
-  // ✅ دالة الريفريش: مجرد setState يعيد بناء الصفحة ويشغّل الـ FutureBuilders من جديد
   Future<void> _onRefresh() async {
-    setState(() {});
+    setState(() {
+      _futureProducts = _service.getActiveProducts();
+    });
   }
 
   @override
@@ -66,98 +59,125 @@ class _HomePageState extends State<HomePage> {
       body: Stack(
         children: [
           const GradientBackground(),
-
-          // ✅ نلف الـ LayoutBuilder + CustomScrollView بـ RefreshIndicator
           RefreshIndicator(
             onRefresh: _onRefresh,
-            child: LayoutBuilder(
-              builder: (_, constraints) {
-                final w = constraints.maxWidth;
-                final pad = Responsive.hpad(w);
-                final maxW = Responsive.maxWidth(w);
-                final cols = _cols(w);
+            child: FutureBuilder<List<ProductModel>>(
+              future: _futureProducts,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                double side = (w - maxW) / 2;
-                final minSide = pad.horizontal / 2;
-                if (side < minSide) side = minSide;
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                      'حدث خطأ أثناء تحميل المنتجات',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
 
-                return CustomScrollView(
-                  physics:
-                      const AlwaysScrollableScrollPhysics(), // مهم للـ pull-to-refresh
-                  slivers: [
-                    SliverPadding(
-                      padding: EdgeInsets.fromLTRB(side, 16, side, 16),
-                      sliver: SliverGrid(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: cols,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                          childAspectRatio: .78,
-                        ),
-                        delegate: SliverChildBuilderDelegate((context, i) {
-                          if (i >= _items.length) return null;
+                final products = snapshot.data ?? [];
 
-                          final m = _items[i];
-                          final images = _getProductImages(i);
-                          final price = (m['price'] as num?)?.toDouble();
-                          final rating = (m['rating'] as num?)?.toDouble();
+                return LayoutBuilder(
+                  builder: (_, constraints) {
+                    final w = constraints.maxWidth;
+                    final pad = Responsive.hpad(w);
+                    final maxW = Responsive.maxWidth(w);
+                    final cols = _cols(w);
 
-                          return SizedBox(
-                            height: 260,
-                            child: ProductHover(
-                              child: ProductCard(
-                                images: images,
-                                price: price,
-                                rating: rating,
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/product',
-                                    arguments: {...m, 'images': images},
-                                  );
-                                },
-                                imageWidget: AnimatedImageSlider(
-                                  images: images,
+                    double side = (w - maxW) / 2;
+                    final minSide = pad.horizontal / 2;
+                    if (side < minSide) side = minSide;
+
+                    return CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(side, 16, side, 16),
+                          sliver: SliverGrid(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: cols,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio: .78,
                                 ),
-                                priceWidget: Text(
-                                  '\$${price?.toStringAsFixed(2) ?? 'N/A'}',
-                                  style: const TextStyle(
-                                    color: Colors.orangeAccent,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                            delegate: SliverChildBuilderDelegate((context, i) {
+                              if (i >= products.length) return null;
+
+                              final product = products[i];
+                              final images = product.images;
+
+                              // لو عندك price/rating في الجدول ضيفهم في الموديل
+                              final double? price = null;
+                              final double? rating = 4.5;
+
+                              return SizedBox(
+                                height: 260,
+                                child: ProductHover(
+                                  child: ProductCard(
+                                    images: images,
+                                    price: price,
+                                    rating: rating,
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/product',
+                                        arguments: {
+                                          'slug': product.slug,
+                                          'id': product.id,
+                                        },
+                                      );
+                                    },
+                                    imageWidget: AnimatedImageSlider(
+                                      images: images,
+                                    ),
+                                    priceWidget: Text(
+                                      price != null
+                                          ? '\$${price.toStringAsFixed(2)}'
+                                          : 'N/A',
+                                      style: const TextStyle(
+                                        color: Colors.orangeAccent,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              );
+                            }, childCount: products.length),
+                          ),
+                        ),
+
+                        const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 30),
+                            child: BuildVideoSection(),
+                          ),
+                        ),
+
+                        const HomeReviewsSection(),
+
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 24,
                             ),
-                          );
-                        }, childCount: _items.length),
-                      ),
-                    ),
-
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 30),
-                        child: BuildVideoSection(),
-                      ),
-                    ),
-
-                    const HomeReviewsSection(),
-
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 24,
+                            child: ReviewSection(
+                              orderNo: 'HOME_SECTION',
+                              productName: products.isNotEmpty
+                                  ? products.first.name
+                                  : 'المنتج',
+                            ),
+                          ),
                         ),
-                        child: ReviewSection(
-                          orderNo: 'HOME_SECTION',
-                          productName: ProductData.name,
-                        ),
-                      ),
-                    ),
 
-                    const SliverToBoxAdapter(child: FooterLinks()),
-                  ],
+                        const SliverToBoxAdapter(child: FooterLinks()),
+                      ],
+                    );
+                  },
                 );
               },
             ),
