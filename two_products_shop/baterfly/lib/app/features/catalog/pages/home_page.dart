@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
 
                               // لو عندك price/rating في الجدول ضيفهم في الموديل
                               final double? price = null;
-                              final double? rating = 4.5;
+                              final double rating = 4.5;
 
                               return SizedBox(
                                 height: 260,
