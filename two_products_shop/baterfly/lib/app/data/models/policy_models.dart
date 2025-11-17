@@ -1,17 +1,38 @@
 // models/policy_models.dart
 
 class PolicyItemModel {
+  final int? id; // 👈 مهم للحذف / التعديل
   final String? number;
   final String title;
   final String body;
 
-  PolicyItemModel({this.number, required this.title, required this.body});
+  PolicyItemModel({
+    this.id,
+    this.number,
+    required this.title,
+    required this.body,
+  });
 
   factory PolicyItemModel.fromJson(Map<String, dynamic> json) {
     return PolicyItemModel(
+      id: json['id'] as int?, // يقرى id من Supabase
       number: json['number'] as String?,
       title: json['title'] as String,
       body: json['body'] as String,
+    );
+  }
+
+  PolicyItemModel copyWith({
+    int? id,
+    String? number,
+    String? title,
+    String? body,
+  }) {
+    return PolicyItemModel(
+      id: id ?? this.id,
+      number: number ?? this.number,
+      title: title ?? this.title,
+      body: body ?? this.body,
     );
   }
 }
@@ -31,7 +52,6 @@ class PolicyPageModel {
     required this.items,
   });
 
-  /// Factory لتحويل بيانات Supabase إلى Model
   factory PolicyPageModel.fromJson(
     Map<String, dynamic> json,
     List<PolicyItemModel> items,
