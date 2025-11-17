@@ -40,7 +40,6 @@ class ContentService {
         .eq('slug', model.slug);
   }
 
-  // ✳️ إنشاء بند جديد
   Future<PolicyItemModel> createPolicyItem({
     required String pageSlug,
     String? number,
@@ -108,6 +107,6 @@ class ContentService {
     await _client
         .from('support_page')
         .update({'intro_text': model.introText, 'note_text': model.noteText})
-        .eq('id', 1); // لو عندك صف واحد
+        .eq('id', 1);
   }
 }
