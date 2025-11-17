@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 
 import 'order/orders_page.dart';
 import 'reviews/reviews_page.dart';
+import 'videos/videos_page.dart'; // ✅ استيراد صفحة الفيديوهات الجديدة
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -21,7 +22,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
   bool _disposed = false;
   late final List<Widget> _pages;
 
-  final _titles = ['الطلبات', 'التقييمات'];
+  // ✅ أضفنا "الفيديوهات"
+  final _titles = ['الطلبات', 'التقييمات', 'الفيديوهات'];
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
     _pages = const [
       OrdersPage(key: PageStorageKey('orders')),
       ReviewsPage(key: PageStorageKey('reviews')),
+      VideosPage(key: PageStorageKey('videos')), // ✅ صفحة الفيديوهات
     ];
 
     _controller = AnimationController(
@@ -119,6 +122,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
                     _navItem(0, Icons.receipt_long, "الطلبات"),
                     const SizedBox(height: 6),
                     _navItem(1, Icons.rate_review, "التقييمات"),
+                    const SizedBox(height: 6),
+                    _navItem(
+                      2,
+                      Icons.video_library,
+                      "الفيديوهات",
+                    ), // ✅ عنصر جديد
                   ],
                 ),
               ),
