@@ -22,7 +22,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
   bool _disposed = false;
   late final List<Widget> _pages;
 
-  // ✅ أضفنا "الفيديوهات"
   final _titles = ['الطلبات', 'التقييمات', 'الفيديوهات'];
 
   @override
@@ -32,7 +31,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
     _pages = const [
       OrdersPage(key: PageStorageKey('orders')),
       ReviewsPage(key: PageStorageKey('reviews')),
-      VideosPage(key: PageStorageKey('videos')), // ✅ صفحة الفيديوهات
+      VideosPage(key: PageStorageKey('videos')),
     ];
 
     _controller = AnimationController(
