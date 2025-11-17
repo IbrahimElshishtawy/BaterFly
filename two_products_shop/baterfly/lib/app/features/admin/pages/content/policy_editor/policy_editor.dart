@@ -145,7 +145,7 @@ class _PolicyEditorState extends State<PolicyEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    Theme.of(context);
 
     return FutureBuilder<PolicyPageModel>(
       future: _future,
