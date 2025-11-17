@@ -1,4 +1,7 @@
-// services/content_service.dart
+// services/supabase/content_service.dart
+
+// ignore_for_file: unnecessary_cast
+
 import 'package:baterfly/app/data/models/policy_models.dart';
 import 'package:baterfly/app/data/models/support_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,6 +25,7 @@ class ContentService {
     final items = (itemsRes as List)
         .map((e) => PolicyItemModel.fromJson(e as Map<String, dynamic>))
         .toList();
+
     return PolicyPageModel.fromJson(pageRes as Map<String, dynamic>, items);
   }
 
@@ -36,13 +40,45 @@ class ContentService {
         .eq('slug', model.slug);
   }
 
-  Future<void> deletePolicyPage(String slug) async {
-    await _client.from('policy_pages').delete().eq('slug', slug);
+  // ✳️ إنشاء بند جديد
+  Future<PolicyItemModel> createPolicyItem({
+    required String pageSlug,
+    String? number,
+    required String title,
+    required String body,
+    int sortOrder = 0,
+  }) async {
+    final res = await _client
+        .from('policy_items')
+        .insert({
+          'page_slug': pageSlug,
+          'number': number,
+          'title': title,
+          'body': body,
+          'sort_order': sortOrder,
+        })
+        .select()
+        .single();
+
+    return PolicyItemModel.fromJson(res as Map<String, dynamic>);
+  }
+
+  Future<PolicyItemModel> updatePolicyItem(PolicyItemModel item) async {
+    final res = await _client
+        .from('policy_items')
+        .update({'number': item.number, 'title': item.title, 'body': item.body})
+        .eq('id', item.id as Object)
+        .select()
+        .single();
+
+    return PolicyItemModel.fromJson(res as Map<String, dynamic>);
   }
 
   Future<void> deletePolicyItem(int id) async {
     await _client.from('policy_items').delete().eq('id', id);
   }
+
+  // ================= دعم فني (كما عندك + updateSupportPage) =================
 
   Future<SupportPageModel> getSupportPage() async {
     final pageRes = await _client
@@ -72,10 +108,6 @@ class ContentService {
     await _client
         .from('support_page')
         .update({'intro_text': model.introText, 'note_text': model.noteText})
-        .eq('id', 1);
-  }
-
-  Future<void> deleteSupportContact(int id) async {
-    await _client.from('support_contacts').delete().eq('id', id);
+        .eq('id', 1); // لو عندك صف واحد
   }
 }
