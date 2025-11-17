@@ -15,7 +15,7 @@ class PolicyItemModel {
 
   factory PolicyItemModel.fromJson(Map<String, dynamic> json) {
     return PolicyItemModel(
-      id: json['id'] as int?, // يقرى id من Supabase
+      id: json['id'] as int?,
       number: json['number'] as String?,
       title: json['title'] as String,
       body: json['body'] as String,
