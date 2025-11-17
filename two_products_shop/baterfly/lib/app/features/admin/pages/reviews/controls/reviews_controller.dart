@@ -9,35 +9,69 @@ class ReviewsController extends ChangeNotifier {
   String? errorMessage;
   List<Map<String, dynamic>> reviews = [];
 
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (_disposed) return;
+    super.notifyListeners();
+  }
+
   Future<void> load() async {
+    if (_disposed) return;
+
     loading = true;
     errorMessage = null;
     notifyListeners();
 
     try {
-      reviews = await _service.fetchReviews();
+      final data = await _service.fetchReviews();
+
+      if (_disposed) return;
+
+      reviews = data;
       if (kDebugMode) {
         print('REVIEWS: $reviews');
       }
     } catch (e, s) {
-      debugPrint('Error loading reviews: $e\n$s');
+      if (kDebugMode) {
+        debugPrint('Error loading reviews: $e\n$s');
+      }
+      if (_disposed) return;
+
       errorMessage = 'حصل خطأ أثناء تحميل التقييمات';
     } finally {
+      if (_disposed) return;
+
       loading = false;
       notifyListeners();
     }
   }
 
   Future<void> verify(int id, bool val) async {
+    if (_disposed) return;
+
     if (kDebugMode) {
       print('VERIFY CALLED: id=$id, val=$val');
     }
 
     try {
       await _service.verifyReview(id, val);
-      await load(); // نعيد تحميل الريفيوز بعد التحديث
+
+      if (_disposed) return;
+
+      // نعيد تحميل الريفيوز بعد التحديث
+      await load();
     } catch (e, s) {
-      debugPrint('Error verifying review: $e\n$s');
+      if (kDebugMode) {
+        debugPrint('Error verifying review: $e\n$s');
+      }
     }
   }
 }
