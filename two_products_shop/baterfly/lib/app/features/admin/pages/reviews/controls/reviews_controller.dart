@@ -1,4 +1,6 @@
 // controllers/reviews_controller.dart
+// ignore_for_file: control_flow_in_finally
+
 import 'package:baterfly/app/services/supabase/admin_service.dart';
 import 'package:flutter/foundation.dart';
 
