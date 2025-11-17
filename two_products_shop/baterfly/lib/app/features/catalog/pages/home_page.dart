@@ -15,9 +15,14 @@ import '../../product/widgets/gradient_bg.dart';
 import '../../product/widgets/product_hover.dart';
 import '../widgets/product_card/product_card.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   static final List<Map<String, dynamic>> _items =
       List<Map<String, dynamic>>.generate(1, (index) {
         return {
@@ -48,6 +53,11 @@ class HomePage extends StatelessWidget {
     return 1;
   }
 
+  // ✅ دالة الريفريش: مجرد setState يعيد بناء الصفحة ويشغّل الـ FutureBuilders من جديد
+  Future<void> _onRefresh() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,92 +66,101 @@ class HomePage extends StatelessWidget {
       body: Stack(
         children: [
           const GradientBackground(),
-          LayoutBuilder(
-            builder: (_, constraints) {
-              final w = constraints.maxWidth;
-              final pad = Responsive.hpad(w);
-              final maxW = Responsive.maxWidth(w);
-              final cols = _cols(w);
 
-              double side = (w - maxW) / 2;
-              final minSide = pad.horizontal / 2;
-              if (side < minSide) side = minSide;
+          // ✅ نلف الـ LayoutBuilder + CustomScrollView بـ RefreshIndicator
+          RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: LayoutBuilder(
+              builder: (_, constraints) {
+                final w = constraints.maxWidth;
+                final pad = Responsive.hpad(w);
+                final maxW = Responsive.maxWidth(w);
+                final cols = _cols(w);
 
-              return CustomScrollView(
-                slivers: [
-                  SliverPadding(
-                    padding: EdgeInsets.fromLTRB(side, 16, side, 16),
-                    sliver: SliverGrid(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: cols,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: .78,
-                      ),
-                      delegate: SliverChildBuilderDelegate((context, i) {
-                        if (i >= _items.length) return null;
+                double side = (w - maxW) / 2;
+                final minSide = pad.horizontal / 2;
+                if (side < minSide) side = minSide;
 
-                        final m = _items[i];
-                        final images = _getProductImages(i);
-                        final price = (m['price'] as num?)?.toDouble();
-                        final rating = (m['rating'] as num?)?.toDouble();
+                return CustomScrollView(
+                  physics:
+                      const AlwaysScrollableScrollPhysics(), // مهم للـ pull-to-refresh
+                  slivers: [
+                    SliverPadding(
+                      padding: EdgeInsets.fromLTRB(side, 16, side, 16),
+                      sliver: SliverGrid(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: cols,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                          childAspectRatio: .78,
+                        ),
+                        delegate: SliverChildBuilderDelegate((context, i) {
+                          if (i >= _items.length) return null;
 
-                        return SizedBox(
-                          height: 260,
-                          child: ProductHover(
-                            child: ProductCard(
-                              images: images,
-                              price: price,
-                              rating: rating,
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/product',
-                                  arguments: {...m, 'images': images},
-                                );
-                              },
-                              imageWidget: AnimatedImageSlider(images: images),
-                              priceWidget: Text(
-                                '\$${price?.toStringAsFixed(2) ?? 'N/A'}',
-                                style: const TextStyle(
-                                  color: Colors.orangeAccent,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                          final m = _items[i];
+                          final images = _getProductImages(i);
+                          final price = (m['price'] as num?)?.toDouble();
+                          final rating = (m['rating'] as num?)?.toDouble();
+
+                          return SizedBox(
+                            height: 260,
+                            child: ProductHover(
+                              child: ProductCard(
+                                images: images,
+                                price: price,
+                                rating: rating,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/product',
+                                    arguments: {...m, 'images': images},
+                                  );
+                                },
+                                imageWidget: AnimatedImageSlider(
+                                  images: images,
+                                ),
+                                priceWidget: Text(
+                                  '\$${price?.toStringAsFixed(2) ?? 'N/A'}',
+                                  style: const TextStyle(
+                                    color: Colors.orangeAccent,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }, childCount: _items.length),
-                    ),
-                  ),
-
-                  const SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 30),
-                      child: BuildVideoSection(),
-                    ),
-                  ),
-
-                  const HomeReviewsSection(),
-
-                  const SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 24,
-                      ),
-                      child: ReviewSection(
-                        orderNo: 'HOME_SECTION',
-                        productName: ProductData.name,
+                          );
+                        }, childCount: _items.length),
                       ),
                     ),
-                  ),
 
-                  const SliverToBoxAdapter(child: FooterLinks()),
-                ],
-              );
-            },
+                    const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 30),
+                        child: BuildVideoSection(),
+                      ),
+                    ),
+
+                    const HomeReviewsSection(),
+
+                    const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 24,
+                        ),
+                        child: ReviewSection(
+                          orderNo: 'HOME_SECTION',
+                          productName: ProductData.name,
+                        ),
+                      ),
+                    ),
+
+                    const SliverToBoxAdapter(child: FooterLinks()),
+                  ],
+                );
+              },
+            ),
           ),
         ],
       ),
