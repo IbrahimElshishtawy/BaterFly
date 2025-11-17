@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, deprecated_member_use
 
+import 'package:baterfly/app/features/catalog/widgets/widget/social_video_opener.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/widgets/product_video_widget.dart';
@@ -21,6 +22,14 @@ class _BuildVideoSectionState extends State<BuildVideoSection> {
         .order('id', ascending: true);
 
     return (response as List).map((e) => e as Map<String, dynamic>).toList();
+  }
+
+  bool _isSocialLink(String url) {
+    final lower = url.toLowerCase();
+    return lower.contains('facebook.com') ||
+        lower.contains('fb.watch') ||
+        lower.contains('instagram.com') ||
+        lower.contains('instagram');
   }
 
   @override
@@ -57,7 +66,6 @@ class _BuildVideoSectionState extends State<BuildVideoSection> {
 
               const SizedBox(height: 20),
 
-              // هنا التعديل الحقيقي
               FutureBuilder<List<Map<String, dynamic>>>(
                 future: _fetchVideos(),
                 builder: (context, snapshot) {
@@ -71,14 +79,11 @@ class _BuildVideoSectionState extends State<BuildVideoSection> {
                   }
 
                   if (snapshot.hasError) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 40),
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40),
                       child: Text(
                         'حدث خطأ أثناء تحميل الفيديوهات',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
+                        style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     );
                   }
@@ -107,15 +112,19 @@ class _BuildVideoSectionState extends State<BuildVideoSection> {
                     ),
                     itemBuilder: (context, index) {
                       final video = videos[index];
+                      final url = video['video_url'] as String;
+                      final title = video['title'] as String? ?? '';
+
+                      final isSocial = _isSocialLink(url);
 
                       return Stack(
                         alignment: Alignment.bottomCenter,
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(15),
-                            child: ProductVideoWidget(
-                              videoUrl: video['video_url']!,
-                            ),
+                            child: isSocial
+                                ? SocialVideoOpener(url: url, title: title)
+                                : ProductVideoWidget(videoUrl: url),
                           ),
                           Container(
                             width: double.infinity,
@@ -127,7 +136,7 @@ class _BuildVideoSectionState extends State<BuildVideoSection> {
                               ),
                             ),
                             child: Text(
-                              video['title']!,
+                              title,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
