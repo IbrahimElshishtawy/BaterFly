@@ -1,4 +1,6 @@
 // controllers/orders_controller.dart
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:baterfly/app/services/supabase/admin_service.dart';
 import 'package:flutter/material.dart';
 
