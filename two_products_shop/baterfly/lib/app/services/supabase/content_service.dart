@@ -78,7 +78,7 @@ class ContentService {
   }
 
   // ================= دعم فني (كما عندك + updateSupportPage) =================
-
+  // جلب صفحة الدعم + قنوات التواصل
   Future<SupportPageModel> getSupportPage() async {
     final pageRes = await _client
         .from('support_page')
@@ -103,10 +103,57 @@ class ContentService {
     );
   }
 
+  // تحديث النصوص فقط
   Future<void> updateSupportPage(SupportPageModel model) async {
     await _client
         .from('support_page')
         .update({'intro_text': model.introText, 'note_text': model.noteText})
-        .eq('id', 1);
+        .eq('id', 1); // لو عندك صف واحد
+  }
+
+  // إنشاء قناة تواصل جديدة
+  Future<SupportContactModel> createSupportContact({
+    required String title,
+    required String body,
+    required String url,
+    required String type, // whatsapp, email, phone, facebook, instagram...
+    int sortOrder = 0,
+  }) async {
+    final res = await _client
+        .from('support_contacts')
+        .insert({
+          'title': title,
+          'body': body,
+          'url': url,
+          'type': type,
+          'sort_order': sortOrder,
+        })
+        .select()
+        .single();
+
+    return SupportContactModel.fromJson(res as Map<String, dynamic>);
+  }
+
+  Future<SupportContactModel> updateSupportContact(
+    SupportContactModel contact,
+  ) async {
+    final res = await _client
+        .from('support_contacts')
+        .update({
+          'title': contact.title,
+          'body': contact.body,
+          'url': contact.url,
+          'type': contact.type,
+        })
+        .eq('id', contact.id as Object)
+        .select()
+        .single();
+
+    return SupportContactModel.fromJson(res as Map<String, dynamic>);
+  }
+
+  // حذف قناة
+  Future<void> deleteSupportContact(int id) async {
+    await _client.from('support_contacts').delete().eq('id', id);
   }
 }
