@@ -1,11 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:ui';
-import 'package:baterfly/app/data/static/product_data.dart';
 import 'package:flutter/material.dart';
+import 'package:baterfly/app/data/models/product_model.dart';
 
 class ProductTitle extends StatelessWidget {
-  const ProductTitle({super.key});
+  final ProductModel product;
+
+  const ProductTitle({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,7 @@ class ProductTitle extends StatelessWidget {
       builder: (context, constraints) {
         double maxWidth = constraints.maxWidth > 800
             ? 800
-            : constraints.maxWidth * 0.95; // حد أقصى للعرض على الويب
+            : constraints.maxWidth * 0.95;
 
         return Center(
           child: Container(
@@ -46,9 +48,8 @@ class ProductTitle extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      //  اسم المنتج
                       Text(
-                        ProductData.name,
+                        product.name,
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
                               fontWeight: FontWeight.w800,
@@ -61,7 +62,7 @@ class ProductTitle extends StatelessWidget {
                       const SizedBox(height: 10),
 
                       Text(
-                        ProductData.type,
+                        product.type,
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
                               color: Colors.pinkAccent.shade100,
@@ -85,7 +86,7 @@ class ProductTitle extends StatelessWidget {
                       const SizedBox(height: 18),
 
                       Text(
-                        ProductData.description,
+                        product.description,
                         textAlign: TextAlign.justify,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.white.withOpacity(0.9),
@@ -96,31 +97,32 @@ class ProductTitle extends StatelessWidget {
 
                       const SizedBox(height: 18),
 
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.pinkAccent.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.pinkAccent.withOpacity(0.25),
-                            width: 1,
+                      if (product.marketingPhrases.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.pinkAccent.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.pinkAccent.withOpacity(0.25),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            "🦋 ${product.marketingPhrases.first}",
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  color: Colors.pinkAccent.shade100,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: constraints.maxWidth > 800
+                                      ? 16
+                                      : 14.5,
+                                ),
                           ),
                         ),
-                        child: Text(
-                          "🦋 ${ProductData.marketingPhrases.first}",
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(
-                                color: Colors.pinkAccent.shade100,
-                                fontWeight: FontWeight.w600,
-                                fontSize: constraints.maxWidth > 800
-                                    ? 16
-                                    : 14.5,
-                              ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
