@@ -2,7 +2,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'policy_editor.dart';
+import 'policy_editor/policy_editor.dart';
 import 'support_editor.dart';
 
 class ContentAdminPage extends StatelessWidget {
