@@ -1,5 +1,5 @@
 // features/admin/content/support_editor.dart
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unnecessary_underscores
 
 import 'package:flutter/material.dart';
 import 'package:baterfly/app/services/supabase/content_service.dart';
