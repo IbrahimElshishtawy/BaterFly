@@ -11,10 +11,10 @@ class ProductModel {
 
   final List<String> images;
 
-  // مشروعك
+  // مشروع المنتج (التفاصيل)
   final List<String> mainBenefits;
   final List<String> ingredients;
-  final List<String> usage; // مشروعك List<String>
+  final List<String> usage; // خطوات الاستخدام
   final List<String> safety;
   final List<String> targetAudience;
   final String countryOfOrigin;
@@ -23,9 +23,9 @@ class ProductModel {
   final List<String> storageTips;
   final List<String> highlights;
 
-  // للـ test
-  final List<String> features; // required by test
-  final String usageText; // required by test (usage as String)
+  // للـ test (features + usageText)
+  final List<String> features;
+  final String usageText;
 
   ProductModel({
     required this.id,
@@ -51,9 +51,7 @@ class ProductModel {
     required this.usageText,
   });
 
-  // -------------------------------------------------------------
-  // مشروعك (Supabase)
-  // -------------------------------------------------------------
+  // ========= استخدام المشروع (Supabase JSON) =========
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     List<String> toList(dynamic v) {
       if (v == null) return [];
@@ -94,14 +92,12 @@ class ProductModel {
       marketingPhrases: toList(json['marketing_phrases']),
       storageTips: toList(json['storage_tips']),
       highlights: toList(json['highlights']),
-      features: const [], // not used in project
-      usageText: '', // not used in project
+      features: const [], // مش مستخدمة في المشروع
+      usageText: '', // مش مستخدمة في المشروع
     );
   }
 
-  // -------------------------------------------------------------
-  // للـ TEST من الـ map المطلوب
-  // -------------------------------------------------------------
+  // ========= للـ unit test: fromMap =========
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     List<String> toList(dynamic v) {
       if (v == null) return [];
@@ -110,12 +106,14 @@ class ProductModel {
     }
 
     double toDouble(dynamic v) {
+      if (v == null) return 0.0;
       if (v is double) return v;
       if (v is int) return v.toDouble();
       return double.tryParse(v.toString()) ?? 0.0;
     }
 
     int toInt(dynamic v) {
+      if (v == null) return 0;
       if (v is int) return v;
       return int.tryParse(v.toString()) ?? 0;
     }
@@ -126,12 +124,12 @@ class ProductModel {
       slug: map['slug'] ?? '',
       price: toDouble(map['price']),
       images: toList(map['images']),
-      usageText: map['usage']?.toString() ?? '', // TEST match
-      features: toList(map['features']), // TEST match
+      usageText: map['usage']?.toString() ?? '',
+      features: toList(map['features']),
       avgRating: toDouble(map['avg_rating']),
       reviewsCount: toInt(map['reviews_count']),
 
-      // مشروعك (مش في الـ map ولكن لازم قيم افتراضية)
+      // باقي الحقول للمشروع (مش موجودة في الـ map فنديها قيم default)
       type: '',
       description: '',
       mainBenefits: const [],
@@ -145,5 +143,30 @@ class ProductModel {
       storageTips: const [],
       highlights: const [],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'slug': slug,
+      'name': name,
+      'type': type,
+      'description': description,
+      'price': price,
+      'avg_rating': avgRating,
+      'reviews_count': reviewsCount,
+      'images': images,
+      'main_benefits': mainBenefits,
+      'ingredients': ingredients,
+      'usage': usage,
+      'safety': safety,
+      'target_audience': targetAudience,
+      'country_of_origin': countryOfOrigin,
+      'guarantee': guarantee,
+      'marketing_phrases': marketingPhrases,
+      'storage_tips': storageTips,
+      'highlights': highlights,
+      // features / usageText مش محتاجين يتبعتوا للـ API
+    };
   }
 }
