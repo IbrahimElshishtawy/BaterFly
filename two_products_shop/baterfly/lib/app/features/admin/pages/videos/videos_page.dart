@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unnecessary_underscores
 
 import 'package:baterfly/app/data/models/video_model.dart';
 import 'package:baterfly/app/services/supabase/video_service.dart';
