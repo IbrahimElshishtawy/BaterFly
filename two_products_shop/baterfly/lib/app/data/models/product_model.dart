@@ -1,98 +1,88 @@
-import '../../domain/entities/product.dart';
+class ProductModel {
+  final String id;
+  final String slug;
+  final String name;
+  final String type;
+  final String description;
 
-class ProductModel extends Product {
+  final List<String> images;
+  final List<String> mainBenefits;
+  final List<String> ingredients;
+  final List<String> usage;
+  final List<String> safety;
+  final List<String> targetAudience;
+
+  final String countryOfOrigin;
+  final String guarantee;
+
+  final List<String> marketingPhrases;
+  final List<String> storageTips;
+  final List<String> highlights;
+
   ProductModel({
-    required super.id,
-    required super.name,
-    required super.slug,
-    required super.price, // non-null
-    required super.images,
-    super.usage,
-    required super.features,
-    required super.active,
-    required super.avgRating,
-    required super.reviewsCount,
+    required this.id,
+    required this.slug,
+    required this.name,
+    required this.type,
+    required this.description,
+    required this.images,
+    required this.mainBenefits,
+    required this.ingredients,
+    required this.usage,
+    required this.safety,
+    required this.targetAudience,
+    required this.countryOfOrigin,
+    required this.guarantee,
+    required this.marketingPhrases,
+    required this.storageTips,
+    required this.highlights,
   });
 
-  factory ProductModel.fromMap(Map<String, dynamic> map) {
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    List<String> _stringList(dynamic v) {
+      if (v == null) return [];
+      if (v is List) return v.map((e) => e.toString()).toList();
+      return [];
+    }
+
     return ProductModel(
-      id: _toInt(map['id'], fallback: 0),
-      name: (map['name'] ?? '').toString(),
-      slug: (map['slug'] ?? '').toString(),
-      price: _toDouble(map['price'], fallback: 0.0),
-      images: _toStringList(map['images']),
-      usage: _toNullableString(map['usage']),
-      features: _toStringList(map['features']),
-      active: _toBool(map['active'], fallback: true),
-      avgRating: _toDouble(map['avg_rating'], fallback: 0.0),
-      reviewsCount: _toInt(map['reviews_count'], fallback: 0),
+      id: json['id'].toString(),
+      slug: json['slug'] as String,
+      name: json['name'] as String,
+      type: json['type'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      images: _stringList(json['images']),
+      mainBenefits: _stringList(json['main_benefits']),
+      ingredients: _stringList(json['ingredients']),
+      usage: _stringList(json['usage']),
+      safety: _stringList(json['safety']),
+      targetAudience: _stringList(json['target_audience']),
+      countryOfOrigin: json['country_of_origin'] as String? ?? '',
+      guarantee: json['guarantee'] as String? ?? '',
+      marketingPhrases: _stringList(json['marketing_phrases']),
+      storageTips: _stringList(json['storage_tips']),
+      highlights: _stringList(json['highlights']),
     );
   }
 
-  Map<String, dynamic> toMap() => {
-    'id': id,
-    'name': name,
-    'slug': slug,
-    'price': price,
-    'images': images,
-    'usage': usage,
-    'features': features,
-    'active': active,
-    'avg_rating': avgRating,
-    'reviews_count': reviewsCount,
-  };
-
-  // ---------- helpers آمنة ----------
-  static double _toDouble(dynamic v, {double fallback = 0.0}) {
-    if (v == null) return fallback;
-    if (v is num) return v.toDouble();
-    return double.tryParse(v.toString()) ?? fallback;
-  }
-
-  static int _toInt(dynamic v, {int fallback = 0}) {
-    if (v == null) return fallback;
-    if (v is num) return v.toInt();
-    return int.tryParse(v.toString()) ?? fallback;
-  }
-
-  static bool _toBool(dynamic v, {bool fallback = false}) {
-    if (v == null) return fallback;
-    if (v is bool) return v;
-    final s = v.toString().toLowerCase();
-    if (s == 'true' || s == '1') return true;
-    if (s == 'false' || s == '0') return false;
-    return fallback;
-  }
-
-  static String? _toNullableString(dynamic v) {
-    if (v == null) return null;
-    final s = v.toString().trim();
-    return s.isEmpty ? null : s;
-  }
-
-  static List<String> _toStringList(dynamic v) {
-    if (v == null) return const [];
-    if (v is List) {
-      return v
-          .map((e) => e?.toString() ?? '')
-          .where((e) => e.isNotEmpty)
-          .toList();
-    }
-    // لو رجع نص JSON/CSV
-    final s = v.toString().trim();
-    if (s.isEmpty) return const [];
-    if (s.startsWith('[')) {
-      try {
-        // تجنب الاعتماد على dart:convert هنا لو مش مضاف، يمكن تفكيك بسيط:
-        // الأفضل: import 'dart:convert'; ثم:
-        // final l = jsonDecode(s) as List; return l.map((e)=>e.toString()).toList();
-      } catch (_) {}
-    }
-    // CSV بدائي
-    return s
-        .split(',')
-        .map((e) => e.trim())
-        .where((e) => e.isNotEmpty)
-        .toList();
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'slug': slug,
+      'name': name,
+      'type': type,
+      'description': description,
+      'images': images,
+      'main_benefits': mainBenefits,
+      'ingredients': ingredients,
+      'usage': usage,
+      'safety': safety,
+      'target_audience': targetAudience,
+      'country_of_origin': countryOfOrigin,
+      'guarantee': guarantee,
+      'marketing_phrases': marketingPhrases,
+      'storage_tips': storageTips,
+      'highlights': highlights,
+    };
   }
 }
