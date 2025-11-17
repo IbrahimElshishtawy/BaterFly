@@ -1,7 +1,8 @@
-// ignore_for_file: deprecated_member_use, unnecessary_underscores
+// ignore_for_file: deprecated_member_use
 
+import 'package:baterfly/app/data/models/video_model.dart';
+import 'package:baterfly/app/services/supabase/video_service.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class VideosPage extends StatefulWidget {
   const VideosPage({super.key});
@@ -19,9 +20,7 @@ class _VideosPageState extends State<VideosPage> {
   bool _isLoadingList = false;
   String? _message;
 
-  final SupabaseClient _client = Supabase.instance.client;
-
-  List<Map<String, dynamic>> _videos = [];
+  List<VideoModel> _videos = [];
 
   @override
   void initState() {
@@ -37,35 +36,35 @@ class _VideosPageState extends State<VideosPage> {
   }
 
   Future<void> _loadVideos() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoadingList = true;
       _message = null;
     });
 
     try {
-      final response = await _client
-          .from('videos')
-          .select('id, video_url, title, created_at')
-          .order('created_at', ascending: false);
+      final videos = await VideoService.fetchVideos();
+
+      if (!mounted) return;
 
       setState(() {
-        _videos = (response as List)
-            .map((e) => e as Map<String, dynamic>)
-            .toList();
+        _videos = videos;
+        _isLoadingList = false;
       });
     } catch (e) {
-      setState(() {
-        _message = "حدث خطأ أثناء تحميل قائمة الفيديوهات: $e";
-      });
-    } finally {
+      if (!mounted) return;
+
       setState(() {
         _isLoadingList = false;
+        _message = "حدث خطأ أثناء تحميل قائمة الفيديوهات: $e";
       });
     }
   }
 
   Future<void> _addVideo() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!mounted) return;
 
     setState(() {
       _isSaving = true;
@@ -76,36 +75,30 @@ class _VideosPageState extends State<VideosPage> {
       final videoUrl = _videoUrlController.text.trim();
       final title = _titleController.text.trim();
 
-      await _client.from('videos').insert({
-        'video_url': videoUrl,
-        'title': title,
-      });
+      await VideoService.addVideo(videoUrl: videoUrl, title: title);
 
-      setState(() {
-        _message = "تم إضافة الفيديو بنجاح";
-      });
+      if (!mounted) return;
 
-      // تفريغ الحقول بعد الحفظ
       _videoUrlController.clear();
       _titleController.clear();
 
-      // إعادة تحميل القائمة
+      setState(() {
+        _message = "تم إضافة الفيديو بنجاح";
+        _isSaving = false;
+      });
+
       await _loadVideos();
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
+        _isSaving = false;
         _message = "حدث خطأ أثناء إضافة الفيديو: $e";
       });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSaving = false;
-        });
-      }
     }
   }
 
-  Future<void> _deleteVideo(int id) async {
-    // تأكيد قبل الحذف
+  Future<void> _deleteVideo(VideoModel video) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -113,7 +106,9 @@ class _VideosPageState extends State<VideosPage> {
           textDirection: TextDirection.rtl,
           child: AlertDialog(
             title: const Text("حذف الفيديو"),
-            content: const Text("هل أنت متأكد أنك تريد حذف هذا الفيديو؟"),
+            content: Text(
+              "هل أنت متأكد أنك تريد حذف الفيديو:\n${video.title.isEmpty ? '(بدون عنوان)' : video.title} ؟",
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -132,13 +127,17 @@ class _VideosPageState extends State<VideosPage> {
     if (confirm != true) return;
 
     try {
-      await _client.from('videos').delete().eq('id', id);
+      await VideoService.deleteVideo(video.id);
+
+      if (!mounted) return;
 
       setState(() {
-        _videos.removeWhere((v) => v['id'] == id);
+        _videos.removeWhere((v) => v.id == video.id);
         _message = "تم حذف الفيديو بنجاح";
       });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _message = "حدث خطأ أثناء حذف الفيديو: $e";
       });
@@ -185,7 +184,6 @@ class _VideosPageState extends State<VideosPage> {
                               ),
                               const SizedBox(height: 20),
 
-                              // حقل رابط الفيديو
                               TextFormField(
                                 controller: _videoUrlController,
                                 decoration: const InputDecoration(
@@ -207,7 +205,6 @@ class _VideosPageState extends State<VideosPage> {
 
                               const SizedBox(height: 16),
 
-                              // حقل النص / العنوان
                               TextFormField(
                                 controller: _titleController,
                                 decoration: const InputDecoration(
@@ -227,7 +224,6 @@ class _VideosPageState extends State<VideosPage> {
 
                               const SizedBox(height: 20),
 
-                              // رسالة نجاح / خطأ
                               if (_message != null) ...[
                                 Text(
                                   _message!,
@@ -241,7 +237,6 @@ class _VideosPageState extends State<VideosPage> {
                                 const SizedBox(height: 12),
                               ],
 
-                              // زر الحفظ
                               SizedBox(
                                 height: 48,
                                 child: ElevatedButton.icon(
@@ -318,9 +313,6 @@ class _VideosPageState extends State<VideosPage> {
                         separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final video = _videos[index];
-                          final id = video['id'] as int;
-                          final url = video['video_url'] as String? ?? '';
-                          final title = video['title'] as String? ?? '';
 
                           return Card(
                             elevation: 2,
@@ -333,13 +325,15 @@ class _VideosPageState extends State<VideosPage> {
                                 vertical: 8,
                               ),
                               title: Text(
-                                title.isEmpty ? "(بدون عنوان)" : title,
+                                video.title.isEmpty
+                                    ? "(بدون عنوان)"
+                                    : video.title,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               subtitle: Text(
-                                url,
+                                video.videoUrl,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
@@ -357,7 +351,7 @@ class _VideosPageState extends State<VideosPage> {
                                   Icons.delete,
                                   color: Colors.red,
                                 ),
-                                onPressed: () => _deleteVideo(id),
+                                onPressed: () => _deleteVideo(video),
                               ),
                             ),
                           );
