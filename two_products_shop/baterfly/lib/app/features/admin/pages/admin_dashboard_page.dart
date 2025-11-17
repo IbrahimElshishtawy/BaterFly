@@ -5,7 +5,7 @@ import 'package:lottie/lottie.dart';
 
 import 'order/orders_page.dart';
 import 'reviews/reviews_page.dart';
-import 'videos/videos_page.dart'; // ✅ استيراد صفحة الفيديوهات الجديدة
+import 'videos/videos_page.dart'; // ✅ صفحة الفيديوهات
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -122,11 +122,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
                     const SizedBox(height: 6),
                     _navItem(1, Icons.rate_review, "التقييمات"),
                     const SizedBox(height: 6),
-                    _navItem(
-                      2,
-                      Icons.video_library,
-                      "الفيديوهات",
-                    ), // ✅ عنصر جديد
+                    _navItem(2, Icons.video_library, "الفيديوهات"),
                   ],
                 ),
               ),
@@ -202,9 +198,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
             ..reset()
             ..forward();
         }
-
-        // لما نختار من الـ Drawer على الموبايل نقفله
-        if (Navigator.of(context).canPop()) {
+        final scaffoldState = Scaffold.maybeOf(context);
+        if (scaffoldState?.isEndDrawerOpen ?? false) {
           Navigator.of(context).pop();
         }
       },
