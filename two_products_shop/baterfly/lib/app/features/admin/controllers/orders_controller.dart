@@ -63,26 +63,15 @@ class OrdersController extends ChangeNotifier {
   }
 
   // ============================================================
-  //                 دالة حذف الطلب
-  // ============================================================
   Future<void> deleteOrder(int id, BuildContext context) async {
     try {
-      // 1) حذف الطلب من الـ Database عبر Supabase
-      // cast to dynamic to avoid compile-time error if AdminService doesn't declare deleteOrder
       await (_service as dynamic).deleteOrder(id);
-
-      // 2) حذف الطلب محليًا بدون إعادة تحميل كل البيانات
       orders.removeWhere((o) => o['id'] == id);
-
-      // 3) إعادة البناء
       notifyListeners();
-
-      // 4) SnackBar نجاح
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('تم حذف الطلب بنجاح')));
     } catch (e) {
-      // في حالة فشل الحذف
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('حدث خطأ أثناء حذف الطلب')));
