@@ -12,10 +12,10 @@ class CatalogController {
           (e) => {
             'id': e.id,
             'name': e.name,
-            'price': e.price,
+
             'image': (e.images.isNotEmpty ? e.images.first : null),
-            'desc': e.usage ?? '',
-            'features': e.features,
+            'desc': e.usage,
+
             'usage': e.usage,
           },
         )
