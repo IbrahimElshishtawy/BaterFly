@@ -1,4 +1,6 @@
 // lib/app/services/supabase/product_service.dart
+// ignore_for_file: file_names
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:baterfly/app/data/models/product_model.dart';
 
