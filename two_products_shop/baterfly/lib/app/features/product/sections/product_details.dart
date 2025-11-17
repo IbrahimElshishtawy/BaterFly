@@ -1,8 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:ui';
-import 'package:baterfly/app/data/static/product_data.dart';
 import 'package:flutter/material.dart';
+
+import 'package:baterfly/app/data/models/product_model.dart';
 
 import '../widgets/ingredient_chips.dart';
 import '../widgets/usage_accordion.dart';
@@ -11,7 +12,9 @@ import '../widgets/trust_row.dart';
 import '../widgets/section_card.dart';
 
 class ProductDetails extends StatelessWidget {
-  const ProductDetails({super.key});
+  final ProductModel product;
+
+  const ProductDetails({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -36,19 +39,19 @@ class ProductDetails extends StatelessWidget {
                   SectionCard(
                     title: "أهم المميزات",
                     transparent: true,
-                    content: _buildBullets(ProductData.mainBenefits),
+                    content: _buildBullets(product.mainBenefits),
                   ),
 
-                  IngredientChips(ingredients: ProductData.ingredients),
+                  IngredientChips(ingredients: product.ingredients),
 
-                  UsageAccordion(steps: ProductData.usage),
+                  UsageAccordion(steps: product.usage),
 
-                  SafetyList(items: ProductData.safety),
+                  SafetyList(items: product.safety),
 
                   SectionCard(
                     title: "مميزات إضافية",
                     transparent: true,
-                    content: _buildBullets(ProductData.highlights, icon: "✨"),
+                    content: _buildBullets(product.highlights, icon: "✨"),
                   ),
 
                   const TrustRow(),
@@ -62,6 +65,10 @@ class ProductDetails extends StatelessWidget {
   }
 
   Widget _buildBullets(List<String> list, {String icon = "•"}) {
+    if (list.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: list
