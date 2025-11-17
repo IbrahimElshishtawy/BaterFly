@@ -19,8 +19,9 @@ class ProductRepositoryImpl implements ProductRepository {
         .limit(limit);
 
     // ProductModel extends Product ⇒ نرجّعها مباشرة كـ Product
-    return (res as List)
+    return (res as List<dynamic>)
         .map((e) => ProductModel.fromMap(e as Map<String, dynamic>))
+        .cast<Product>()
         .toList();
   }
 
@@ -30,6 +31,6 @@ class ProductRepositoryImpl implements ProductRepository {
     final res = await _sb.from(_table).select().eq('id', id).maybeSingle();
 
     if (res == null) return null;
-    return ProductModel.fromMap(res);
+    return ProductModel.fromMap(res) as Product?;
   }
 }
