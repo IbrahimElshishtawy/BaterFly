@@ -1,8 +1,8 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:ui';
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 import 'package:baterfly/app/data/models/product_model.dart';
 
 import '../widgets/ingredient_chips.dart';
@@ -35,24 +35,40 @@ class ProductDetails extends StatelessWidget {
                 border: Border.all(color: Colors.white.withOpacity(0.25)),
               ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  // أهم المميزات
                   SectionCard(
                     title: "أهم المميزات",
                     transparent: true,
                     content: _buildBullets(product.mainBenefits),
                   ),
 
+                  const SizedBox(height: 16),
+
+                  // المكونات
                   IngredientChips(ingredients: product.ingredients),
 
+                  const SizedBox(height: 16),
+
+                  // طريقة الاستخدام
                   UsageAccordion(steps: product.usage),
 
+                  const SizedBox(height: 16),
+
+                  // الأمان / التحذيرات
                   SafetyList(items: product.safety),
 
+                  const SizedBox(height: 16),
+
+                  // مميزات إضافية
                   SectionCard(
                     title: "مميزات إضافية",
                     transparent: true,
                     content: _buildBullets(product.highlights, icon: "✨"),
                   ),
+
+                  const SizedBox(height: 16),
 
                   const TrustRow(),
                 ],
