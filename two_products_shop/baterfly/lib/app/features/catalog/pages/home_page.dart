@@ -1,8 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:baterfly/app/services/supabase/Product_Service.dart';
+import 'package:baterfly/app/core/routing/app_routes.dart';
 import 'package:flutter/material.dart';
 
+import 'package:baterfly/app/services/supabase/Product_Service.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/CustomDrawer.dart';
 import 'package:baterfly/app/core/utils/responsive.dart';
 import 'package:baterfly/app/core/widgets/footer_links/footer_links.dart';
@@ -109,9 +110,13 @@ class _HomePageState extends State<HomePage> {
                               final product = products[i];
                               final images = product.images;
 
-                              // لو عندك price/rating في الجدول ضيفهم في الموديل
-                              final double? price = null;
-                              final double rating = 4.5;
+                              // لو لسه السعر مش موجود في الداتا، سيبه null مؤقتًا
+                              final double? price = product.price == 0
+                                  ? null
+                                  : product.price;
+                              final double rating = product.avgRating == 0
+                                  ? 4.5
+                                  : product.avgRating;
 
                               return SizedBox(
                                 height: 260,
@@ -123,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                                     onTap: () {
                                       Navigator.pushNamed(
                                         context,
-                                        '/product',
+                                        AppRoutes.product, // أو '/product'
                                         arguments: {
                                           'slug': product.slug,
                                           'id': product.id,
