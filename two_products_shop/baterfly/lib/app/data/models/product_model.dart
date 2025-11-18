@@ -11,7 +11,7 @@ class ProductModel {
 
   final List<String> images;
 
-  // مشروع المنتج (التفاصيل)
+  // تفاصيل المنتج
   final List<String> mainBenefits;
   final List<String> ingredients;
   final List<String> usage; // خطوات الاستخدام
@@ -23,7 +23,7 @@ class ProductModel {
   final List<String> storageTips;
   final List<String> highlights;
 
-  // للـ test (features + usageText)
+  // للـ unit test (features + usageText)
   final List<String> features;
   final String usageText;
 
@@ -51,7 +51,7 @@ class ProductModel {
     required this.usageText,
   });
 
-  // ========= استخدام المشروع (Supabase JSON) =========
+  // ====== استخدام المشروع مع Supabase (JSON) ======
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     List<String> toList(dynamic v) {
       if (v == null) return [];
@@ -92,12 +92,12 @@ class ProductModel {
       marketingPhrases: toList(json['marketing_phrases']),
       storageTips: toList(json['storage_tips']),
       highlights: toList(json['highlights']),
-      features: const [], // مش مستخدمة في المشروع
-      usageText: '', // مش مستخدمة في المشروع
+      features: const [],
+      usageText: '',
     );
   }
 
-  // ========= للـ unit test: fromMap =========
+  // ====== للـ unit test: fromMap(map) ======
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     List<String> toList(dynamic v) {
       if (v == null) return [];
@@ -128,8 +128,6 @@ class ProductModel {
       features: toList(map['features']),
       avgRating: toDouble(map['avg_rating']),
       reviewsCount: toInt(map['reviews_count']),
-
-      // باقي الحقول للمشروع (مش موجودة في الـ map فنديها قيم default)
       type: '',
       description: '',
       mainBenefits: const [],
@@ -166,7 +164,6 @@ class ProductModel {
       'marketing_phrases': marketingPhrases,
       'storage_tips': storageTips,
       'highlights': highlights,
-      // features / usageText مش محتاجين يتبعتوا للـ API
     };
   }
 }
