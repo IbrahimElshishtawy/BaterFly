@@ -6,25 +6,32 @@ import 'package:baterfly/app/data/models/product_model.dart';
 class ProductService {
   final SupabaseClient _client = Supabase.instance.client;
 
+  Future<List<ProductModel>> getActiveProducts() async {
+    final data = await _client
+        .from('products')
+        .select()
+        .order('name', ascending: true);
+
+    return (data as List)
+        .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<ProductModel?> getProductBySlug(String slug) async {
     final data = await _client
         .from('products')
         .select()
         .eq('slug', slug)
-        .eq('is_active', true)
         .maybeSingle();
 
     if (data == null) return null;
-    return ProductModel.fromJson(data);
+    return ProductModel.fromJson(data as Map<String, dynamic>);
   }
 
-  Future<List<ProductModel>> getActiveProducts() async {
-    final data = await _client.from('products').select().eq('is_active', true);
-
-    final list = (data as List)
-        .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-
-    return list;
+  Future<void> updateProduct(ProductModel product) async {
+    await _client
+        .from('products')
+        .update(product.toJson())
+        .eq('id', product.id);
   }
 }
