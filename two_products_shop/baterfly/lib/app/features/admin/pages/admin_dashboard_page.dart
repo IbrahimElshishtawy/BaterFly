@@ -7,6 +7,7 @@ import 'order/orders_page.dart';
 import 'reviews/reviews_page.dart';
 import 'videos/videos_page.dart';
 import 'content/content_admin_page.dart';
+import 'products/products_page.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -23,7 +24,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
   bool _disposed = false;
   late final List<Widget> _pages;
 
-  final _titles = ['الطلبات', 'التقييمات', 'الفيديوهات', 'محتوى الصفحات'];
+  final _titles = [
+    'الطلبات',
+    'المنتجات',
+    'التقييمات',
+    'الفيديوهات',
+    'محتوى الصفحات',
+  ];
 
   @override
   void initState() {
@@ -31,11 +38,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
 
     _pages = const [
       OrdersPage(key: PageStorageKey('orders')),
+      ProductsPage(key: PageStorageKey('products')),
       ReviewsPage(key: PageStorageKey('reviews')),
       VideosPage(key: PageStorageKey('videos')),
-      ContentAdminPage(
-        key: PageStorageKey('content-admin'),
-      ), // ✅ الصفحة الجديدة
+      ContentAdminPage(key: PageStorageKey('content-admin')),
     ];
 
     _controller = AnimationController(
@@ -59,7 +65,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
     setState(fn);
   }
 
-  // ================== Sidebar Content (يستخدم في السايدبار و الـ Drawer) ==================
+  // ================== Sidebar Content ==================
 
   Widget _buildSidebarContent() {
     return SafeArea(
@@ -75,7 +81,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
           children: [
             const SizedBox(height: 16),
 
-            // لوجو / أنيميشن أعلى السايدبار
             SizedBox(
               height: 90,
               child: Lottie.network(
@@ -124,15 +129,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
                   children: [
                     _navItem(0, Icons.receipt_long, "الطلبات"),
                     const SizedBox(height: 6),
-                    _navItem(1, Icons.rate_review, "التقييمات"),
+                    _navItem(1, Icons.shopping_bag_outlined, "المنتجات"),
                     const SizedBox(height: 6),
-                    _navItem(2, Icons.video_library, "الفيديوهات"),
+                    _navItem(2, Icons.rate_review, "التقييمات"),
                     const SizedBox(height: 6),
-                    _navItem(
-                      3,
-                      Icons.description_outlined,
-                      "محتوى الصفحات",
-                    ), // ✅ عنصر جديد للسياسات والدعم
+                    _navItem(3, Icons.video_library, "الفيديوهات"),
+                    const SizedBox(height: 6),
+                    _navItem(4, Icons.description_outlined, "محتوى الصفحات"),
                   ],
                 ),
               ),
@@ -261,12 +264,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
         return Scaffold(
           backgroundColor: Colors.grey[50],
 
-          // 🔹 على الشاشات الصغيرة: نخليها Drawer من اليمين
           endDrawer: isWide ? null : Drawer(child: _buildSidebarContent()),
 
           body: Row(
             children: [
-              // على الشاشات الواسعة نعرض السايدبار ثابت
               if (isWide) _buildSidebar(),
 
               Expanded(
@@ -289,7 +290,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // لو الشاشة صغيرة نعرض زر المنيو عشان يفتح الـ Drawer
                           if (!isWide)
                             Builder(
                               builder: (context) {
