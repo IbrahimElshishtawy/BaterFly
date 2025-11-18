@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:baterfly/app/services/supabase/Product_Service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:baterfly/app/core/widgets/footer_links/footer_links.dart';
@@ -14,29 +13,15 @@ import 'package:baterfly/app/features/product/sections/price_and_cta.dart';
 import 'package:baterfly/app/features/product/widgets/gradient_bg.dart';
 
 import 'package:baterfly/app/data/models/product_model.dart';
+import 'package:baterfly/app/services/supabase/product_service.dart';
 
 class ProductPage extends StatelessWidget {
-  const ProductPage({super.key});
+  final String slug;
+
+  const ProductPage({super.key, required this.slug});
 
   @override
   Widget build(BuildContext context) {
-    // نقرأ الـ slug من الـ arguments اللي جاي من Navigator.pushNamed
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
-
-    final slug = args?['slug'] as String?;
-
-    if (slug == null || slug.isEmpty) {
-      return const Scaffold(
-        body: Center(
-          child: Text(
-            'لم يتم تمرير معرف المنتج (slug)',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      );
-    }
-
     final productService = ProductService();
 
     return Scaffold(
@@ -53,20 +38,39 @@ class ProductPage extends StatelessWidget {
               }
 
               if (snapshot.hasError) {
-                return const Center(
+                // ignore: avoid_print
+                print('ProductPage error: ${snapshot.error}');
+                return Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: Colors.black,
+                  alignment: Alignment.center,
                   child: Text(
-                    'حدث خطأ أثناء تحميل بيانات المنتج',
-                    style: TextStyle(color: Colors.white),
+                    'حدث خطأ أثناء تحميل بيانات المنتج:\n${snapshot.error}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 18,
+                    ),
                   ),
                 );
               }
 
               final product = snapshot.data;
+
               if (product == null) {
-                return const Center(
+                return Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: Colors.black,
+                  alignment: Alignment.center,
                   child: Text(
-                    'لم يتم العثور على هذا المنتج',
-                    style: TextStyle(color: Colors.white),
+                    'المنتج غير موجود في قاعدة البيانات.\nslug = $slug',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.orangeAccent,
+                      fontSize: 18,
+                    ),
                   ),
                 );
               }
@@ -77,16 +81,11 @@ class ProductPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // صور المنتج من الموديل
                         ProductImages(images: product.images),
 
-                        // السعر والزرار (لو حابب تمرر product بعدين عدّل الـ widget ده)
-                        const PriceAndCTA(),
+                        PriceAndCTA(),
 
-                        // عنوان المنتج والوصف وغيره
                         ProductTitle(product: product),
-
-                        // تفاصيل المنتج (مميزات، مكونات، استخدام، أمان...)
                         ProductDetails(product: product),
 
                         const SizedBox(height: 40),
