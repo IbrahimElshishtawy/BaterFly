@@ -4,6 +4,7 @@ import 'package:baterfly/app/features/contact/pages/contact_page.dart';
 import 'package:baterfly/app/features/policies/pages/returns_page.dart';
 import 'package:baterfly/app/features/policies/pages/support_page.dart';
 import 'package:baterfly/app/features/policies/pages/shipping_page.dart';
+
 import '../../features/catalog/pages/home_page.dart';
 import '../../features/product/pages/product_page.dart';
 import '../../features/checkout/pages/checkout_page.dart';
@@ -30,10 +31,17 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const HomePage());
 
       case AppRoutes.product:
-        return MaterialPageRoute(builder: (_) => const ProductPage());
+        {
+          // نقرأ الـ arguments اللي جاية من Navigator.pushNamed
+          final args = s.arguments as Map<String, dynamic>?;
+
+          // نجيب الـ slug لو مبعوت، أو نستخدم واحد افتراضي للتجربة
+          final slug = (args?['slug'] as String?) ?? 'ceramide-butterfly';
+
+          return MaterialPageRoute(builder: (_) => ProductPage(slug: slug));
+        }
 
       case AppRoutes.checkout:
-        // تأكد من أن الـ arguments موجودة وأنه Map<String, dynamic>
         final args = s.arguments;
         Map<String, dynamic> productArgs = {};
         if (args != null && args is Map<String, dynamic>) {
@@ -41,10 +49,7 @@ class AppRouter {
         }
 
         return MaterialPageRoute(
-          builder: (_) => CheckoutPage(
-            // لو product مش موجود هيمرر null بأمان
-            product: productArgs['product'],
-          ),
+          builder: (_) => CheckoutPage(product: productArgs['product']),
         );
 
       case AppRoutes.adminLogin:
