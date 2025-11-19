@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:baterfly/app/data/models/product_model.dart';
 import 'package:baterfly/app/services/supabase/Product_Service.dart';
 
+import 'widgets/product_form_fields.dart';
+import 'widgets/product_images_section.dart';
+
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
 
@@ -18,6 +21,8 @@ class _ProductsPageState extends State<ProductsPage> {
 
   List<ProductModel> _products = [];
   ProductModel? _selected;
+
+  bool _creatingNew = false; // 👈 هل نحن في وضع إنشاء منتج جديد؟
 
   // صور متاحة للاختيار (عدّل المسارات حسب مشروعك)
   final List<String> _availableImages = const [
@@ -85,6 +90,8 @@ class _ProductsPageState extends State<ProductsPage> {
         _products = list;
         if (list.isNotEmpty) {
           _setSelected(list.first);
+        } else {
+          _selected = null;
         }
         _loading = false;
       });
@@ -97,6 +104,7 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   void _setSelected(ProductModel product) {
+    _creatingNew = false;
     _selected = product;
 
     _nameCtrl.text = product.name;
@@ -129,9 +137,46 @@ class _ProductsPageState extends State<ProductsPage> {
         .toList();
   }
 
-  Future<void> _save() async {
-    if (_selected == null) return;
+  /// 👈 نسخ البيانات الحالية كمنتج جديد
+  void _startNewFromCurrent() {
+    setState(() {
+      _creatingNew = true;
+      _selected = null;
 
+      // اختياري: تغيير الاسم / تفريغ الـ slug عشان ما يتكرر
+      _nameCtrl.text = '${_nameCtrl.text} (نسخة)';
+      _slugCtrl.text = '';
+    });
+  }
+
+  /// 👈 منتج جديد فارغ
+  void _startNewEmpty() {
+    setState(() {
+      _creatingNew = true;
+      _selected = null;
+
+      _nameCtrl.clear();
+      _slugCtrl.clear();
+      _typeCtrl.clear();
+      _descCtrl.clear();
+      _priceCtrl.clear();
+      _countryCtrl.clear();
+      _guaranteeCtrl.clear();
+
+      _mainBenefitsCtrl.clear();
+      _ingredientsCtrl.clear();
+      _usageCtrl.clear();
+      _safetyCtrl.clear();
+      _targetAudienceCtrl.clear();
+      _marketingCtrl.clear();
+      _storageCtrl.clear();
+      _highlightsCtrl.clear();
+
+      _selectedImages = [];
+    });
+  }
+
+  Future<void> _save() async {
     setState(() {
       _saving = true;
       _error = null;
@@ -139,16 +184,17 @@ class _ProductsPageState extends State<ProductsPage> {
 
     try {
       final price = double.tryParse(_priceCtrl.text.trim()) ?? 0.0;
+      final isCreate = _creatingNew || _selected == null;
 
-      final updated = ProductModel(
-        id: _selected!.id,
+      final model = ProductModel(
+        id: isCreate ? null : _selected!.id,
         slug: _slugCtrl.text.trim(),
         name: _nameCtrl.text.trim(),
         type: _typeCtrl.text.trim(),
         description: _descCtrl.text.trim(),
         price: price,
-        avgRating: _selected!.avgRating,
-        reviewsCount: _selected!.reviewsCount,
+        avgRating: isCreate ? 0 : _selected!.avgRating,
+        reviewsCount: isCreate ? 0 : _selected!.reviewsCount,
         images: _selectedImages,
         mainBenefits: _splitLines(_mainBenefitsCtrl.text),
         ingredients: _splitLines(_ingredientsCtrl.text),
@@ -160,23 +206,33 @@ class _ProductsPageState extends State<ProductsPage> {
         marketingPhrases: _splitLines(_marketingCtrl.text),
         storageTips: _splitLines(_storageCtrl.text),
         highlights: _splitLines(_highlightsCtrl.text),
-        features: _selected!.features,
-        usageText: _selected!.usageText,
+        features: isCreate ? const [] : _selected!.features,
+        usageText: isCreate ? '' : _selected!.usageText,
       );
 
-      await _service.updateProduct(updated);
-
-      // حدّث النسخة الموجودة في القائمة
-      final idx = _products.indexWhere((p) => p.id == updated.id);
-      if (idx != -1) {
-        _products[idx] = updated;
+      if (isCreate) {
+        // INSERT
+        final created = await _service.createProduct(model);
+        setState(() {
+          _products.add(created);
+          _setSelected(created);
+        });
+      } else {
+        // UPDATE
+        await _service.updateProduct(model);
+        final idx = _products.indexWhere((p) => p.id == model.id);
+        if (idx != -1) {
+          _products[idx] = model;
+        }
+        _setSelected(model);
       }
-      _setSelected(updated);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم حفظ بيانات المنتج بنجاح'),
+          SnackBar(
+            content: Text(
+              isCreate ? 'تم إنشاء المنتج بنجاح' : 'تم حفظ بيانات المنتج بنجاح',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -189,6 +245,7 @@ class _ProductsPageState extends State<ProductsPage> {
       if (mounted) {
         setState(() {
           _saving = false;
+          _creatingNew = false;
         });
       }
     }
@@ -216,13 +273,9 @@ class _ProductsPageState extends State<ProductsPage> {
       );
     }
 
-    if (_products.isEmpty) {
-      return const Center(
-        child: Text(
-          'لا يوجد منتجات في قاعدة البيانات',
-          style: TextStyle(fontSize: 16),
-        ),
-      );
+    if (_products.isEmpty && !_creatingNew) {
+      // لا يوجد منتجات، نبدأ مباشرة في إنشاء منتج جديد
+      _startNewEmpty();
     }
 
     return Directionality(
@@ -230,7 +283,7 @@ class _ProductsPageState extends State<ProductsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // الشريط العلوي: اختيار المنتج + زر الحفظ
+          // الشريط العلوي: اختيار المنتج + أزرار الإنشاء/الحفظ
           Row(
             children: [
               Expanded(
@@ -257,7 +310,24 @@ class _ProductsPageState extends State<ProductsPage> {
                   },
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
+              // منتج جديد فارغ
+              TextButton.icon(
+                onPressed: _saving ? null : _startNewEmpty,
+                icon: const Icon(Icons.add),
+                label: const Text('منتج جديد'),
+              ),
+              const SizedBox(width: 8),
+              // نسخ كمنتج جديد
+              TextButton.icon(
+                onPressed: _saving || _selected == null
+                    ? null
+                    : _startNewFromCurrent,
+                icon: const Icon(Icons.copy),
+                label: const Text('نسخ كمنتج جديد'),
+              ),
+              const SizedBox(width: 8),
+              // حفظ
               ElevatedButton.icon(
                 onPressed: _saving ? null : _save,
                 icon: _saving
@@ -267,7 +337,7 @@ class _ProductsPageState extends State<ProductsPage> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.save),
-                label: const Text('حفظ التعديلات'),
+                label: const Text('حفظ'),
               ),
             ],
           ),
@@ -282,254 +352,42 @@ class _ProductsPageState extends State<ProductsPage> {
                   // عمود النصوص الأساسية
                   Expanded(
                     flex: 2,
-                    child: Column(
-                      children: [
-                        _buildTextField(_nameCtrl, 'اسم المنتج'),
-                        const SizedBox(height: 10),
-                        _buildTextField(_slugCtrl, 'Slug (عنوان الرابط)'),
-                        const SizedBox(height: 10),
-                        _buildTextField(_typeCtrl, 'نوع / وصف قصير'),
-                        const SizedBox(height: 10),
-                        _buildTextField(
-                          _priceCtrl,
-                          'السعر',
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        _buildTextField(_descCtrl, 'وصف المنتج', maxLines: 4),
-                        const SizedBox(height: 10),
-                        _buildTextField(_countryCtrl, 'بلد المنشأ'),
-                        const SizedBox(height: 10),
-                        _buildTextField(_guaranteeCtrl, 'الضمان'),
-                        const SizedBox(height: 20),
-                        _buildMultilineListField(
-                          controller: _mainBenefitsCtrl,
-                          label: 'أهم المميزات (سطر لكل ميزة)',
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMultilineListField(
-                          controller: _ingredientsCtrl,
-                          label: 'المكونات (سطر لكل عنصر)',
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMultilineListField(
-                          controller: _usageCtrl,
-                          label: 'طريقة الاستخدام (سطر لكل خطوة)',
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMultilineListField(
-                          controller: _safetyCtrl,
-                          label: 'الأمان / التحذيرات (سطر لكل نقطة)',
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMultilineListField(
-                          controller: _targetAudienceCtrl,
-                          label: 'الفئة المستهدفة (سطر لكل نوع عميل)',
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMultilineListField(
-                          controller: _marketingCtrl,
-                          label: 'جمل تسويقية (سطر لكل جملة)',
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMultilineListField(
-                          controller: _storageCtrl,
-                          label: 'نصائح التخزين (سطر لكل نقطة)',
-                        ),
-                        const SizedBox(height: 10),
-                        _buildMultilineListField(
-                          controller: _highlightsCtrl,
-                          label: 'مميزات إضافية (سطر لكل نقطة)',
-                        ),
-                      ],
+                    child: ProductFormFields(
+                      nameCtrl: _nameCtrl,
+                      slugCtrl: _slugCtrl,
+                      typeCtrl: _typeCtrl,
+                      priceCtrl: _priceCtrl,
+                      descCtrl: _descCtrl,
+                      countryCtrl: _countryCtrl,
+                      guaranteeCtrl: _guaranteeCtrl,
+                      mainBenefitsCtrl: _mainBenefitsCtrl,
+                      ingredientsCtrl: _ingredientsCtrl,
+                      usageCtrl: _usageCtrl,
+                      safetyCtrl: _safetyCtrl,
+                      targetAudienceCtrl: _targetAudienceCtrl,
+                      marketingCtrl: _marketingCtrl,
+                      storageCtrl: _storageCtrl,
+                      highlightsCtrl: _highlightsCtrl,
                     ),
                   ),
 
                   const SizedBox(width: 16),
 
                   // عمود الصور
-                  Expanded(flex: 1, child: _buildImagesColumn()),
+                  Expanded(
+                    flex: 1,
+                    child: ProductImagesSection(
+                      availableImages: _availableImages,
+                      selectedImages: _selectedImages,
+                      onToggle: _toggleImage,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label, {
-    int maxLines = 1,
-    TextInputType? keyboardType,
-  }) {
-    return TextField(
-      controller: controller,
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      ),
-    );
-  }
-
-  Widget _buildMultilineListField({
-    required TextEditingController controller,
-    required String label,
-  }) {
-    return TextField(
-      controller: controller,
-      maxLines: null,
-      minLines: 3,
-      decoration: InputDecoration(
-        alignLabelWithHint: true,
-        labelText: label,
-        hintText: 'كل سطر يمثل عنصر في القائمة.',
-        border: const OutlineInputBorder(),
-      ),
-    );
-  }
-
-  Widget _buildImagesColumn() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'صور المنتج',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 8),
-
-        // الصور المختارة الآن
-        SizedBox(
-          height: 140,
-          child: _selectedImages.isEmpty
-              ? Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: const Text(
-                    'لم يتم اختيار صور بعد',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                )
-              : ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _selectedImages.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (_, index) {
-                    final path = _selectedImages[index];
-                    return Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            path,
-                            width: 110,
-                            height: 130,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Positioned(
-                          top: 4,
-                          left: 4,
-                          child: InkWell(
-                            onTap: () => _toggleImage(path),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black54,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: const EdgeInsets.all(4),
-                              child: const Icon(
-                                Icons.close,
-                                size: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-        ),
-
-        const SizedBox(height: 16),
-        const Text(
-          'اختيار من الصور المتاحة',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
-
-        SizedBox(
-          height: 260,
-          child: GridView.builder(
-            itemCount: _availableImages.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1,
-            ),
-            itemBuilder: (_, index) {
-              final path = _availableImages[index];
-              final isSelected = _selectedImages.contains(path);
-
-              return GestureDetector(
-                onTap: () => _toggleImage(path),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        path,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isSelected
-                              ? Colors.blueAccent
-                              : Colors.transparent,
-                          width: 3,
-                        ),
-                        color: isSelected
-                            ? Colors.black26
-                            : Colors.black12.withOpacity(0),
-                      ),
-                    ),
-                    if (isSelected)
-                      const Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: Icon(
-                            Icons.check_circle,
-                            color: Colors.lightBlueAccent,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 }
