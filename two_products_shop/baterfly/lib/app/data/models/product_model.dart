@@ -1,5 +1,5 @@
 class ProductModel {
-  final String id;
+  final String? id;
   final String slug;
   final String name;
   final String type;
@@ -28,7 +28,7 @@ class ProductModel {
   final String usageText;
 
   ProductModel({
-    required this.id,
+    this.id,
     required this.slug,
     required this.name,
     required this.type,
@@ -73,7 +73,7 @@ class ProductModel {
     }
 
     return ProductModel(
-      id: json['id'].toString(),
+      id: json['id']?.toString(),
       slug: json['slug'] ?? '',
       name: json['name'] ?? '',
       type: json['type'] ?? '',
@@ -119,7 +119,7 @@ class ProductModel {
     }
 
     return ProductModel(
-      id: map['id'].toString(),
+      id: map['id']?.toString(),
       name: map['name'] ?? '',
       slug: map['slug'] ?? '',
       price: toDouble(map['price']),
@@ -143,9 +143,34 @@ class ProductModel {
     );
   }
 
+  /// للـ update (تحديث منتج موجود)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'slug': slug,
+      'name': name,
+      'type': type,
+      'description': description,
+      'price': price,
+      'avg_rating': avgRating,
+      'reviews_count': reviewsCount,
+      'images': images,
+      'main_benefits': mainBenefits,
+      'ingredients': ingredients,
+      'usage': usage,
+      'safety': safety,
+      'target_audience': targetAudience,
+      'country_of_origin': countryOfOrigin,
+      'guarantee': guarantee,
+      'marketing_phrases': marketingPhrases,
+      'storage_tips': storageTips,
+      'highlights': highlights,
+    };
+  }
+
+  /// للـ insert (إنشاء منتج جديد) – بدون id
+  Map<String, dynamic> toJsonForInsert() {
+    return {
       'slug': slug,
       'name': name,
       'type': type,
