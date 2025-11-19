@@ -10,7 +10,7 @@ class ProductService {
     final data = await _client
         .from('products')
         .select()
-        .order('name', ascending: true);
+        .order('id', ascending: true);
 
     return (data as List)
         .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
@@ -25,13 +25,27 @@ class ProductService {
         .maybeSingle();
 
     if (data == null) return null;
-    return ProductModel.fromJson(data as Map<String, dynamic>);
+    return ProductModel.fromJson(data);
   }
 
   Future<void> updateProduct(ProductModel product) async {
     await _client
         .from('products')
         .update(product.toJson())
-        .eq('id', product.id);
+        .eq('id', product.id as Object);
+  }
+
+  Future<ProductModel> createProduct(ProductModel product) async {
+    final inserted = await _client
+        .from('products')
+        .insert(product.toJsonForInsert())
+        .select()
+        .single();
+
+    return ProductModel.fromJson(inserted as Map<String, dynamic>);
+  }
+
+  Future<void> deleteProduct(int id) async {
+    await _client.from('products').delete().eq('id', id);
   }
 }
