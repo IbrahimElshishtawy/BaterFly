@@ -42,7 +42,7 @@ class ProductService {
         .select()
         .single();
 
-    return ProductModel.fromJson(inserted as Map<String, dynamic>);
+    return ProductModel.fromJson(inserted);
   }
 
   Future<void> deleteProduct(int id) async {
