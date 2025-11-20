@@ -1,6 +1,5 @@
 // ignore_for_file: deprecated_member_use, file_names
 
-import 'package:baterfly/app/features/Track/widgets/order_status_timeline.dart';
 import 'package:flutter/material.dart';
 
 import 'package:baterfly/app/core/widgets/site_app_bar/CustomDrawer.dart';
@@ -11,6 +10,7 @@ import 'package:baterfly/app/features/product/widgets/gradient_bg.dart';
 
 import 'package:baterfly/app/services/supabase/orders_public_service.dart';
 import 'package:baterfly/app/features/admin/pages/order/widgets/order_status_utils.dart';
+import 'package:baterfly/app/features/Track/widgets/order_status_timeline.dart';
 
 class OrderDetailsPage extends StatefulWidget {
   final int orderId;
@@ -75,14 +75,17 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     );
                   }
 
+                  // ================== تجهيز البيانات ==================
                   final status = (order['status'] ?? '').toString();
                   final statusClr = statusColor(status);
 
                   final orderNo =
                       order['order_no']?.toString() ?? order['id'].toString();
                   final fullName = order['full_name']?.toString() ?? 'بدون اسم';
+
                   final phone1 = order['phone1']?.toString() ?? '-';
                   final phone2 = order['phone2']?.toString() ?? '';
+
                   final city = order['city']?.toString() ?? '-';
                   final area = order['area']?.toString() ?? '-';
                   final address = order['address_text']?.toString() ?? '-';
@@ -105,9 +108,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
 
                   final createdAt = order['created_at']?.toString() ?? '';
 
+                  // ================== الـ UI ==================
                   return CustomScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
+                      // هيدر الطلب
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(side, 20, side, 16),
@@ -154,7 +159,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         ),
                       ),
 
-                      // المعلومات الأساسية
+                      // بيانات التواصل + العنوان + الكمية
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(side, 0, side, 16),
@@ -183,7 +188,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                   _infoRow('الهاتف 1', phone1),
                                   if (phone2.isNotEmpty)
                                     _infoRow('الهاتف 2', phone2),
+
                                   const SizedBox(height: 16),
+
                                   const Text(
                                     'العنوان',
                                     style: TextStyle(
@@ -196,7 +203,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                   _infoRow('المدينة', city),
                                   _infoRow('المنطقة', area),
                                   _infoRow('وصف العنوان', address),
+
                                   const SizedBox(height: 16),
+
                                   const Text(
                                     'التفاصيل الإضافية',
                                     style: TextStyle(
@@ -219,7 +228,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         ),
                       ),
 
-                      // الـ Timeline للحالة
+                      // التايم لاين (أهم جزء تم تعديله)
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(side, 0, side, 24),
@@ -231,9 +240,12 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                 color: Colors.white.withOpacity(0.12),
                               ),
                             ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: _OrderTimelineSection(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: OrderStatusTimeline(
+                                currentStatus:
+                                    status, // ← لا نستخدم arguments هنا
+                              ),
                             ),
                           ),
                         ),
@@ -271,18 +283,6 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _OrderTimelineSection extends StatelessWidget {
-  const _OrderTimelineSection();
-
-  @override
-  Widget build(BuildContext context) {
-    return OrderStatusTimeline(
-      currentStatus:
-          (ModalRoute.of(context)?.settings.arguments as Map?)?['status'] ?? '',
     );
   }
 }
