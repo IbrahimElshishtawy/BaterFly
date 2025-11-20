@@ -6,7 +6,7 @@ import 'index.dart';
 
 class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool transparent;
-  final String title; // 🔹 العنوان اللي هيظهر في النص
+  final String title;
 
   const SiteAppBar({
     super.key,
@@ -27,7 +27,7 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: bg,
       elevation: transparent ? 0 : 2,
       automaticallyImplyLeading: false,
-      centerTitle: true, // 🔹 يخلي النص في النص
+      centerTitle: true,
       titleSpacing: 0,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -57,8 +57,6 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
-
-      /// 🔹 الأكشنز اللي في اليمين واليسار (زي السلة أو المينيو)
       leadingWidth: 120,
       leading: Padding(
         padding: const EdgeInsets.only(left: 12),
@@ -93,12 +91,11 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  /// 🔹 روابط الويب (لما الشاشة تكون كبيرة)
   List<Widget> _desktopLinks(BuildContext context) => [
     NavLink(text: 'الرئيسية', route: '/'),
-    NavLink(text: 'اتصل بنا', route: '/contact'),
+    NavLink(text: 'تتبع منتجك', route: '/track'),
     const SizedBox(width: 8),
-    SearchBox(onTap: () => _openSearch(context)),
+    SearchPage(),
     const SizedBox(width: 8),
     const SizedBox(width: 8),
     WebButton(
@@ -109,7 +106,6 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     const SizedBox(width: 12),
   ];
 
-  /// 🔹 أكشنات الموبايل (بحث - سلة - مينيو)
   List<Widget> _mobileActions(BuildContext context) => [
     IconButton(
       tooltip: 'بحث',
