@@ -37,6 +37,19 @@ class _TrackProductPageState extends State<TrackProductPage> {
     });
   }
 
+  // ================== دالة الريفرش ==================
+  Future<void> _refresh() async {
+    if (_query.isEmpty) {
+      // لو مفيش بحث، مفيش حاجة نعمل لها ريفرش
+      return;
+    }
+    setState(() {
+      _future = _service.findOrdersByFullName(_query);
+    });
+    await _future;
+  }
+  // ==================================================
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -68,172 +81,177 @@ class _TrackProductPageState extends State<TrackProductPage> {
                       snapshot.connectionState == ConnectionState.waiting;
                   final orders = snapshot.data ?? [];
 
-                  return CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      // العنوان + الوصف
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(side, 20, side, 8),
-                          child: const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'تتبع طلبك بالاسم',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
+                  return RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        // العنوان + الوصف
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(side, 20, side, 8),
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'تتبع طلبك بالاسم',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 6),
-                              Text(
-                                'اكتب اسمك الكامل كما أدخلته في الطلب لمعرفة حالة طلباتك.',
+                                SizedBox(height: 6),
+                                Text(
+                                  'اكتب اسمك الكامل كما أدخلته في الطلب لمعرفة حالة طلباتك.',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(side, 8, side, 16),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _nameController,
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      hintText: 'مثال: أحمد محمد علي',
+                                      hintStyle: TextStyle(
+                                        color: Colors.white.withOpacity(.6),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.black.withOpacity(0.3),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Colors.white.withOpacity(0.25),
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Colors.white.withOpacity(0.25),
+                                        ),
+                                      ),
+                                      focusedBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(12),
+                                        ),
+                                        borderSide: BorderSide(
+                                          color: Colors.orangeAccent,
+                                        ),
+                                      ),
+                                      prefixIcon: Icon(
+                                        Icons.person_search,
+                                        color: Colors.white.withOpacity(.85),
+                                      ),
+                                    ),
+                                    textInputAction: TextInputAction.search,
+                                    onChanged: (val) {
+                                      _query = val.trim();
+                                    },
+                                    onSubmitted: (_) {
+                                      _query = _nameController.text.trim();
+                                      if (_query.isNotEmpty) _runTrack();
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _query = _nameController.text.trim();
+                                    if (_query.isNotEmpty) _runTrack();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text('تتبع'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // تحميل
+                        if (loading)
+                          const SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 40),
+                              child: Center(child: CircularProgressIndicator()),
+                            ),
+                          )
+                        // لا يوجد نتائج
+                        else if (!loading &&
+                            _query.isNotEmpty &&
+                            orders.isEmpty)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(side, 24, side, 16),
+                              child: const Text(
+                                'لا يوجد طلبات مطابقة لهذا الاسم حاليًا.',
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
 
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(side, 8, side, 16),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _nameController,
-                                  style: const TextStyle(color: Colors.white),
-                                  decoration: InputDecoration(
-                                    hintText: 'مثال: أحمد محمد علي',
-                                    hintStyle: TextStyle(
-                                      color: Colors.white.withOpacity(.6),
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.black.withOpacity(0.3),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: Colors.white.withOpacity(0.25),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: Colors.white.withOpacity(0.25),
-                                      ),
-                                    ),
-                                    focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(12),
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Colors.orangeAccent,
-                                      ),
-                                    ),
-                                    prefixIcon: Icon(
-                                      Icons.person_search,
-                                      color: Colors.white.withOpacity(.85),
-                                    ),
-                                  ),
-                                  textInputAction: TextInputAction.search,
-                                  onChanged: (val) {
-                                    _query = val.trim();
-                                  },
-                                  onSubmitted: (_) {
-                                    _query = _nameController.text.trim();
-                                    if (_query.isNotEmpty) _runTrack();
-                                  },
+                        // لو فيه طلبات
+                        if (orders.isNotEmpty)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(side, 8, side, 4),
+                              child: Text(
+                                'عدد الطلبات المطابقة: ${orders.length}',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(.8),
+                                  fontSize: 13,
                                 ),
                               ),
-                              const SizedBox(width: 10),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _query = _nameController.text.trim();
-                                  if (_query.isNotEmpty) _runTrack();
+                            ),
+                          ),
+                        if (orders.isNotEmpty)
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final o = orders[index];
+
+                              return TrackOrderCard(
+                                order: o,
+                                sidePadding: side,
+                                isLast: index == orders.length - 1,
+                                onViewDetails: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.orderDetails,
+                                    arguments: o['id'],
+                                  );
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 14,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: const Text('تتبع'),
-                              ),
-                            ],
+                              );
+                            }, childCount: orders.length),
                           ),
-                        ),
-                      ),
 
-                      // تحميل
-                      if (loading)
-                        const SliverToBoxAdapter(
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 40),
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
-                        )
-                      // لا يوجد نتائج
-                      else if (!loading && _query.isNotEmpty && orders.isEmpty)
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(side, 24, side, 16),
-                            child: const Text(
-                              'لا يوجد طلبات مطابقة لهذا الاسم حاليًا.',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      // لو فيه طلبات
-                      if (orders.isNotEmpty)
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(side, 8, side, 4),
-                            child: Text(
-                              'عدد الطلبات المطابقة: ${orders.length}',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(.8),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                        ),
-                      if (orders.isNotEmpty)
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final o = orders[index];
-
-                            return TrackOrderCard(
-                              order: o,
-                              sidePadding: side,
-                              isLast: index == orders.length - 1,
-                              onViewDetails: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.orderDetails,
-                                  arguments: o['id'],
-                                );
-                              },
-                            );
-                          }, childCount: orders.length),
-                        ),
-
-                      const SliverToBoxAdapter(child: FooterLinks()),
-                    ],
+                        const SliverToBoxAdapter(child: FooterLinks()),
+                      ],
+                    ),
                   );
                 },
               );
