@@ -1,3 +1,4 @@
+import 'package:baterfly/app/features/Track/ui/Track_Product_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:baterfly/app/features/cart/pages/cart_page.dart';
 import 'package:baterfly/app/features/contact/pages/contact_page.dart';
@@ -32,12 +33,8 @@ class AppRouter {
 
       case AppRoutes.product:
         {
-          // نقرأ الـ arguments اللي جاية من Navigator.pushNamed
           final args = s.arguments as Map<String, dynamic>?;
-
-          // نجيب الـ slug لو مبعوت، أو نستخدم واحد افتراضي للتجربة
           final slug = (args?['slug'] as String?) ?? 'ceramide-butterfly';
-
           return MaterialPageRoute(builder: (_) => ProductPage(slug: slug));
         }
 
@@ -63,7 +60,8 @@ class AppRouter {
 
       case AppRoutes.cart:
         return MaterialPageRoute(builder: (_) => const CartPage());
-
+      case AppRoutes.track:
+        return MaterialPageRoute(builder: (_) => const TrackProductPage());
       default:
         return MaterialPageRoute(
           builder: (_) =>
