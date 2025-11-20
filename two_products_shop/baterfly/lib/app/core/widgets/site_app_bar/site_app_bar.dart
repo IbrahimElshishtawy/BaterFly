@@ -112,9 +112,8 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     NavLink(text: 'تتبع منتجك', route: '/track'),
     const SizedBox(width: 16),
 
-    // 🔹 SearchBox يفتح صفحة البحث
     SizedBox(
-      width: 240, // ✅ نحدد عرض ثابت معقول عشان ما يكبر بزيادة
+      width: 240,
       child: SearchBox(onTap: () => _go(context, '/search')),
     ),
 
@@ -126,7 +125,6 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     ),
   ];
 
-  /// أكشنات الموبايل (بحث + منيو)
   List<Widget> _mobileActions(BuildContext context) => [
     IconButton(
       tooltip: 'بحث',
