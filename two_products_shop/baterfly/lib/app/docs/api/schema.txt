@@ -1,8 +1,0 @@
-[products]
-id: int, name: text, slug: text, price: numeric(10,2), images: jsonb, features: jsonb, avg_rating: numeric, reviews_count: int
-
-[orders]
-id: int, product_id: int, full_name: text, phone1: text, address_text: text, quantity: int, status: text, payment_method: text
-
-[product_reviews]
-id: int, product_id: int, rating: int, comment: text, full_name: text, is_verified: bool, status: text
