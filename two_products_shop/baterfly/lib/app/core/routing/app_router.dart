@@ -1,3 +1,4 @@
+import 'package:baterfly/app/core/widgets/site_app_bar/search_page.dart';
 import 'package:baterfly/app/features/Track/ui/Track_Product_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:baterfly/app/features/cart/pages/cart_page.dart';
@@ -62,6 +63,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const CartPage());
       case AppRoutes.track:
         return MaterialPageRoute(builder: (_) => const TrackProductPage());
+      case AppRoutes.search:
+        return MaterialPageRoute(builder: (_) => const SearchPage());
       default:
         return MaterialPageRoute(
           builder: (_) =>
