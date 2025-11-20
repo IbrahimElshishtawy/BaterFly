@@ -57,4 +57,37 @@ class ProductService {
   Future<void> deleteProduct(String id) async {
     await _client.from('products').delete().eq('id', id);
   }
+
+  Future<List<ProductModel>> searchProducts({
+    required String query,
+    String? categorySlug,
+    double? minPrice,
+    double? maxPrice,
+    double? minRating,
+  }) async {
+    var req = _client.from('products').select('*').eq('is_active', true);
+
+    if (query.isNotEmpty) {
+      req = req.or('name.ilike.%$query%,description.ilike.%$query%');
+    }
+
+    if (categorySlug != null && categorySlug.isNotEmpty) {
+      req = req.eq('category_slug', categorySlug);
+    }
+    if (minPrice != null) {
+      req = req.gte('price', minPrice);
+    }
+    if (maxPrice != null) {
+      req = req.lte('price', maxPrice);
+    }
+    if (minRating != null) {
+      req = req.gte('avg_rating', minRating);
+    }
+
+    final data = await req.order('created_at', ascending: false);
+
+    return (data as List)
+        .map((json) => ProductModel.fromMap(json as Map<String, dynamic>))
+        .toList();
+  }
 }
