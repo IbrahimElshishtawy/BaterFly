@@ -1,5 +1,7 @@
 // features/admin/products/widgets/product_images_section.dart
 
+// ignore_for_file: unnecessary_underscores, deprecated_member_use
+
 import 'package:flutter/material.dart';
 
 class ProductImagesSection extends StatelessWidget {
