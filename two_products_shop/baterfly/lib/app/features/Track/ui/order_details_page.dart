@@ -31,6 +31,15 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     _future = _service.getOrderById(widget.orderId);
   }
 
+  // ================== دالة الريفرش ==================
+  Future<void> _refresh() async {
+    setState(() {
+      _future = _service.getOrderById(widget.orderId);
+    });
+    await _future;
+  }
+  // ==================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,20 +66,40 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                   }
 
                   if (snapshot.hasError) {
-                    return const Center(
-                      child: Text(
-                        'حدث خطأ أثناء تحميل تفاصيل الطلب.',
-                        style: TextStyle(color: Colors.white),
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'حدث خطأ أثناء تحميل تفاصيل الطلب.',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: _refresh,
+                            child: const Text('إعادة المحاولة'),
+                          ),
+                        ],
                       ),
                     );
                   }
 
                   final order = snapshot.data;
                   if (order == null) {
-                    return const Center(
-                      child: Text(
-                        'لم يتم العثور على هذا الطلب.',
-                        style: TextStyle(color: Colors.white70),
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'لم يتم العثور على هذا الطلب.',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: _refresh,
+                            child: const Text('تحديث'),
+                          ),
+                        ],
                       ),
                     );
                   }
@@ -108,151 +137,153 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
 
                   final createdAt = order['created_at']?.toString() ?? '';
 
-                  // ================== الـ UI ==================
-                  return CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      // هيدر الطلب
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(side, 20, side, 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'الطلب #$orderNo',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                fullName,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(.85),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: statusClr.withOpacity(0.12),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  kStatusLabels[status] ?? '-',
-                                  style: TextStyle(
-                                    fontSize: 12,
+                  // ================== الـ UI + ريفرش ==================
+                  return RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        // هيدر الطلب
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(side, 20, side, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'الطلب #$orderNo',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
                                     fontWeight: FontWeight.bold,
-                                    color: statusClr,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // بيانات التواصل + العنوان + الكمية
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(side, 0, side, 16),
-                          child: Card(
-                            color: Colors.black.withOpacity(0.25),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: BorderSide(
-                                color: Colors.white.withOpacity(0.12),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'بيانات التواصل',
+                                const SizedBox(height: 4),
+                                Text(
+                                  fullName,
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(.85),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: statusClr.withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    kStatusLabels[status] ?? '-',
                                     style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: statusClr,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  _infoRow('الهاتف 1', phone1),
-                                  if (phone2.isNotEmpty)
-                                    _infoRow('الهاتف 2', phone2),
-
-                                  const SizedBox(height: 16),
-
-                                  const Text(
-                                    'العنوان',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _infoRow('المدينة', city),
-                                  _infoRow('المنطقة', area),
-                                  _infoRow('وصف العنوان', address),
-
-                                  const SizedBox(height: 16),
-
-                                  const Text(
-                                    'التفاصيل الإضافية',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _infoRow(
-                                    'الكمية المطلوبة',
-                                    '$quantity $unitLabel',
-                                  ),
-                                  if (createdAt.isNotEmpty)
-                                    _infoRow('تاريخ إنشاء الطلب', createdAt),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ),
 
-                      // التايم لاين (أهم جزء تم تعديله)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(side, 0, side, 24),
-                          child: Card(
-                            color: Colors.black.withOpacity(0.25),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: BorderSide(
-                                color: Colors.white.withOpacity(0.12),
+                        // بيانات التواصل + العنوان + الكمية
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(side, 0, side, 16),
+                            child: Card(
+                              color: Colors.black.withOpacity(0.25),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                side: BorderSide(
+                                  color: Colors.white.withOpacity(0.12),
+                                ),
                               ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: OrderStatusTimeline(
-                                currentStatus:
-                                    status, // ← لا نستخدم arguments هنا
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'بيانات التواصل',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    _infoRow('الهاتف 1', phone1),
+                                    if (phone2.isNotEmpty)
+                                      _infoRow('الهاتف 2', phone2),
+
+                                    const SizedBox(height: 16),
+
+                                    const Text(
+                                      'العنوان',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    _infoRow('المدينة', city),
+                                    _infoRow('المنطقة', area),
+                                    _infoRow('وصف العنوان', address),
+
+                                    const SizedBox(height: 16),
+
+                                    const Text(
+                                      'التفاصيل الإضافية',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    _infoRow(
+                                      'الكمية المطلوبة',
+                                      '$quantity $unitLabel',
+                                    ),
+                                    if (createdAt.isNotEmpty)
+                                      _infoRow('تاريخ إنشاء الطلب', createdAt),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
 
-                      const SliverToBoxAdapter(child: FooterLinks()),
-                    ],
+                        // التايم لاين
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(side, 0, side, 24),
+                            child: Card(
+                              color: Colors.black.withOpacity(0.25),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                side: BorderSide(
+                                  color: Colors.white.withOpacity(0.12),
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: OrderStatusTimeline(
+                                  currentStatus: status,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SliverToBoxAdapter(child: FooterLinks()),
+                      ],
+                    ),
                   );
                 },
               );
