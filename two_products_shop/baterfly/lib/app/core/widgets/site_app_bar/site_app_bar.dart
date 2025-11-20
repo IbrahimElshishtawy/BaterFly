@@ -1,7 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:baterfly/app/core/widgets/site_app_bar/search_box.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
+
+// يصدر NavLink / WebButton / SearchBox / SimpleSearchDelegate
 import 'index.dart';
 
 class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -84,19 +87,21 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ),
       ),
-
       actions: [
         if (isWide) ..._desktopLinks(context) else ..._mobileActions(context),
       ],
     );
   }
 
+  /// روابط الديسكتوب
   List<Widget> _desktopLinks(BuildContext context) => [
     NavLink(text: 'الرئيسية', route: '/'),
     NavLink(text: 'تتبع منتجك', route: '/track'),
     const SizedBox(width: 8),
-    SearchPage(),
-    const SizedBox(width: 8),
+
+    // 🔹 SearchBox بسيفت يفتح Route صفحة البحث
+    SearchBox(onTap: () => _go(context, '/search')),
+
     const SizedBox(width: 8),
     WebButton(
       label: 'دخول الأدمن',
@@ -106,6 +111,7 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     const SizedBox(width: 12),
   ];
 
+  /// أكشنات الموبايل (بحث + منيو)
   List<Widget> _mobileActions(BuildContext context) => [
     IconButton(
       tooltip: 'بحث',
@@ -129,6 +135,10 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
       context: context,
       delegate: SimpleSearchDelegate(),
     );
+
+    // مهم عشان تحذير use_build_context_synchronously
+    if (!context.mounted) return;
+
     if (res != null && res.trim().isNotEmpty) {
       _go(context, '/catalog', args: {'q': res.trim()});
     }
