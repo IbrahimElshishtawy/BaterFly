@@ -1,21 +1,15 @@
 // ignore_for_file: deprecated_member_use, file_names
 
-import 'package:flutter/material.dart';
-
 import 'package:baterfly/app/core/routing/app_routes.dart';
-import 'package:baterfly/app/services/supabase/Product_Service.dart';
+import 'package:baterfly/app/features/Track/widgets/track_order_card.dart';
+import 'package:flutter/material.dart';
 
 import 'package:baterfly/app/core/widgets/site_app_bar/CustomDrawer.dart';
 import 'package:baterfly/app/core/utils/responsive.dart';
 import 'package:baterfly/app/core/widgets/footer_links/footer_links.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/site_app_bar.dart';
-
 import 'package:baterfly/app/features/product/widgets/gradient_bg.dart';
-import 'package:baterfly/app/features/product/widgets/product_hover.dart';
-import 'package:baterfly/app/features/catalog/widgets/product_card/product_card.dart';
-import 'package:baterfly/app/features/catalog/widgets/product_card/animated_image_slider.dart';
-
-import 'package:baterfly/app/data/models/product_model.dart';
+import 'package:baterfly/app/services/supabase/orders_public_service.dart';
 
 class TrackProductPage extends StatefulWidget {
   const TrackProductPage({super.key});
@@ -25,34 +19,21 @@ class TrackProductPage extends StatefulWidget {
 }
 
 class _TrackProductPageState extends State<TrackProductPage> {
-  final _service = ProductService();
-
+  final _service = OrdersPublicService();
   final TextEditingController _nameController = TextEditingController();
 
   String _query = '';
-  late Future<List<ProductModel>> _future;
+  late Future<List<Map<String, dynamic>>> _future;
 
   @override
   void initState() {
     super.initState();
-    _future = Future.value(<ProductModel>[]);
-  }
-
-  int _cols(double w) {
-    if (w >= 1600) return 6;
-    if (w >= 1300) return 5;
-    if (w >= 992) return 4;
-    if (w >= 720) return 3;
-    if (w >= 520) return 2;
-    return 1;
+    _future = Future.value(<Map<String, dynamic>>[]);
   }
 
   void _runTrack() {
     setState(() {
-      _future = _service.searchProducts(
-        query: _query,
-        // لو عندك باراميترات إضافية للفلترة ممكن تضيفها هنا
-      );
+      _future = _service.findOrdersByFullName(_query);
     });
   }
 
@@ -66,7 +47,7 @@ class _TrackProductPageState extends State<TrackProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       endDrawer: const CustomDrawer(),
-      appBar: const SiteAppBar(transparent: false, title: 'تتبع منتجك'),
+      appBar: const SiteAppBar(transparent: false, title: 'تتبع طلبك'),
       body: Stack(
         children: [
           const GradientBackground(),
@@ -75,31 +56,30 @@ class _TrackProductPageState extends State<TrackProductPage> {
               final w = constraints.maxWidth;
               final pad = Responsive.hpad(w);
               final maxW = Responsive.maxWidth(w);
-              final cols = _cols(w);
 
               double side = (w - maxW) / 2;
               final minSide = pad.horizontal / 2;
               if (side < minSide) side = minSide;
 
-              return FutureBuilder<List<ProductModel>>(
+              return FutureBuilder<List<Map<String, dynamic>>>(
                 future: _future,
                 builder: (context, snapshot) {
                   final loading =
                       snapshot.connectionState == ConnectionState.waiting;
-                  final products = snapshot.data ?? [];
+                  final orders = snapshot.data ?? [];
 
                   return CustomScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
-                      // 🔹 عنوان وتعليمات بسيطة
+                      // العنوان + الوصف
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(side, 20, side, 8),
-                          child: Column(
+                          child: const Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
-                                'تتبع منتجك بالاسم',
+                                'تتبع طلبك بالاسم',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 22,
@@ -108,7 +88,7 @@ class _TrackProductPageState extends State<TrackProductPage> {
                               ),
                               SizedBox(height: 6),
                               Text(
-                                'اكتب اسم المنتج أو جزء منه لمعرفة حالته وموقعه في المتجر.',
+                                'اكتب اسمك الكامل كما أدخلته في الطلب لمعرفة حالة طلباتك.',
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
@@ -119,7 +99,6 @@ class _TrackProductPageState extends State<TrackProductPage> {
                         ),
                       ),
 
-                      // 🔹 حقل إدخال الاسم + زر "تتبع"
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(side, 8, side, 16),
@@ -130,8 +109,7 @@ class _TrackProductPageState extends State<TrackProductPage> {
                                   controller: _nameController,
                                   style: const TextStyle(color: Colors.white),
                                   decoration: InputDecoration(
-                                    hintText:
-                                        'مثال: سماعة بلوتوث، كيبورد ميكانيكال...',
+                                    hintText: 'مثال: أحمد محمد علي',
                                     hintStyle: TextStyle(
                                       color: Colors.white.withOpacity(.6),
                                     ),
@@ -158,7 +136,7 @@ class _TrackProductPageState extends State<TrackProductPage> {
                                       ),
                                     ),
                                     prefixIcon: Icon(
-                                      Icons.search,
+                                      Icons.person_search,
                                       color: Colors.white.withOpacity(.85),
                                     ),
                                   ),
@@ -194,7 +172,7 @@ class _TrackProductPageState extends State<TrackProductPage> {
                         ),
                       ),
 
-                      // 🔹 حالة التحميل أو رسالة لا توجد نتائج
+                      // تحميل
                       if (loading)
                         const SliverToBoxAdapter(
                           child: Padding(
@@ -202,14 +180,13 @@ class _TrackProductPageState extends State<TrackProductPage> {
                             child: Center(child: CircularProgressIndicator()),
                           ),
                         )
-                      else if (!loading &&
-                          _query.isNotEmpty &&
-                          products.isEmpty)
+                      // لا يوجد نتائج
+                      else if (!loading && _query.isNotEmpty && orders.isEmpty)
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: EdgeInsets.fromLTRB(side, 24, side, 16),
                             child: const Text(
-                              'لا يوجد منتج مطابق للاسم المدخل حاليًا.',
+                              'لا يوجد طلبات مطابقة لهذا الاسم حاليًا.',
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 14,
@@ -218,13 +195,13 @@ class _TrackProductPageState extends State<TrackProductPage> {
                           ),
                         ),
 
-                      // 🔹 لو في نتائج – نعرضها في Grid مثل الهوم
-                      if (products.isNotEmpty)
+                      // لو فيه طلبات
+                      if (orders.isNotEmpty)
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: EdgeInsets.fromLTRB(side, 8, side, 4),
                             child: Text(
-                              'عدد المنتجات المطابقة: ${products.length}',
+                              'عدد الطلبات المطابقة: ${orders.length}',
                               style: TextStyle(
                                 color: Colors.white.withOpacity(.8),
                                 fontSize: 13,
@@ -232,68 +209,29 @@ class _TrackProductPageState extends State<TrackProductPage> {
                             ),
                           ),
                         ),
-                      if (products.isNotEmpty)
-                        SliverPadding(
-                          padding: EdgeInsets.fromLTRB(side, 8, side, 16),
-                          sliver: SliverGrid(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: cols,
-                                  mainAxisSpacing: 16,
-                                  crossAxisSpacing: 16,
-                                  childAspectRatio: .78,
-                                ),
-                            delegate: SliverChildBuilderDelegate((context, i) {
-                              if (i >= products.length) return null;
+                      if (orders.isNotEmpty)
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            final o = orders[index];
 
-                              final product = products[i];
-                              final images = product.images;
-
-                              final double? price = product.price == 0
-                                  ? null
-                                  : product.price;
-                              final double rating = product.avgRating == 0
-                                  ? 4.5
-                                  : product.avgRating;
-
-                              return SizedBox(
-                                height: 260,
-                                child: ProductHover(
-                                  child: ProductCard(
-                                    images: images,
-                                    price: price,
-                                    rating: rating,
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        AppRoutes.product,
-                                        arguments: {
-                                          'slug': product.slug,
-                                          'id': product.id,
-                                        },
-                                      );
-                                    },
-                                    imageWidget: AnimatedImageSlider(
-                                      images: images,
-                                    ),
-                                    priceWidget: Text(
-                                      price != null
-                                          ? '\$${price.toStringAsFixed(2)}'
-                                          : 'N/A',
-                                      style: const TextStyle(
-                                        color: Colors.orangeAccent,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }, childCount: products.length),
-                          ),
+                            return TrackOrderCard(
+                              order: o,
+                              sidePadding: side,
+                              isLast: index == orders.length - 1,
+                              onViewDetails: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.orderDetails,
+                                  arguments: o['id'],
+                                );
+                              },
+                            );
+                          }, childCount: orders.length),
                         ),
 
-                      // 🔹 FooterLinks في آخر الصفحة
                       const SliverToBoxAdapter(child: FooterLinks()),
                     ],
                   );
