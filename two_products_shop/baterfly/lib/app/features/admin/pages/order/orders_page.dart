@@ -80,21 +80,19 @@ class OrdersPage extends StatelessWidget {
                         ),
 
                         const SizedBox(height: 8),
-
-                        // قائمة الطلبات
                         Expanded(
-                          child: OrdersList(
-                            orders: orders,
-                            isWide: isWide,
-                            isTablet: isTablet,
-                            onChangeStatus: (id, status) =>
-                                ctrl.changeStatus(id, status),
-
-                            // ✅ هنا ربطنا الحذف بالكنترولر
-                            onDeleteOrder: (id) => ctrl.deleteOrder(
-                              id,
-                              // نرسل الـ context لو عايز تعرض SnackBar مثلاً
-                              context,
+                          child: RefreshIndicator(
+                            onRefresh: () async {
+                              await ctrl.loadOrders();
+                            },
+                            child: OrdersList(
+                              orders: orders,
+                              isWide: isWide,
+                              isTablet: isTablet,
+                              onChangeStatus: (id, status) =>
+                                  ctrl.changeStatus(id, status),
+                              onDeleteOrder: (id) =>
+                                  ctrl.deleteOrder(id, context),
                             ),
                           ),
                         ),
