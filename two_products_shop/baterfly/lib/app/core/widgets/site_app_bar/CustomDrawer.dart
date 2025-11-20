@@ -42,6 +42,12 @@ class CustomDrawer extends StatelessWidget {
           ),
           _drawerItem(
             context,
+            icon: Icons.mail_outline_rounded,
+            title: 'تتبع الطلب',
+            route: AppRoutes.track,
+          ),
+          _drawerItem(
+            context,
             icon: Icons.support_agent_outlined,
             title: 'التواصل مع الدعم',
             route: AppRoutes.support,
