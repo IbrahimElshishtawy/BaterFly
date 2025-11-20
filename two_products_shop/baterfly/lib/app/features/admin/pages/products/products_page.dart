@@ -139,19 +139,15 @@ class _ProductsPageState extends State<ProductsPage> {
         .toList();
   }
 
-  /// 👈 نسخ البيانات الحالية كمنتج جديد
   void _startNewFromCurrent() {
     setState(() {
       _creatingNew = true;
       _selected = null;
-
-      // اختياري: تغيير الاسم / تفريغ الـ slug عشان ما يتكرر
       _nameCtrl.text = '${_nameCtrl.text} (نسخة)';
       _slugCtrl.text = '';
     });
   }
 
-  /// 👈 منتج جديد فارغ
   void _startNewEmpty() {
     setState(() {
       _creatingNew = true;
@@ -253,6 +249,69 @@ class _ProductsPageState extends State<ProductsPage> {
     }
   }
 
+  Future<void> _deleteSelected() async {
+    if (_selected == null || _selected!.id == null) return;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('حذف المنتج'),
+        content: Text(
+          'هل أنت متأكد من حذف المنتج "${_selected!.name}"؟\n'
+          'لا يمكن التراجع عن هذه العملية.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('حذف', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() => _saving = true);
+
+    try {
+      await _service.deleteProduct(_selected!.id! as int);
+      setState(() {
+        _products.removeWhere((p) => p.id == _selected!.id);
+        if (_products.isNotEmpty) {
+          _setSelected(_products.first);
+        } else {
+          _startNewEmpty();
+        }
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم حذف المنتج بنجاح'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('خطأ أثناء الحذف: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _saving = false);
+      }
+    }
+  }
+
   void _toggleImage(String path) {
     setState(() {
       if (_selectedImages.contains(path)) {
@@ -282,79 +341,42 @@ class _ProductsPageState extends State<ProductsPage> {
 
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // الشريط العلوي: اختيار المنتج + أزرار الإنشاء/الحفظ
-          Row(
-            children: [
-              Expanded(
-                child: DropdownButtonFormField<ProductModel>(
-                  value: _selected,
-                  decoration: const InputDecoration(
-                    labelText: 'اختر المنتج',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: _products
-                      .map(
-                        (p) => DropdownMenuItem<ProductModel>(
-                          value: p,
-                          child: Text(p.name),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (p) {
-                    if (p != null) {
-                      setState(() {
-                        _setSelected(p);
-                      });
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              // منتج جديد فارغ
-              TextButton.icon(
-                onPressed: _saving ? null : _startNewEmpty,
-                icon: const Icon(Icons.add),
-                label: const Text('منتج جديد'),
-              ),
-              const SizedBox(width: 8),
-              // نسخ كمنتج جديد
-              TextButton.icon(
-                onPressed: _saving || _selected == null
-                    ? null
-                    : _startNewFromCurrent,
-                icon: const Icon(Icons.copy),
-                label: const Text('نسخ كمنتج جديد'),
-              ),
-              const SizedBox(width: 8),
-              // حفظ
-              ElevatedButton.icon(
-                onPressed: _saving ? null : _save,
-                icon: _saving
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.save),
-                label: const Text('حفظ'),
-              ),
-            ],
-          ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isMobile = constraints.maxWidth < 700;
 
-          const SizedBox(height: 16),
-
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: _load,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Row(
+          final mainContent = isMobile
+              ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // عمود النصوص الأساسية
+                    ProductFormFields(
+                      nameCtrl: _nameCtrl,
+                      slugCtrl: _slugCtrl,
+                      typeCtrl: _typeCtrl,
+                      priceCtrl: _priceCtrl,
+                      descCtrl: _descCtrl,
+                      countryCtrl: _countryCtrl,
+                      guaranteeCtrl: _guaranteeCtrl,
+                      mainBenefitsCtrl: _mainBenefitsCtrl,
+                      ingredientsCtrl: _ingredientsCtrl,
+                      usageCtrl: _usageCtrl,
+                      safetyCtrl: _safetyCtrl,
+                      targetAudienceCtrl: _targetAudienceCtrl,
+                      marketingCtrl: _marketingCtrl,
+                      storageCtrl: _storageCtrl,
+                      highlightsCtrl: _highlightsCtrl,
+                    ),
+                    const SizedBox(height: 16),
+                    ProductImagesSection(
+                      availableImages: _availableImages,
+                      selectedImages: _selectedImages,
+                      onToggle: _toggleImage,
+                    ),
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Expanded(
                       flex: 2,
                       child: ProductFormFields(
@@ -388,11 +410,95 @@ class _ProductsPageState extends State<ProductsPage> {
                       ),
                     ),
                   ],
+                );
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<ProductModel>(
+                      value: _selected,
+                      decoration: const InputDecoration(
+                        labelText: 'اختر المنتج',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: _products
+                          .map(
+                            (p) => DropdownMenuItem<ProductModel>(
+                              value: p,
+                              child: Text(p.name),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (p) {
+                        if (p != null) {
+                          setState(() {
+                            _setSelected(p);
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // منتج جديد فارغ
+                  TextButton.icon(
+                    onPressed: _saving ? null : _startNewEmpty,
+                    icon: const Icon(Icons.add),
+                    label: const Text('منتج جديد'),
+                  ),
+                  const SizedBox(width: 8),
+                  // نسخ كمنتج جديد
+                  TextButton.icon(
+                    onPressed: _saving || _selected == null
+                        ? null
+                        : _startNewFromCurrent,
+                    icon: const Icon(Icons.copy),
+                    label: const Text('نسخ كمنتج جديد'),
+                  ),
+                  const SizedBox(width: 8),
+                  // حذف المنتج الحالي
+                  TextButton.icon(
+                    onPressed: _saving || _selected == null
+                        ? null
+                        : _deleteSelected,
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    label: const Text(
+                      'حذف',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // حفظ
+                  ElevatedButton.icon(
+                    onPressed: _saving ? null : _save,
+                    icon: _saving
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.save),
+                    label: const Text('حفظ'),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _load,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: mainContent,
+                  ),
                 ),
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
