@@ -11,4 +11,5 @@ class AppRoutes {
   static const shipping = '/shipping';
   static const support = '/support';
   static const track = '/track';
+  static const search = '/search';
 }
