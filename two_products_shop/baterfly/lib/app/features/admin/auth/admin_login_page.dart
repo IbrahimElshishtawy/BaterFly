@@ -28,6 +28,18 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     super.dispose();
   }
 
+  // ================= دالة الريفرش =================
+  Future<void> _refresh() async {
+    setState(() {
+      email.clear();
+      pass.clear();
+      loading = false;
+      obscure = true;
+    });
+    await Future.delayed(const Duration(milliseconds: 300));
+  }
+  // =================================================
+
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => loading = true);
@@ -65,140 +77,154 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     return Scaffold(
       endDrawer: const CustomDrawer(),
       appBar: const SiteAppBar(transparent: false),
-
       body: Stack(
         children: [
           const GradientBackground(),
-          Center(
+          RefreshIndicator(
+            onRefresh: _refresh,
             child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        spreadRadius: 1,
-                      ),
-                    ],
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(
-                              Icons.admin_panel_settings,
-                              size: 34,
-                              color: Colors.white,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              "لوحة الأدمن",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 22),
-
-                        _buildInput(
-                          controller: email,
-                          icon: Icons.email_outlined,
-                          label: "البريد الإلكتروني",
-                          validator: (v) {
-                            if (v == null || v.isEmpty) return "أدخل البريد";
-                            if (!v.contains("@")) return "بريد غير صالح";
-                            return null;
-                          },
-                          keyboard: TextInputType.emailAddress,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        _buildInput(
-                          controller: pass,
-                          icon: Icons.lock_outline_rounded,
-                          label: "كلمة المرور",
-                          obscure: obscure,
-                          validator: (v) {
-                            if (v == null || v.isEmpty) {
-                              return "أدخل كلمة المرور";
-                            }
-                            if (v.length < 8) return "8 أحرف على الأقل";
-                            return null;
-                          },
-                          suffix: IconButton(
-                            icon: Icon(
-                              obscure ? Icons.visibility_off : Icons.visibility,
-                              color: Colors.white70,
-                            ),
-                            onPressed: () => setState(() => obscure = !obscure),
-                          ),
-                          onSubmit: (_) => _login(),
-                        ),
-
-                        const SizedBox(height: 22),
-
-                        // زر تسجيل الدخول
-                        SizedBox(
-                          width: double.infinity,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF3527B0), Color(0xFFE91E63)],
-                              ),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: loading ? null : _login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                ),
-                              ),
-                              child: loading
-                                  ? const SizedBox(
-                                      height: 22,
-                                      width: 22,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Text(
-                                      "تسجيل الدخول",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        const Text(
-                          "يُرجى استخدام حساب أدمن فقط",
-                          style: TextStyle(color: Colors.white70, fontSize: 13),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 1,
                         ),
                       ],
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(
+                                Icons.admin_panel_settings,
+                                size: 34,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                "لوحة الأدمن",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 22),
+
+                          _buildInput(
+                            controller: email,
+                            icon: Icons.email_outlined,
+                            label: "البريد الإلكتروني",
+                            validator: (v) {
+                              if (v == null || v.isEmpty) {
+                                return "أدخل البريد";
+                              }
+                              if (!v.contains("@")) return "بريد غير صالح";
+                              return null;
+                            },
+                            keyboard: TextInputType.emailAddress,
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          _buildInput(
+                            controller: pass,
+                            icon: Icons.lock_outline_rounded,
+                            label: "كلمة المرور",
+                            obscure: obscure,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) {
+                                return "أدخل كلمة المرور";
+                              }
+                              if (v.length < 8) return "8 أحرف على الأقل";
+                              return null;
+                            },
+                            suffix: IconButton(
+                              icon: Icon(
+                                obscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.white70,
+                              ),
+                              onPressed: () =>
+                                  setState(() => obscure = !obscure),
+                            ),
+                            onSubmit: (_) => _login(),
+                          ),
+
+                          const SizedBox(height: 22),
+
+                          // زر تسجيل الدخول
+                          SizedBox(
+                            width: double.infinity,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF3527B0),
+                                    Color(0xFFE91E63),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: ElevatedButton(
+                                onPressed: loading ? null : _login,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                                child: loading
+                                    ? const SizedBox(
+                                        height: 22,
+                                        width: 22,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "تسجيل الدخول",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          const Text(
+                            "يُرجى استخدام حساب أدمن فقط",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
