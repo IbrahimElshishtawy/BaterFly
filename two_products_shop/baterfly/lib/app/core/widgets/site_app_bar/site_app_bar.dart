@@ -4,7 +4,6 @@ import 'package:baterfly/app/core/widgets/site_app_bar/search_box.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
 
-// يصدر NavLink / WebButton / SearchBox / SimpleSearchDelegate
 import 'index.dart';
 
 class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -23,7 +22,9 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final isWide = w >= 1024;
+
+    // ✅ نخلي الديسكتوب من 1280 وطالع عشان يكون فيه مساحة كفاية
+    final isWide = w >= 1280;
     final bg = transparent ? Colors.transparent : const Color(0xFF0E1A2A);
 
     return AppBar(
@@ -87,8 +88,19 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ),
       ),
+
+      // ✅ نخلي كل روابط الديسكتوب في Row واحد داخل Action واحدة
       actions: [
-        if (isWide) ..._desktopLinks(context) else ..._mobileActions(context),
+        if (isWide)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: _desktopLinks(context),
+            ),
+          )
+        else
+          ..._mobileActions(context),
       ],
     );
   }
@@ -96,19 +108,22 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// روابط الديسكتوب
   List<Widget> _desktopLinks(BuildContext context) => [
     NavLink(text: 'الرئيسية', route: '/'),
+    const SizedBox(width: 12),
     NavLink(text: 'تتبع منتجك', route: '/track'),
-    const SizedBox(width: 8),
+    const SizedBox(width: 16),
 
-    // 🔹 SearchBox بسيفت يفتح Route صفحة البحث
-    SearchBox(onTap: () => _go(context, '/search')),
+    // 🔹 SearchBox يفتح صفحة البحث
+    SizedBox(
+      width: 240, // ✅ نحدد عرض ثابت معقول عشان ما يكبر بزيادة
+      child: SearchBox(onTap: () => _go(context, '/search')),
+    ),
 
-    const SizedBox(width: 8),
+    const SizedBox(width: 16),
     WebButton(
       label: 'دخول الأدمن',
       icon: Icons.admin_panel_settings_outlined,
       onTap: () => _go(context, '/admin/login'),
     ),
-    const SizedBox(width: 12),
   ];
 
   /// أكشنات الموبايل (بحث + منيو)
@@ -136,7 +151,6 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
       delegate: SimpleSearchDelegate(),
     );
 
-    // مهم عشان تحذير use_build_context_synchronously
     if (!context.mounted) return;
 
     if (res != null && res.trim().isNotEmpty) {
