@@ -46,7 +46,6 @@ class _AppScrollBehavior extends ScrollBehavior {
 
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) {
-    // تقدر تغيّرها لو حابب Bounce على الموبايل مثلًا
     return const ClampingScrollPhysics();
   }
 
