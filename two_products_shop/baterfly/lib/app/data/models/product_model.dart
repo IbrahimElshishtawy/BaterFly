@@ -51,7 +51,6 @@ class ProductModel {
     required this.usageText,
   });
 
-  // ====== استخدام المشروع مع Supabase (JSON) ======
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     List<String> toList(dynamic v) {
       if (v == null) return [];
@@ -97,7 +96,6 @@ class ProductModel {
     );
   }
 
-  // ====== للـ unit test: fromMap(map) ======
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     List<String> toList(dynamic v) {
       if (v == null) return [];
@@ -143,7 +141,6 @@ class ProductModel {
     );
   }
 
-  /// للـ update (تحديث منتج موجود)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -168,7 +165,6 @@ class ProductModel {
     };
   }
 
-  /// للـ insert (إنشاء منتج جديد) – بدون id
   Map<String, dynamic> toJsonForInsert() {
     return {
       'slug': slug,
