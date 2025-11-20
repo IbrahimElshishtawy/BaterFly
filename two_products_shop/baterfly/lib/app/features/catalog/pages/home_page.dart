@@ -40,6 +40,14 @@ class _HomePageState extends State<HomePage> {
     return 1;
   }
 
+  // ============= دالة الريفرش =============
+  Future<void> _refresh() async {
+    // في حالة الـ Stream, مجرد إعادة build بتكفي
+    setState(() {});
+    await Future.delayed(const Duration(milliseconds: 300));
+  }
+  // ========================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,96 +86,99 @@ class _HomePageState extends State<HomePage> {
                   final minSide = pad.horizontal / 2;
                   if (side < minSide) side = minSide;
 
-                  return CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      // شبكة المنتجات
-                      SliverPadding(
-                        padding: EdgeInsets.fromLTRB(side, 16, side, 16),
-                        sliver: SliverGrid(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: cols,
-                                mainAxisSpacing: 16,
-                                crossAxisSpacing: 16,
-                                childAspectRatio: .78,
-                              ),
-                          delegate: SliverChildBuilderDelegate((context, i) {
-                            if (i >= products.length) return null;
+                  return RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        // شبكة المنتجات
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(side, 16, side, 16),
+                          sliver: SliverGrid(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: cols,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio: .78,
+                                ),
+                            delegate: SliverChildBuilderDelegate((context, i) {
+                              if (i >= products.length) return null;
 
-                            final product = products[i];
-                            final images = product.images;
+                              final product = products[i];
+                              final images = product.images;
 
-                            final double? price = product.price == 0
-                                ? null
-                                : product.price;
-                            final double rating = product.avgRating == 0
-                                ? 4.5
-                                : product.avgRating;
+                              final double? price = product.price == 0
+                                  ? null
+                                  : product.price;
+                              final double rating = product.avgRating == 0
+                                  ? 4.5
+                                  : product.avgRating;
 
-                            return SizedBox(
-                              height: 260,
-                              child: ProductHover(
-                                child: ProductCard(
-                                  images: images,
-                                  price: price,
-                                  rating: rating,
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      AppRoutes.product,
-                                      arguments: {
-                                        'slug': product.slug,
-                                        'id': product.id,
-                                      },
-                                    );
-                                  },
-                                  imageWidget: AnimatedImageSlider(
+                              return SizedBox(
+                                height: 260,
+                                child: ProductHover(
+                                  child: ProductCard(
                                     images: images,
-                                  ),
-                                  priceWidget: Text(
-                                    price != null
-                                        ? '\$${price.toStringAsFixed(2)}'
-                                        : 'N/A',
-                                    style: const TextStyle(
-                                      color: Colors.orangeAccent,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                    price: price,
+                                    rating: rating,
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRoutes.product,
+                                        arguments: {
+                                          'slug': product.slug,
+                                          'id': product.id,
+                                        },
+                                      );
+                                    },
+                                    imageWidget: AnimatedImageSlider(
+                                      images: images,
+                                    ),
+                                    priceWidget: Text(
+                                      price != null
+                                          ? '\$${price.toStringAsFixed(2)}'
+                                          : 'N/A',
+                                      style: const TextStyle(
+                                        color: Colors.orangeAccent,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          }, childCount: products.length),
-                        ),
-                      ),
-
-                      const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 30),
-                          child: BuildVideoSection(),
-                        ),
-                      ),
-
-                      const HomeReviewsSection(),
-
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 24,
-                          ),
-                          child: ReviewSection(
-                            orderNo: 'HOME_SECTION',
-                            productName: products.isNotEmpty
-                                ? products.first.name
-                                : 'المنتج',
+                              );
+                            }, childCount: products.length),
                           ),
                         ),
-                      ),
 
-                      const SliverToBoxAdapter(child: FooterLinks()),
-                    ],
+                        const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 30),
+                            child: BuildVideoSection(),
+                          ),
+                        ),
+
+                        const HomeReviewsSection(),
+
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 24,
+                            ),
+                            child: ReviewSection(
+                              orderNo: 'HOME_SECTION',
+                              productName: products.isNotEmpty
+                                  ? products.first.name
+                                  : 'المنتج',
+                            ),
+                          ),
+                        ),
+
+                        const SliverToBoxAdapter(child: FooterLinks()),
+                      ],
+                    ),
                   );
                 },
               );
