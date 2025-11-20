@@ -347,44 +347,48 @@ class _ProductsPageState extends State<ProductsPage> {
           const SizedBox(height: 16),
 
           Expanded(
-            child: SingleChildScrollView(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // عمود النصوص الأساسية
-                  Expanded(
-                    flex: 2,
-                    child: ProductFormFields(
-                      nameCtrl: _nameCtrl,
-                      slugCtrl: _slugCtrl,
-                      typeCtrl: _typeCtrl,
-                      priceCtrl: _priceCtrl,
-                      descCtrl: _descCtrl,
-                      countryCtrl: _countryCtrl,
-                      guaranteeCtrl: _guaranteeCtrl,
-                      mainBenefitsCtrl: _mainBenefitsCtrl,
-                      ingredientsCtrl: _ingredientsCtrl,
-                      usageCtrl: _usageCtrl,
-                      safetyCtrl: _safetyCtrl,
-                      targetAudienceCtrl: _targetAudienceCtrl,
-                      marketingCtrl: _marketingCtrl,
-                      storageCtrl: _storageCtrl,
-                      highlightsCtrl: _highlightsCtrl,
+            child: RefreshIndicator(
+              onRefresh: _load,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // عمود النصوص الأساسية
+                    Expanded(
+                      flex: 2,
+                      child: ProductFormFields(
+                        nameCtrl: _nameCtrl,
+                        slugCtrl: _slugCtrl,
+                        typeCtrl: _typeCtrl,
+                        priceCtrl: _priceCtrl,
+                        descCtrl: _descCtrl,
+                        countryCtrl: _countryCtrl,
+                        guaranteeCtrl: _guaranteeCtrl,
+                        mainBenefitsCtrl: _mainBenefitsCtrl,
+                        ingredientsCtrl: _ingredientsCtrl,
+                        usageCtrl: _usageCtrl,
+                        safetyCtrl: _safetyCtrl,
+                        targetAudienceCtrl: _targetAudienceCtrl,
+                        marketingCtrl: _marketingCtrl,
+                        storageCtrl: _storageCtrl,
+                        highlightsCtrl: _highlightsCtrl,
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(width: 16),
+                    const SizedBox(width: 16),
 
-                  // عمود الصور
-                  Expanded(
-                    flex: 1,
-                    child: ProductImagesSection(
-                      availableImages: _availableImages,
-                      selectedImages: _selectedImages,
-                      onToggle: _toggleImage,
+                    // عمود الصور
+                    Expanded(
+                      flex: 1,
+                      child: ProductImagesSection(
+                        availableImages: _availableImages,
+                        selectedImages: _selectedImages,
+                        onToggle: _toggleImage,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
