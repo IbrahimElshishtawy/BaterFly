@@ -278,7 +278,7 @@ class _ProductsPageState extends State<ProductsPage> {
     setState(() => _saving = true);
 
     try {
-      await _service.deleteProduct(_selected!.id! as int);
+      await _service.deleteProduct(_selected!.id!);
       setState(() {
         _products.removeWhere((p) => p.id == _selected!.id);
         if (_products.isNotEmpty) {
