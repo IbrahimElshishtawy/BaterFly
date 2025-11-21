@@ -1,3 +1,4 @@
+import 'package:baterfly/app/core/widgets/footer_links/footer_helpers.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/nav_link.dart';
 import 'package:flutter/material.dart';
 
@@ -18,11 +19,19 @@ class FooterMobileColumns extends StatelessWidget {
           style: TextStyle(color: Colors.white70, fontSize: 14),
         ),
         const SizedBox(height: 16),
+
         Wrap(
           spacing: 18,
           runSpacing: 8,
           alignment: WrapAlignment.center,
           children: [
+            // زر تحميل APK
+            const FooterLink(
+              text: 'تحميل تطبيق ButterFly (APK)',
+              url:
+                  'https://github.com/IbrahimElshishtawy/BaterFly/releases/download/v1.0.0/app-release.apk',
+            ),
+
             NavLink(text: 'سياسة الاستبدال والاسترجاع', route: '/returns'),
             NavLink(text: 'سياسة الشحن', route: '/shipping'),
             NavLink(text: 'الدعم الفني واتساب', route: '/support'),
