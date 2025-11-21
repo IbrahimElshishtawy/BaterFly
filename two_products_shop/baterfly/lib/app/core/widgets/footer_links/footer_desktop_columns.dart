@@ -66,6 +66,11 @@ class FooterDesktopColumns extends StatelessWidget {
                 text: 'إنستجرام',
                 url: 'https://www.instagram.com/m.almounir/',
               ),
+              FooterLink(
+                text: 'تحميل تطبيق ButterFly (APK)',
+                url:
+                    'https://github.com/IbrahimElshishtawy/BaterFly/releases/download/v1.0.0/app-release.apk',
+              ),
             ],
           ),
         ),
