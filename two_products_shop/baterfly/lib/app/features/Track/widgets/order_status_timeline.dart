@@ -12,7 +12,7 @@ class OrderStatusTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     const steps = ['pending', 'processing', 'shipped', 'done'];
 
-    final currentIndex = steps.indexOf(currentStatus) == -1
+    final currentIndex = !steps.contains(currentStatus)
         ? 0
         : steps.indexOf(currentStatus);
 

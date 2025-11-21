@@ -30,7 +30,7 @@ class ProductHeaderBar extends StatelessWidget {
       children: [
         Expanded(
           child: DropdownButtonFormField<ProductModel>(
-            value: selected,
+            initialValue: selected,
             decoration: const InputDecoration(
               labelText: 'اختر المنتج',
               border: OutlineInputBorder(),
