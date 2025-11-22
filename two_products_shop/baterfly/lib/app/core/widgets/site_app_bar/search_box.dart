@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class SearchBox extends StatelessWidget {
-  final VoidCallback? onTap; // تقدر تسيبه null لأننا هنستخدم Navigator
+  final VoidCallback? onTap;
 
   const SearchBox({super.key, this.onTap});
 
@@ -74,7 +74,7 @@ class SearchBox extends StatelessWidget {
   }
 
   void _openSearchPage(BuildContext context) {
-    Navigator.pushNamed(context, '/search');
+    Navigator.of(context).pushNamed('/search');
     // أو استخدم AppRoutes.search لو عندك Route ثابت
   }
 }
