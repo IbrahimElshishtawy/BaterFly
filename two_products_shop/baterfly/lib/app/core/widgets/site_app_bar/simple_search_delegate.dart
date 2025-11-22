@@ -1,29 +1,29 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
-class SimpleSearchDelegate extends SearchDelegate<String?> {
-  SimpleSearchDelegate() {
-    query = '';
-  }
+// class SimpleSearchDelegate extends SearchDelegate<String?> {
+//   SimpleSearchDelegate() {
+//     query = '';
+//   }
 
-  @override
-  List<Widget>? buildActions(BuildContext context) => [
-    IconButton(onPressed: () => query = '', icon: const Icon(Icons.clear)),
-  ];
+//   @override
+//   List<Widget>? buildActions(BuildContext context) => [
+//     IconButton(onPressed: () => query = '', icon: const Icon(Icons.clear)),
+//   ];
 
-  @override
-  Widget? buildLeading(BuildContext context) => IconButton(
-    onPressed: () => close(context, null),
-    icon: const Icon(Icons.arrow_back),
-  );
+//   @override
+//   Widget? buildLeading(BuildContext context) => IconButton(
+//     onPressed: () => close(context, null),
+//     icon: const Icon(Icons.arrow_back),
+//   );
 
-  @override
-  Widget buildResults(BuildContext context) => _hint();
+//   @override
+//   Widget buildResults(BuildContext context) => _hint();
 
-  @override
-  Widget buildSuggestions(BuildContext context) => _hint();
+//   @override
+//   Widget buildSuggestions(BuildContext context) => _hint();
 
-  Widget _hint() => Center(child: Text('اكتب اسم المنتج ثم Enter: $query'));
+//   Widget _hint() => Center(child: Text('اكتب اسم المنتج ثم Enter: $query'));
 
-  @override
-  void showResults(BuildContext context) => close(context, query.trim());
-}
+//   @override
+//   void showResults(BuildContext context) => close(context, query.trim());
+// }
