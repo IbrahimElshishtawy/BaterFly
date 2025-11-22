@@ -1,5 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
-
+import 'package:baterfly/app/core/routing/app_routes.dart';
 import 'package:baterfly/app/core/widgets/site_app_bar/search_box.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_flutter/lucide_flutter.dart';
@@ -23,7 +22,7 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
 
-    // ✅ نخلي الديسكتوب من 1280 وطالع عشان يكون فيه مساحة كفاية
+    // نخلي الديسكتوب من 1280 وطالع عشان يكون فيه مساحة كفاية
     final isWide = w >= 1280;
     final bg = transparent ? Colors.transparent : const Color(0xFF0E1A2A);
 
@@ -69,6 +68,7 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
             InkWell(
               onTap: () => _go(context, '/'),
               borderRadius: BorderRadius.circular(8),
+              mouseCursor: SystemMouseCursors.click,
               child: Row(
                 children: [
                   Icon(LucideIcons.droplets, color: Colors.white, size: 22),
@@ -88,8 +88,6 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ),
       ),
-
-      // ✅ نخلي كل روابط الديسكتوب في Row واحد داخل Action واحدة
       actions: [
         if (isWide)
           Padding(
@@ -111,12 +109,10 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     const SizedBox(width: 12),
     NavLink(text: 'تتبع منتجك', route: '/track'),
     const SizedBox(width: 16),
-
     SizedBox(
       width: 240,
       child: SearchBox(onTap: () => _go(context, '/search')),
     ),
-
     const SizedBox(width: 16),
     WebButton(
       label: 'دخول الأدمن',
@@ -125,10 +121,12 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
     ),
   ];
 
+  /// أزرار الموبايل
   List<Widget> _mobileActions(BuildContext context) => [
     IconButton(
       tooltip: 'بحث',
-      onPressed: () => _openSearch(context),
+      // هنا كان الخطأ: لازم تستدعي التنقّل فعلاً، مش بس ترجع قيم
+      onPressed: () => _go(context, AppRoutes.search),
       icon: const Icon(Icons.search, color: Colors.white),
     ),
     Builder(
@@ -142,19 +140,6 @@ class SiteAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     ),
   ];
-
-  Future<void> _openSearch(BuildContext context) async {
-    final res = await showSearch<String?>(
-      context: context,
-      delegate: SimpleSearchDelegate(),
-    );
-
-    if (!context.mounted) return;
-
-    if (res != null && res.trim().isNotEmpty) {
-      _go(context, '/catalog', args: {'q': res.trim()});
-    }
-  }
 
   void _go(BuildContext context, String route, {Object? args}) {
     final current = ModalRoute.of(context)?.settings.name;
